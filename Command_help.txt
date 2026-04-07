@@ -1,0 +1,13 @@
+Virtual Env:
+& "c:\Users\ADMIN\OneDrive\Documents\SAD System files\version4_technopath\.venv\Scripts\activate.ps1"
+
+Setting Path:
+cd backend_django
+
+Backend Run command:
+
+python manage.py runserver
+
+Frontend Run command:
+cd "c:\Users\ADMIN\OneDrive\Documents\SAD System files\version4_technopath\frontend"
+npm run dev

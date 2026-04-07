@@ -1,0 +1,108 @@
+/* AdminLoginView External Styles */
+.adminlogin-view {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FFE0B2 0%, #FF9800 100%);
+  padding: 16px;
+}
+
+.adminlogin-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+.adminlogin-card h1 {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 4px;
+  color: var(--color-primary);
+}
+
+.adminlogin-subtitle {
+  text-align: center;
+  color: var(--color-text-secondary);
+  margin-bottom: 32px;
+  font-size: 14px;
+}
+
+.adminlogin-input-group {
+  margin-bottom: 20px;
+}
+
+.adminlogin-input-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--color-text);
+}
+
+.adminlogin-input-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.adminlogin-input-group input:focus {
+  border-color: var(--color-primary);
+}
+
+.adminlogin-error-message {
+  background: #FFEBEE;
+  color: #C62828;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.adminlogin-btn-primary {
+  width: 100%;
+  padding: 16px;
+  background: #FF9800;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.adminlogin-btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.adminlogin-back-link {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+}
+
+.adminlogin-btn-back-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.adminlogin-btn-back-link:hover {
+  text-decoration: underline;
+}

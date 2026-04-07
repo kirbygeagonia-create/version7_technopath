@@ -1,0 +1,413 @@
+================================================================================
+SEAIT CAMPUS GUIDE - CODEBASE STRUCTURE DOCUMENTATION
+================================================================================
+Generated: March 30, 2026
+Project: version4_technopath
+Type: Flutter Campus Navigation Application
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+1. ROOT DIRECTORY STRUCTURE
+2. LIB DIRECTORY (Flutter Frontend)
+3. BACKEND DIRECTORIES
+4. ASSETS & CONFIGURATION
+5. PLATFORM DIRECTORIES
+
+================================================================================
+1. ROOT DIRECTORY STRUCTURE
+================================================================================
+
+Path: c:\Users\User\Downloads\SAD\version4_technopath\
+
+├── .dart_tool/                 - Flutter/Dart build artifacts and cache
+├── .idea/                      - IntelliJ IDEA / Android Studio project settings
+├── .windsurf/                  - Windsurf IDE configuration and workflows
+├── android/                    - Android platform-specific code
+├── assets/                     - Static assets (images, maps)
+├── backend/                    - Node.js REST API server
+├── backend_dart/               - Alternative Dart backend implementation
+├── build/                      - Flutter build output directory
+├── chatbot_flask/              - Python Flask chatbot service
+├── ios/                        - iOS platform-specific code
+├── lib/                        - Main Flutter application code (Dart)
+├── linux/                      - Linux platform-specific code
+├── macos/                      - macOS platform-specific code
+├── test/                       - Unit and widget tests
+├── web/                        - Web platform-specific code
+├── windows/                    - Windows platform-specific code
+├── .flutter-plugins-dependencies - Flutter plugin metadata
+├── .gitignore                  - Git ignore patterns
+├── .metadata                   - Flutter project metadata
+├── analysis_options.yaml       - Dart static analysis configuration
+├── pubspec.lock                - Locked dependency versions
+├── pubspec.yaml                - Flutter project dependencies and config
+├── README.md                   - Project readme with setup instructions
+├── SYSTEM_DOCUMENTATION.md     - Comprehensive system documentation
+└── version4_technopath.iml    - IntelliJ module configuration
+
+================================================================================
+2. LIB DIRECTORY (Flutter Frontend)
+================================================================================
+
+Path: c:\Users\User\Downloads\SAD\version4_technopath\lib\
+
+--------------------------------------------------------------------------------
+CORE APPLICATION FILES
+--------------------------------------------------------------------------------
+
+main.dart                       [186,953 bytes]
+  - PRIMARY APPLICATION ENTRY POINT
+  - Contains: SplashScreen, MainNavigationShell, HomeScreen, NavigateScreen
+  - Contains: SettingsScreen, ChatbotScreen, NotificationsScreen, Admin screens
+  - Contains: BuildingInfoScreen, AdminInfoScreen, InstructorInfoScreen
+  - Contains: EmployeesScreen, Rating system, Search functionality
+  - Defines Material 3 theme with orange color scheme (Color 0xFFFF9800)
+  - Implements bottom navigation (Home, Navigate, Settings)
+  - Manages app state: dark mode, user authentication, notifications
+  - PURPOSE: Main UI framework and navigation controller
+
+api_service.dart                [11,429 bytes]
+  - HTTP CLIENT FOR BACKEND COMMUNICATION
+  - Class: ApiService (static methods)
+  - Base URL: http://10.0.2.2:3000/api (Android emulator)
+  - Implements: User management, Facility CRUD, Room CRUD, Map markers
+  - Implements: Ratings, Notifications, Chat history, App usage analytics
+  - PURPOSE: REST API client for server communication
+
+database_helper.dart            [13,450 bytes]
+  - ORIGINAL SQLITE DATABASE HELPER (Legacy)
+  - PURPOSE: Basic SQLite operations (superseded by v2)
+
+database_helper_v2.dart         [49,683 bytes]
+  - ENHANCED SQLITE DATABASE MANAGER
+  - Class: DatabaseHelper (singleton pattern)
+  - Tables: users, facilities, rooms, map_markers, ratings
+  - Tables: notifications, chat_history, app_usage
+  - Implements: CRUD operations, queries, statistics
+  - PURPOSE: Local data persistence and offline functionality
+
+chatbot_database_helper.dart    [2,472 bytes]
+  - CHATBOT-SPECIFIC DATABASE OPERATIONS
+  - Class: ChatbotDatabaseHelper
+  - PURPOSE: Local storage for chat history and messages
+
+--------------------------------------------------------------------------------
+SUBDIRECTORIES
+--------------------------------------------------------------------------------
+
+feedback/
+  └── feedback_screen.dart      - User feedback submission interface
+      PURPOSE: Collect and submit user feedback/ratings
+
+map/
+  ├── campus_map_screen.dart    [35,837 bytes]
+  │   - INTERACTIVE CAMPUS MAP SCREEN
+  │   - Implements: Pan, zoom, markers, building/room selection
+  │   - Entry point navigation, route visualization
+  │   - PURPOSE: Full-screen map navigation interface
+  │
+  ├── SEAITlogo.png             [256,107 bytes]
+  │   - SEAIT institutional logo
+  │   - PURPOSE: Splash screen and branding
+  │
+  └── Example1.jpg              [124,937 bytes]
+      - Campus map image asset
+      - PURPOSE: Background map for navigation
+
+navigation/
+  └── pathfinder.dart           [14,751 bytes]
+      - PATHFINDING ALGORITHM IMPLEMENTATION
+      - Implements: A* pathfinding algorithm
+      - PURPOSE: Calculate optimal routes between campus locations
+
+qr/
+  └── qr_scanner_screen.dart    [13,254 bytes]
+      - QR CODE SCANNER INTERFACE
+      - Uses: mobile_scanner package
+      - PURPOSE: Scan QR codes for quick location access
+
+search/
+  └── search_delegate.dart      - Search functionality and autocomplete
+      PURPOSE: Location search with filtering
+
+================================================================================
+3. BACKEND DIRECTORIES
+================================================================================
+
+--------------------------------------------------------------------------------
+3.1 NODE.JS BACKEND (Primary API Server)
+--------------------------------------------------------------------------------
+
+Path: c:\Users\User\Downloads\SAD\version4_technopath\backend\
+
+server.js                       [17,030 bytes]
+  - MAIN NODE.JS SERVER APPLICATION
+  - Framework: Express.js
+  - Port: 3000 (default)
+  - Endpoints:
+    * GET  /health                - Health check
+    * GET  /api/dashboard/stats   - Dashboard statistics
+    * GET  /api/users             - List users
+    * POST /api/users             - Create user
+    * POST /api/users/login       - User authentication
+    * GET  /api/facilities        - List facilities
+    * POST /api/facilities        - Create facility
+    * GET  /api/rooms             - List rooms
+    * GET  /api/rooms/:facilityId - Rooms by facility
+    * POST /api/rooms             - Create room
+    * GET  /api/map-markers       - Map marker positions
+    * GET  /api/ratings           - User ratings
+    * GET  /api/ratings/average   - Average rating
+    * GET  /api/notifications     - Notifications list
+    * POST /api/chat-history      - Save chat message
+    * GET  /api/app-usage/weekly  - Usage statistics
+  - PURPOSE: REST API for mobile app data operations
+
+database.js                     [4,116 bytes]
+  - SQLITE DATABASE MANAGER
+  - Database: guide_map.db
+  - PURPOSE: Database initialization and query execution
+
+database/
+  └── guide_map.db              - SQLite database file (binary)
+      PURPOSE: Stores all application data (users, facilities, rooms, etc.)
+
+package.json                    [460 bytes]
+  - Node.js dependencies
+  - Dependencies: express (^4.18.2), sqlite3 (^5.1.6), cors (^2.8.5)
+
+package-lock.json               [95,866 bytes]
+  - Locked dependency tree
+
+README.md                       [2,394 bytes]
+  - Backend-specific documentation
+
+node_modules/                   - Installed npm packages
+
+--------------------------------------------------------------------------------
+3.2 DART BACKEND (Alternative Implementation)
+--------------------------------------------------------------------------------
+
+Path: c:\Users\User\Downloads\SAD\version4_technopath\backend_dart\
+
+bin/
+  └── server.dart               - Dart HTTP server
+      - Framework: dart:io HttpServer
+      - Port: 8080
+      - Endpoints: /health, /dashboard, /locations
+      - PURPOSE: Alternative backend in Dart (minimal implementation)
+
+pubspec.yaml                    [193 bytes]
+  - Dart dependencies
+
+pubspec.lock                    [3,997 bytes]
+  - Locked Dart dependencies
+
+.dart_tool/                     - Dart build artifacts
+
+--------------------------------------------------------------------------------
+3.3 FLASK CHATBOT BACKEND (AI Service)
+--------------------------------------------------------------------------------
+
+Path: c:\Users\User\Downloads\SAD\version4_technopath\chatbot_flask\
+
+app.py                          [2,142 bytes]
+  - FLASK CHATBOT SERVER
+  - Framework: Flask + Flask-CORS
+  - Port: 5000
+  - Database: chatbot.db (SQLite)
+  - Functions:
+    * init_db()                 - Initialize chat_history table
+    * generate_reply(message)   - Rule-based response generation
+    * /health                   - Health check endpoint
+    * /chat                     - Chat message processing (POST)
+  - Response patterns:
+    * "hello"/"hi" → Greeting
+    * "cl1"-"cl4" → Classroom guidance
+    * "building" → Building information
+    * Default → Acknowledgment
+  - PURPOSE: AI chatbot service for navigation assistance
+
+requirements.txt                [14 bytes]
+  - Python dependencies: flask, flask-cors
+
+chatbot.db                      - SQLite chat history database (binary)
+
+================================================================================
+4. ASSETS & CONFIGURATION
+================================================================================
+
+--------------------------------------------------------------------------------
+ASSETS DIRECTORY
+--------------------------------------------------------------------------------
+
+Path: c:\Users\User\Downloads\SAD\version4_technopath\assets\
+
+maps/
+  └── Example1.jpg              [124,937 bytes]
+      - Campus map image
+      - PURPOSE: Visual reference for navigation
+
+--------------------------------------------------------------------------------
+CONFIGURATION FILES (Root)
+--------------------------------------------------------------------------------
+
+pubspec.yaml                    [4,126 bytes]
+  - FLUTTER PROJECT CONFIGURATION
+  - Name: version4_technopath
+  - Version: 1.0.0+1
+  - SDK: ^3.11.1
+  - Dependencies:
+    * cupertino_icons: ^1.0.8  - iOS-style icons
+    * http: ^1.2.2             - HTTP client
+    * sqflite: ^2.3.2           - SQLite database
+    * path: ^1.9.0              - File path utilities
+    * crypto: ^3.0.3           - Cryptographic functions
+    * mobile_scanner: ^3.5.5    - QR code scanning
+    * flutter_svg: ^2.0.9       - SVG support
+    * vector_math: ^2.1.4       - Math operations
+  - Assets:
+    * assets/maps/              - Map images
+    * lib/map/                  - Logo and map resources
+  - PURPOSE: Define project dependencies and assets
+
+analysis_options.yaml           [1,448 bytes]
+  - Dart analyzer configuration
+  - Lint rules and static analysis settings
+  - PURPOSE: Enforce code quality standards
+
+.gitignore                      [748 bytes]
+  - Git ignore patterns
+  - Excludes: build/, .dart_tool/, .packages, etc.
+  - PURPOSE: Prevent build artifacts from version control
+
+.metadata                       [964 bytes]
+  - Flutter project metadata
+  - PURPOSE: IDE integration and project tracking
+
+================================================================================
+5. PLATFORM DIRECTORIES
+================================================================================
+
+--------------------------------------------------------------------------------
+ANDROID
+--------------------------------------------------------------------------------
+
+Path: c:\Users\User\Downloads\SAD\version4_technopath\android\
+
+app/src/main/
+  ├── AndroidManifest.xml       - Android app configuration
+  ├── java/.../MainActivity.java - Main activity entry
+  └── res/                      - Android resources (layouts, strings, icons)
+
+build.gradle                    - Android build configuration
+
+--------------------------------------------------------------------------------
+IOS
+--------------------------------------------------------------------------------
+
+Path: c:\Users\User\Downloads\SAD\version4_technopath\ios\
+
+Runner/
+  ├── AppDelegate.swift         - iOS app delegate
+  ├── Info.plist                - iOS configuration
+  └── Assets.xcassets/          - App icons and images
+
+Podfile                         - CocoaPods dependencies
+
+--------------------------------------------------------------------------------
+WEB
+--------------------------------------------------------------------------------
+
+Path: c:\Users\User\Downloads\SAD\version4_technopath\web\
+
+index.html                      - Web entry point
+manifest.json                   - PWA manifest
+
+--------------------------------------------------------------------------------
+WINDOWS
+--------------------------------------------------------------------------------
+
+Path: c:\Users\User\Downloads\SAD\version4_technopath\windows\
+
+runner/
+  ├── main.cpp                  - Windows entry point
+  ├── resource.h                - Resource definitions
+  └── Runner.rc                 - Windows resources
+
+--------------------------------------------------------------------------------
+MACOS
+--------------------------------------------------------------------------------
+
+Path: c:\Users\User\Downloads\SAD\version4_technopath\macos\
+
+Runner/
+  ├── MainFlutterWindow.swift   - macOS window configuration
+  ├── Info.plist                - macOS configuration
+  └── Assets.xcassets/          - App icons
+
+--------------------------------------------------------------------------------
+LINUX
+--------------------------------------------------------------------------------
+
+Path: c:\Users\User\Downloads\SAD\version4_technopath\linux\
+
+main.cc                         - Linux entry point
+CMakeLists.txt                  - CMake build configuration
+
+================================================================================
+FILE SIZE SUMMARY
+================================================================================
+
+LARGEST FILES BY SIZE:
+1. lib/main.dart                - 186,953 bytes (Main application code)
+2. lib/database_helper_v2.dart  - 49,683 bytes (Database operations)
+3. lib/map/campus_map_screen.dart - 35,837 bytes (Map interface)
+4. backend/server.js            - 17,030 bytes (Node.js API)
+5. lib/api_service.dart         - 11,429 bytes (HTTP client)
+6. lib/database_helper.dart     - 13,450 bytes (Legacy database)
+7. lib/qr/qr_scanner_screen.dart - 13,254 bytes (QR scanner)
+8. lib/navigation/pathfinder.dart - 14,751 bytes (Pathfinding)
+
+TOTAL LIB DIRECTORY: ~327 KB
+TOTAL PROJECT: ~2.5 MB (excluding build artifacts)
+
+================================================================================
+KEY COMPONENTS PURPOSE SUMMARY
+================================================================================
+
+USER INTERFACE (main.dart):
+  - 15+ screens including Home, Navigate, Settings, Admin panels
+  - Material 3 design with orange theme
+  - Supports light and dark modes
+
+NAVIGATION (navigation/pathfinder.dart):
+  - A* algorithm for optimal route calculation
+  - Building-to-room pathfinding
+
+QR SCANNING (qr/qr_scanner_screen.dart):
+  - Mobile scanner integration
+  - Quick location access via QR codes
+
+DATABASE (database_helper_v2.dart):
+  - 8 tables: users, facilities, rooms, markers, ratings, notifications, chat, usage
+  - Local SQLite with singleton pattern
+
+API CLIENT (api_service.dart):
+  - 20+ REST endpoints
+  - User, facility, room, notification management
+
+BACKEND API (backend/server.js):
+  - Express.js server
+  - 3000 port default
+  - Full CRUD for all entities
+
+CHATBOT (chatbot_flask/app.py):
+  - Flask server
+  - Rule-based responses
+  - 5000 port default
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================

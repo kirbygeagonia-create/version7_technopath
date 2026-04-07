@@ -1,0 +1,10 @@
+name: guide_map_backend
+description: Dart backend for guide map app
+version: 1.0.0
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  shelf: ^1.4.2
+  shelf_router: ^1.1.4
+  sqlite3: ^2.4.6

@@ -1,0 +1,174 @@
+================================================================================
+DJANGO SETUP VERIFICATION REPORT - TechnoPath
+================================================================================
+Generated: March 30, 2026
+Status: STRUCTURE VERIFIED - Manual check required for runtime validation
+
+================================================================================
+FILE STRUCTURE VERIFICATION
+================================================================================
+
+✓ Root Configuration Files:
+  - backend_django/manage.py (381 bytes)
+  - backend_django/requirements.txt (159 bytes)
+  - .env.example (118 bytes)
+
+✓ Project Settings (technopath/):
+  - __init__.py (0 bytes)
+  - settings.py (2821 bytes)
+  - urls.py (925 bytes)
+  - wsgi.py (171 bytes)
+  - asgi.py (171 bytes)
+
+✓ Apps Package (apps/__init__.py): 0 bytes
+
+✓ Users App (apps/users/):
+  - __init__.py (0 bytes) ✓
+  - models.py (1769 bytes) - AdminUser with role-based auth
+  - serializers.py (790 bytes) - User serialization
+  - views.py (820 bytes) - API endpoints
+  - urls.py (253 bytes) - URL routing
+
+✓ Facilities App (apps/facilities/):
+  - __init__.py (0 bytes) ✓
+  - models.py (720 bytes) - Facility with map_svg_id
+  - serializers.py (192 bytes)
+  - views.py (674 bytes)
+  - urls.py (221 bytes)
+
+✓ Rooms App (apps/rooms/):
+  - __init__.py (0 bytes) ✓
+  - models.py (1167 bytes) - Room with facility FK
+  - serializers.py (267 bytes)
+  - views.py (642 bytes)
+  - urls.py (205 bytes)
+
+✓ Navigation App (apps/navigation/):
+  - __init__.py (0 bytes) ✓
+  - models.py (1778 bytes) - NavigationNode & NavigationEdge
+  - serializers.py (531 bytes)
+  - views.py (1142 bytes)
+  - urls.py (406 bytes)
+
+✓ Chatbot App (apps/chatbot/):
+  - __init__.py (0 bytes) ✓
+  - models.py (1529 bytes) - FAQEntry & AIChatLog
+  - serializers.py (329 bytes)
+  - views.py (591 bytes)
+  - urls.py (209 bytes)
+
+✓ Notifications App (apps/notifications/):
+  - __init__.py (0 bytes) ✓
+  - models.py (1020 bytes) - Notification model
+  - serializers.py (204 bytes)
+  - views.py (563 bytes)
+  - urls.py (237 bytes)
+
+✓ Feedback App (apps/feedback/):
+  - __init__.py (0 bytes) ✓
+  - models.py (968 bytes) - Feedback with ratings
+  - serializers.py (192 bytes)
+  - views.py (531 bytes)
+  - urls.py (221 bytes)
+
+================================================================================
+CONFIGURATION VERIFICATION
+================================================================================
+
+✓ Settings (technopath/settings.py):
+  - SECRET_KEY: Uses python-decouple with fallback
+  - DEBUG: Boolean config
+  - ALLOWED_HOSTS: Configurable via env
+  - INSTALLED_APPS: 16 apps (Django + DRF + 7 custom)
+  - MIDDLEWARE: CORS + Django security stack
+  - DATABASES: SQLite default
+  - AUTH_USER_MODEL: users.AdminUser
+  - REST_FRAMEWORK: JWT authentication configured
+  - SIMPLE_JWT: 8h access, 7d refresh tokens
+  - CORS_ALLOWED_ORIGINS: Vue dev server (5173)
+  - STATIC/MEDIA: File serving configured
+  - TIME_ZONE: Asia/Manila
+
+✓ URL Routing (technopath/urls.py):
+  - /admin/ - Django admin
+  - /api/auth/login/ - JWT token obtain
+  - /api/auth/refresh/ - JWT token refresh
+  - /api/users/ - User management
+  - /api/facilities/ - Facility CRUD
+  - /api/rooms/ - Room CRUD
+  - /api/navigation/ - Nodes/Edges CRUD
+  - /api/chatbot/ - FAQ endpoints
+  - /api/notifications/ - Notification endpoints
+  - /api/feedback/ - Feedback endpoints
+  - Media files served in development
+
+✓ Requirements (requirements.txt):
+  - django>=4.2
+  - djangorestframework>=3.15
+  - djangorestframework-simplejwt>=5.3
+  - django-cors-headers>=4.3
+  - python-decouple>=3.8
+  - Pillow>=10.0
+  - flask>=3.0 (for chatbot)
+  - flask-cors>=4.0
+
+================================================================================
+MANUAL VERIFICATION STEPS
+================================================================================
+
+To complete Django verification, run these commands in your terminal:
+
+1. Navigate to backend directory:
+   cd backend_django
+
+2. Create virtual environment:
+   python -m venv venv
+
+3. Activate virtual environment:
+   Windows: venv\Scripts\activate
+   Linux/Mac: source venv/bin/activate
+
+4. Install dependencies:
+   pip install -r requirements.txt
+
+5. Run Django system check:
+   python manage.py check
+   
+   Expected output:
+   System check identified no issues (0 silenced).
+
+6. Create database tables:
+   python manage.py migrate
+
+7. Create superuser (optional):
+   python manage.py createsuperuser
+
+8. Run development server:
+   python manage.py runserver
+   
+   Server should start at: http://127.0.0.1:8000/
+
+================================================================================
+ENDPOINT VERIFICATION CHECKLIST
+================================================================================
+
+After starting the server, verify these endpoints:
+
+□ GET http://localhost:8000/api/facilities/ (should return [] or facilities)
+□ GET http://localhost:8000/api/rooms/ (should return [] or rooms)
+□ GET http://localhost:8000/api/navigation/nodes/ (should return [] or nodes)
+□ GET http://localhost:8000/api/navigation/edges/ (should return [] or edges)
+□ GET http://localhost:8000/api/chatbot/faq/ (should return [] or FAQs)
+□ GET http://localhost:8000/api/notifications/ (should return [] or notifications)
+□ POST http://localhost:8000/api/auth/login/ (requires credentials)
+
+================================================================================
+VERIFICATION STATUS: STRUCTURE COMPLETE
+================================================================================
+
+All required files have been created and verified present.
+Django project is ready for installation and runtime verification.
+
+Next step: Run the manual verification commands above to complete setup.
+
+================================================================================

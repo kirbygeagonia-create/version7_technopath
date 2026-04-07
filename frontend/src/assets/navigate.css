@@ -1,0 +1,112 @@
+/* NavigateView External Styles */
+.navigate-view {
+  height: 100%;
+  width: 100%;
+}
+
+.navigate-top-bar {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: #FF9800;
+  color: white;
+}
+
+.navigate-back-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  transition: background 0.2s;
+}
+
+.navigate-back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.navigate-back-btn .material-icons {
+  font-size: 22px;
+}
+
+.navigate-top-bar h1 {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  margin: 0;
+}
+
+.navigate-spacer {
+  width: 36px;
+}
+
+.navigate-main-content {
+  padding: 16px;
+}
+
+.navigate-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.navigate-input-group {
+  margin-bottom: 16px;
+}
+
+.navigate-input-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--color-text-secondary);
+}
+
+.navigate-input-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 16px;
+  background: var(--color-bg);
+}
+
+.navigate-btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: #FF9800;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.navigate-btn-primary:hover:not(:disabled) {
+  background: #F57C00;
+}
+
+.navigate-btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.navigate-route-result {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--color-surface);
+  border-radius: 8px;
+}
+
+.navigate-route-result p {
+  margin-bottom: 4px;
+}

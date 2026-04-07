@@ -1,0 +1,364 @@
+/* App.vue External Styles */
+/* This file contains all styles for App.vue to avoid Vue scoped CSS conflicts */
+
+/* Global styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-primary);
+  background: var(--color-surface);
+  overflow-x: hidden;
+}
+
+#app {
+  height: 100vh;
+  width: 100vw;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+#app-root {
+  height: 100%;
+  width: 100%;
+}
+
+/* Desktop Layout */
+#app-root.app-desktop {
+  display: flex;
+}
+
+/* Side Navigation */
+.app-side-nav {
+  width: 260px;
+  height: 100vh;
+  background: white;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+}
+
+.app-side-nav-header {
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.app-logo-fallback {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFF3E0;
+  border-radius: 8px;
+  color: #FF9800;
+}
+
+.app-logo-fallback .material-icons {
+  font-size: 24px;
+}
+
+.app-logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FF9800;
+}
+
+.app-side-nav-menu {
+  flex: 1;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.app-side-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #666;
+  transition: all 0.15s;
+}
+
+.app-side-nav-item:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.app-side-nav-item.app-active {
+  background: #FFF3E0;
+  color: #FF9800;
+}
+
+.app-side-nav-item .material-icons {
+  font-size: 22px;
+}
+
+.app-nav-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Add transitions to nav items */
+.app-side-nav-item {
+  transition: all 0.2s ease;
+}
+
+.app-nav-item {
+  transition: all 0.2s ease;
+}
+
+.app-side-nav-item:hover {
+  transform: translateX(4px);
+}
+
+.app-nav-item:active {
+  transform: scale(0.95);
+}
+
+/* Info Dropdown Section */
+.app-info-section {
+  border-top: 1px solid #f0f0f0;
+  padding: 8px 12px;
+}
+
+.app-info-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.app-info-dropdown-header:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.app-info-dropdown-header .material-icons {
+  font-size: 22px;
+}
+
+.app-info-dropdown-header .app-dropdown-chevron {
+  margin-left: auto;
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+.app-info-dropdown-content {
+  padding: 4px 0;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.app-info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px 10px 50px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #666;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.app-info-item:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.app-info-item .material-icons {
+  font-size: 18px;
+}
+
+.app-info-item.router-link-active {
+  background: #FFF3E0;
+  color: #FF9800;
+}
+
+.app-side-nav-footer {
+  padding: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.app-user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.app-user-info .material-icons {
+  font-size: 20px;
+  color: #888;
+}
+
+.app-username {
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
+}
+
+/* Main Area (Desktop) */
+.app-main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.app-main-area.app-with-sidebar {
+  margin-left: 260px;
+}
+
+.app-main-area.app-full-width {
+  margin-left: 0;
+}
+
+.app-main-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  background: #f5f5f5;
+  display: block;
+}
+
+/* Status Banners */
+.app-status-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.app-status-banner.app-offline {
+  background: #616161;
+  color: white;
+}
+
+.app-status-banner.app-syncing {
+  background: #FF9800;
+  color: white;
+}
+
+.app-status-banner .material-icons {
+  font-size: 16px;
+}
+
+/* Mobile Layout */
+#app-root.app-mobile {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+#app-root.app-mobile .app-content-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 80px;
+  display: block;
+}
+
+/* Bottom Navigation */
+.app-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 100;
+}
+
+.app-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+  height: 100%;
+  text-decoration: none;
+  color: #888;
+  transition: color 0.15s;
+}
+
+.app-nav-item .material-icons {
+  font-size: 24px;
+}
+
+.app-nav-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.app-nav-item.app-active {
+  color: #FF9800;
+}
+
+/* Responsive */
+@media (max-width: 1023px) {
+  .app-side-nav {
+    display: none;
+  }
+  
+  .app-main-area {
+    margin-left: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-bottom-nav {
+    display: none;
+  }
+}
