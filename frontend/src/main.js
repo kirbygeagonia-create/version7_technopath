@@ -8,27 +8,39 @@ import '@fontsource/inter/600.css'
 import '@fontsource/inter/700.css'
 import './assets/main.css'
 import 'material-icons/iconfont/material-icons.css'
-import { useSyncStore } from './stores/syncStore.js'
 import { registerConnectivityListener } from './services/sync.js'
 
 const app = createApp(App)
 app.use(createPinia())
 app.use(router)
+
+// FIX: Global Vue error boundary — prevents white-screen on uncaught errors
+app.config.errorHandler = (err, instance, info) => {
+  console.error('[TechnoPath] Uncaught Vue error:', err, '\nInfo:', info)
+
+  // Show friendly error UI instead of blank white screen
+  const appEl = document.getElementById('app')
+  if (appEl && !appEl.querySelector('.tp-error-boundary')) {
+    appEl.innerHTML = `
+      <div class="tp-error-boundary">
+        <span class="material-icons">error_outline</span>
+        <h2>Something went wrong</h2>
+        <p>The app encountered an unexpected error. Please refresh to continue.</p>
+        <button onclick="location.reload()">Refresh App</button>
+      </div>
+    `
+  }
+}
+
 app.mount('#app')
 
-// On app load: sync data from Django to IndexedDB if online
-// Use syncStore to properly manage isSyncing state
-const syncStore = useSyncStore()
-syncStore.sync().then(() => {
-  if (syncStore.lastSyncedAt) {
-    console.log('TechnoPath: Data synced at', syncStore.lastSyncedAt)
-  } else {
-    console.log('TechnoPath: Running offline with cached data')
+// Register connectivity listener — auto-syncs when device reconnects
+registerConnectivityListener((result) => {
+  if (result.success) {
+    console.log('[TechnoPath] Reconnected and synced at', result.syncedAt)
   }
 })
 
-// Auto-sync whenever the device reconnects to the internet
-registerConnectivityListener(() => {
-  syncStore.sync()
-  console.log('TechnoPath: Reconnected and synced')
-})
+// NOTE: syncAllData() is now called inside SplashScreen.vue so the
+// splash screen can wait for it before dismissing.
+// We do NOT call it here anymore to avoid double-syncing on startup.

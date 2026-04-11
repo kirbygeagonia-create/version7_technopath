@@ -4,51 +4,28 @@ import db from './db.js'
 
 /**
  * AI-Powered Chatbot Service for TechnoPath
- * 
+ *
  * Priority chain:
- * 1. Flask chatbot API (if configured and online)
+ * 1. Flask chatbot API (handles AI internally — key stays server-side)
  * 2. Rule-based fallback (always works offline)
- * 
- * NOTE: OpenAI API removed from frontend to prevent API key exposure.
- * All AI processing happens server-side via Flask chatbot.
- * 
- * Maintains conversation history and campus context.
+ *
+ * NOTE: OpenAI API key is NEVER in the frontend.
+ * All AI calls go through the Flask backend which holds the key securely.
  */
 
 const FLASK_CHATBOT_URL = import.meta.env.VITE_FLASK_CHATBOT_URL || 'http://localhost:5000'
-const USE_AI_OFFLINE = false // Set to true to queue AI requests when offline
 
-// Campus context for rule-based responses (kept for reference)
-const CAMPUS_CONTEXT = `
-You are the SEAIT Campus Assistant for TechnoPath, a campus guide app for South East Asian Institute of Technology (SEAIT) in Tupi, South Cotabato, Philippines.
-
-CAMPUS INFORMATION:
-- MST Building (Main Science and Technology): 4 floors, center of campus. Houses MST 101-120 (1F), MST 201-221 (2F), Computer Labs CL1-CL10 (3F), MST 301-420 (4F)
-- JST Building (Junior Science and Technology): 4 floors at back of campus. JST101-102 (1F), JST201-202 labs (2F), seminar rooms (3F)
-- RST Building (Research Science and Technology): 3 floors, left-bottom from main gate. Registrar & Accounting (1F), Guidance/Safety/HR/SSC/Student Affairs (2F), IT/Silakbo/Laboratory offices (3F)
-- Library: 2 floors, ground floor left wing. Open Mon-Fri 8AM-6PM, Sat 8AM-12PM
-- Cafeteria: Center grounds between MST and Gymnasium. Open 7AM-6PM daily
-- Gymnasium: Back of campus with basketball/volleyball courts, fitness equipment
-- Computer Labs CL1-CL6: All on 3rd floor of MST Building
-- Registrar Office: 1st floor RST Building, 7 windows, Mon-Fri 8AM-5PM
-- CICT Office: 2nd floor MST Building, near computer labs
-- Comfort rooms available on every floor of all buildings, near stairwells
-
-KEY SERVICES:
-- Interactive campus map with floor plans
-- Turn-by-turn navigation between locations
-- Offline mode works without internet
-
-Be helpful, concise, and friendly. Guide users to use the Navigate tab for directions and Map tab for visual exploration. If unsure, direct them to the Registrar office for official inquiries.
+const CAMPUS_CONTEXT_SUMMARY = `
+SEAIT Campus — TechnoPath guide app for South East Asian Institute of Technology, Tupi, South Cotabato.
+Buildings: MST (4F, center), JST (4F, back), RST (3F, left-bottom from gate).
+Key rooms: CL1-CL10 on MST 3F. Registrar on RST 1F. Library left wing.
+Cafeteria between MST and Gymnasium. Comfort rooms near stairwells on every floor.
 `
 
-// Conversation history (in-memory, per session)
+// Conversation history (in-memory per session)
 const conversationHistory = []
 const MAX_HISTORY = 10
 
-/**
- * Initialize chat history from IndexedDB (for logged-in users)
- */
 export async function initChatHistory() {
   if (!isOnline()) return
   try {
@@ -57,188 +34,116 @@ export async function initChatHistory() {
       role: h.mode === 'user' ? 'user' : 'assistant',
       content: h.message
     })))
-  } catch {
-    // Silent fail - start fresh
-  }
+  } catch { /* silent fail — start fresh */ }
 }
 
-/**
- * Save chat message to local history
- */
 async function saveToHistory(mode, message) {
   try {
-    await db.ai_chat_logs.add({
-      mode,
-      message,
-      created_at: new Date().toISOString()
-    })
-  } catch {
-    // Silent fail
-  }
+    await db.ai_chat_logs.add({ mode, message, created_at: new Date().toISOString() })
+  } catch { /* silent fail */ }
 }
 
 /**
- * Generate response using Flask Chatbot API
+ * Call Flask chatbot — Flask handles OpenAI internally (key never in frontend)
  */
 async function generateFlaskResponse(userMessage) {
   const response = await fetch(`${FLASK_CHATBOT_URL}/chat`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ message: userMessage })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message: userMessage,
+      history: conversationHistory.slice(-MAX_HISTORY)
+    })
   })
-
-  if (!response.ok) {
-    throw new Error(`Flask chatbot error: ${response.status}`)
-  }
-
+  if (!response.ok) throw new Error(`Flask chatbot error: ${response.status}`)
   const data = await response.json()
   return data.reply
 }
 
 /**
- * Rule-based fallback for offline mode or AI failures
+ * Rule-based fallback — works fully offline, no external API
  */
 async function generateRuleBasedResponse(userMessage) {
   const msg = userMessage.toLowerCase()
-  
-  // Try to match FAQ first
+
+  // Try FAQ entries from IndexedDB first
   try {
     const faqData = await getFAQEntries()
     for (const faq of faqData.data || []) {
+      if (faq.keywords) {
+        const keywords = faq.keywords.split(',').map(k => k.trim().toLowerCase())
+        if (keywords.some(k => k && msg.includes(k))) return faq.answer
+      }
       if (faq.question && msg.includes(faq.question.toLowerCase().substring(0, 10))) {
         return faq.answer
       }
-      // Check keywords
-      if (faq.keywords) {
-        const keywords = faq.keywords.split(',').map(k => k.trim().toLowerCase())
-        if (keywords.some(k => msg.includes(k))) {
-          return faq.answer
-        }
-      }
     }
-  } catch {
-    // Continue to keyword matching
-  }
+  } catch { /* continue to keyword matching */ }
 
-  // Keyword-based responses
-  if (msg.includes('mst')) {
-    return 'The MST Building is our main 4-floor academic building at the center of campus. It houses classrooms, computer labs (CL1-CL10 on 3F), and offices. Use the Map tab to see the floor plan!'
-  }
-  
-  if (msg.includes('jst')) {
-    return 'JST Building has 4 floors at the back of campus with lecture rooms, laboratories, and seminar areas. Check the Map tab for details.'
-  }
-  
-  if (msg.includes('rst')) {
-    return 'RST Building is our 3-floor administrative building. 1F: Registrar/Accounting, 2F: Guidance/Safety/Student Affairs, 3F: IT offices. Located left-bottom from the main gate.'
-  }
-  
-  if (msg.includes('library')) {
-    return 'The Library is on the ground floor left wing. Open Mon-Fri 8AM-6PM, Sat 8AM-12PM. It has 2 floors with study areas and digital resources.'
-  }
-  
-  if (msg.includes('registrar')) {
-    return 'Registrar Office is on the 1st floor of RST Building with 7 service windows. Hours: Mon-Fri 8AM-5PM.'
-  }
-  
-  if (msg.includes('cl') || msg.includes('computer lab')) {
-    return 'Computer Labs CL1-CL10 are on the 3rd floor of MST Building. Use the Navigate tab to get directions from your current location!'
-  }
-  
-  if (msg.includes('canteen') || msg.includes('cafeteria')) {
-    return 'The Cafeteria is between the MST Building and Gymnasium, open 7AM-6PM daily serving meals and snacks.'
-  }
-  
-  if (msg.includes('comfort room') || msg.includes('restroom') || msg.includes('cr')) {
-    return 'Comfort rooms are on every floor of all buildings (MST, JST, RST), typically near stairwells for easy access.'
-  }
-  
-  if (msg.includes('navigate') || msg.includes('direction') || msg.includes('where is')) {
-    return 'Use the Navigate tab for turn-by-turn directions! Enter your starting point and destination to see the shortest route across campus.'
-  }
-  
-  if (msg.includes('offline')) {
-    return 'TechnoPath works offline! Once you\'ve loaded the app while online, you can use the map, navigation, and room info without internet. Your feedback will sync when you reconnect.'
-  }
+  // Building-specific responses
+  if (msg.includes('mst')) return 'The MST Building is the main 4-floor academic building at the center of campus. It houses classrooms (1F-2F), Computer Labs CL1-CL10 on the 3rd floor, and more rooms on the 4th floor. Use the Navigate tab for directions!'
+  if (msg.includes('jst')) return 'JST Building has 4 floors at the back of campus — lecture rooms on 1F, laboratories on 2F, and seminar areas on 3F-4F. Check the Map tab for details.'
+  if (msg.includes('rst')) return 'RST Building is the 3-floor administrative building. 1F: Registrar & Accounting. 2F: Guidance, Safety, Student Affairs. 3F: IT Office, Silakbo. Located left of the main gate.'
+  if (msg.includes('library')) return 'The Library is on the ground floor, left wing. Open Mon-Fri 8AM-6PM, Sat 8AM-12PM. Two floors with study areas and digital resources.'
+  if (msg.includes('registrar')) return 'Registrar Office is on the 1st floor of RST Building with 7 service windows. Hours: Mon-Fri 8AM-5PM.'
+  if (msg.includes('cl') || msg.includes('computer lab')) return 'Computer Labs CL1-CL10 are on the 3rd floor of the MST Building. Use the Navigate tab for turn-by-turn directions!'
+  if (msg.includes('canteen') || msg.includes('cafeteria')) return 'The Cafeteria is between the MST Building and Gymnasium, open 7AM-6PM daily.'
+  if (msg.includes('comfort room') || msg.includes('restroom') || msg.includes(' cr')) return 'Comfort rooms are on every floor of all buildings (MST, JST, RST), near stairwells.'
+  if (msg.includes('gym')) return 'The Gymnasium is at the back of campus with basketball/volleyball courts and fitness equipment.'
+  if (msg.includes('navigate') || msg.includes('direction') || msg.includes('where is') || msg.includes('how to get')) return 'Use the Navigate tab for turn-by-turn directions! Select your start and destination to find the shortest route across campus.'
+  if (msg.includes('offline')) return "TechnoPath works offline! The map, navigation, and room info all work without internet after your first visit. Feedback will sync when you reconnect."
+  if (msg.includes('hello') || msg.includes('hi') || msg.includes('kumusta')) return "Hello! I'm your SEAIT Campus Assistant. Ask me about buildings, rooms, offices, or use the Navigate tab for directions!"
 
-  // Default response
-  return "I'm here to help with SEAIT campus info! Ask about:\n• Buildings (MST, JST, RST)\n• Computer Labs (CL1-CL10)\n• Offices (Registrar, CICT, Guidance)\n• Facilities (Library, Cafeteria, Gym)\nOr use the Navigate tab for directions!"
+  return "I can help with SEAIT campus info! Ask about:\n• Buildings (MST, JST, RST)\n• Computer Labs (CL1-CL10)\n• Offices (Registrar, CICT, Guidance)\n• Facilities (Library, Cafeteria, Gym)\n\nOr use the Navigate tab for directions!"
 }
 
 /**
- * Main chat function - tries Flask first, then falls back to rules
- * NOTE: OpenAI API removed from frontend to prevent API key exposure
+ * Main chat function — Flask AI first, offline rules as fallback
  */
 export async function sendMessage(userMessage) {
-  if (!userMessage?.trim()) {
-    throw new Error('Message is required')
-  }
+  if (!userMessage?.trim()) throw new Error('Message is required')
 
-  // Add to history
   conversationHistory.push({ role: 'user', content: userMessage })
   await saveToHistory('user', userMessage)
 
   let response
-  let source = 'ai'  // GPT/AI from Flask backend
+  let source = 'flask'
 
   if (isOnline()) {
-    // Try Flask chatbot with OpenAI GPT
     try {
       response = await generateFlaskResponse(userMessage)
     } catch (flaskErr) {
-      console.log('[AI Chatbot] Flask failed, using rule-based fallback:', flaskErr.message)
-      // Use rule-based fallback
+      console.warn('[Chatbot] Flask unavailable, using rule-based fallback:', flaskErr.message)
       response = await generateRuleBasedResponse(userMessage)
       source = 'fallback'
     }
   } else {
-    // Offline mode - use rule-based
     response = await generateRuleBasedResponse(userMessage)
     source = 'offline'
   }
 
-  // Add response to history
   conversationHistory.push({ role: 'assistant', content: response })
   await saveToHistory('assistant', response)
 
-  // Trim history if too long
   if (conversationHistory.length > MAX_HISTORY * 2) {
     conversationHistory.splice(0, conversationHistory.length - MAX_HISTORY * 2)
   }
 
-  return {
-    reply: response,
-    source,
-    isOffline: !isOnline()
-  }
+  return { reply: response, source, isOffline: !isOnline() }
 }
 
-/**
- * Clear conversation history
- */
 export function clearHistory() {
   conversationHistory.length = 0
 }
 
-/**
- * Get chatbot status
- */
 export function getStatus() {
   return {
     isOnline: isOnline(),
     hasFlaskUrl: !!FLASK_CHATBOT_URL,
+    hasAIKey: true, // Key is server-side in Flask — always true when Flask is available
     historyLength: conversationHistory.length,
-    isAIEnabled: isOnline() && !!FLASK_CHATBOT_URL,
-    aiModel: 'gpt-3.5-turbo',  // Now using real OpenAI GPT via Flask backend
-    // OpenAI API is securely hosted on Flask backend (not frontend)
+    isAIEnabled: isOnline() && !!FLASK_CHATBOT_URL
   }
 }
 
-export default {
-  sendMessage,
-  clearHistory,
-  getStatus,
-  initChatHistory
-}
+export default { sendMessage, clearHistory, getStatus, initChatHistory }

@@ -188,7 +188,6 @@ class Command(BaseCommand):
         configs_data = [
             {'config_key': 'app_version', 'config_value': '1.0.0', 'description': 'Current app version'},
             {'config_key': 'offline_mode_enabled', 'config_value': 'true', 'description': 'Allow offline operation'},
-            {'config_key': 'qr_code_enabled', 'config_value': 'true', 'description': 'Enable QR code scanning'},
             {'config_key': 'navigation_enabled', 'config_value': 'true', 'description': 'Enable navigation features'},
             {'config_key': 'maintenance_mode', 'config_value': 'false', 'description': 'App maintenance status'},
         ]

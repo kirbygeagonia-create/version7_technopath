@@ -60,3 +60,25 @@ class MarkAllReadView(APIView):
         # Bulk create ignoring conflicts if they somehow already exist
         NotificationReadStatus.objects.bulk_create(status_objects, ignore_conflicts=True)
         return Response({'status': 'success'}, status=status.HTTP_200_OK)
+
+
+class MarkOneReadView(APIView):
+    """
+    POST /api/notifications/<pk>/read/
+    Marks a single notification as read for the current user.
+    Guest users manage read state locally in IndexedDB;
+    authenticated admins use this endpoint so read state persists across devices.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            notification = Notification.objects.get(pk=pk)
+        except Notification.DoesNotExist:
+            return Response({'error': 'Notification not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        NotificationReadStatus.objects.get_or_create(
+            user=request.user,
+            notification=notification,
+        )
+        return Response({'status': 'read'}, status=status.HTTP_200_OK)

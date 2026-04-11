@@ -7,7 +7,12 @@
       <div class="notifications-header-title">
         <h1>Notifications</h1>
       </div>
-      <button class="notifications-read-btn" @click="markAllAsRead" v-if="notifications.length > 0" title="Mark all as read">
+      <button
+        class="notifications-read-btn"
+        @click="markAllAsRead"
+        v-if="unreadCount > 0"
+        title="Mark all as read"
+      >
         <span class="material-icons">done_all</span>
       </button>
       <div v-else class="notifications-spacer"></div>
@@ -20,15 +25,20 @@
             <span class="material-icons">notifications_off</span>
           </div>
           <h2>All caught up!</h2>
-          <p>You have no new notifications.</p>
+          <p>You have no notifications.</p>
         </div>
-        
-        <div v-for="notif in notifications" :key="notif.id" 
-             :class="['notifications-card', notif.type, { 'notifications-unread': !notif.is_read }]"
-             @click="markAsRead(notif)">
+
+        <div
+          v-for="notif in notifications"
+          :key="notif.id"
+          :class="['notifications-card', notif.type, { 'notifications-unread': !notif.is_read }]"
+          @click="markAsRead(notif)"
+        >
           <div class="notifications-card-header">
-            <span v-if="notif.source_label"
-                  :class="['source-chip', 'chip-' + (notif.source_color || 'orange')]">
+            <span
+              v-if="notif.source_label"
+              :class="['source-chip', 'chip-' + (notif.source_color || 'orange')]"
+            >
               {{ notif.source_label }}
             </span>
             <span class="notifications-badge" :class="notif.type">{{ notif.type }}</span>
@@ -43,48 +53,40 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import db from '../services/db.js'
 import api from '../services/api.js'
 import { isOnline } from '../services/sync.js'
 import { showToast } from '../services/toast.js'
 
-const router = useRouter()
+const router        = useRouter()
 const notifications = ref([])
+
+const unreadCount = computed(() =>
+  notifications.value.filter(n => !n.is_read).length
+)
 
 const goBack = () => router.back()
 
 onMounted(async () => {
   try {
-    // If online, sync from API first to get latest notifications
     if (isOnline()) {
       try {
-        // First, sync any pending read statuses
-        await syncPendingReadStatuses()
-        
         const res = await api.get('/notifications/')
         notifications.value = res.data
-        // Save to IndexedDB for offline use
         await db.notifications.clear()
         await db.notifications.bulkPut(res.data)
-      } catch (apiError) {
-        console.warn('Failed to sync notifications from API:', apiError)
-        // Fall back to IndexedDB
+      } catch {
         notifications.value = await db.notifications
-          .orderBy('created_at')
-          .reverse()
-          .toArray()
+          .orderBy('created_at').reverse().toArray()
       }
     } else {
-      // Offline: load from IndexedDB only
       notifications.value = await db.notifications
-        .orderBy('created_at')
-        .reverse()
-        .toArray()
+        .orderBy('created_at').reverse().toArray()
     }
-  } catch (dbError) {
-    console.error('Failed to load notifications:', dbError)
+  } catch (err) {
+    console.error('[Notifications] Failed to load:', err)
     showToast('Unable to load notifications', 'error')
   }
 })
@@ -92,141 +94,65 @@ onMounted(async () => {
 function formatTime(timestamp) {
   if (!timestamp) return ''
   const date = new Date(timestamp)
-  return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  return (
+    date.toLocaleDateString() + ' ' +
+    date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  )
 }
 
-/**
- * Mark individual notification as read
- */
+// FIX: Per-click read sync — also calls backend per-notification endpoint
 async function markAsRead(notif) {
-  if (notif.is_read) return  // Already read
-  
-  // Update local state
+  if (notif.is_read) return
   notif.is_read = true
-  
-  // Update IndexedDB
   await db.notifications.update(notif.id, { is_read: true })
-  
-  // Sync to backend if online
+
   if (isOnline()) {
     try {
       await api.post(`/notifications/${notif.id}/read/`)
-    } catch (e) {
-      console.warn('Failed to sync read status for notification:', notif.id, e)
-      // Store for later sync
-      await storePendingReadSync(notif.id)
+    } catch {
+      // Store pending sync for when reconnected
+      await storePendingRead(notif.id)
     }
   } else {
-    // Store for later sync when online
-    await storePendingReadSync(notif.id)
-  }
-}
-
-/**
- * Store pending read sync for offline mode
- */
-async function storePendingReadSync(notificationId) {
-  try {
-    const pending = await db.sync_meta.get('pending_read_syncs') || { value: [] }
-    if (!pending.value.includes(notificationId)) {
-      pending.value.push(notificationId)
-      await db.sync_meta.put({ key: 'pending_read_syncs', value: pending.value })
-    }
-  } catch (e) {
-    console.warn('Failed to store pending read sync:', e)
-  }
-}
-
-/**
- * Sync pending read statuses when coming back online
- */
-async function syncPendingReadStatuses() {
-  try {
-    const pending = await db.sync_meta.get('pending_read_syncs')
-    if (!pending?.value?.length) return
-    
-    const notificationIds = pending.value
-    for (const id of notificationIds) {
-      try {
-        await api.post(`/notifications/${id}/read/`)
-      } catch (e) {
-        console.warn('Failed to sync read status for:', id)
-      }
-    }
-    
-    // Clear pending syncs
-    await db.sync_meta.put({ key: 'pending_read_syncs', value: [] })
-  } catch (e) {
-    console.warn('Failed to sync pending read statuses:', e)
+    await storePendingRead(notif.id)
   }
 }
 
 async function markAllAsRead() {
-  let hasUnread = false
-  const unreadIds = []
-  
-  for (const notif of notifications.value) {
-    if (!notif.is_read) {
-      notif.is_read = true
-      hasUnread = true
-      unreadIds.push(notif.id)
-      await db.notifications.update(notif.id, { is_read: true })
-    }
+  const unread = notifications.value.filter(n => !n.is_read)
+  if (unread.length === 0) return
+
+  for (const notif of unread) {
+    notif.is_read = true
+    await db.notifications.update(notif.id, { is_read: true })
   }
 
-  if (hasUnread) {
-    if (isOnline()) {
-      try {
-        await api.post('/notifications/read-all/')
-      } catch (e) {
-        console.warn('Failed to sync read-all status:', e)
-        // Store individual IDs for later sync
-        for (const id of unreadIds) {
-          await storePendingReadSync(id)
-        }
-      }
-    } else {
-      showToast('Offline: Read status saved locally', 'info')
-      // Store for later sync
-      for (const id of unreadIds) {
-        await storePendingReadSync(id)
-      }
+  if (isOnline()) {
+    try {
+      await api.post('/notifications/read-all/')
+    } catch {
+      showToast('Offline: read status saved locally', 'info')
+      for (const n of unread) await storePendingRead(n.id)
     }
+  } else {
+    showToast('Offline: read status saved locally', 'info')
+    for (const n of unread) await storePendingRead(n.id)
   }
+}
+
+async function storePendingRead(id) {
+  try {
+    const meta    = await db.sync_meta.get('pending_reads')
+    const pending = meta?.value || []
+    if (!pending.includes(id)) {
+      pending.push(id)
+      await db.sync_meta.put({ key: 'pending_reads', value: pending })
+    }
+  } catch { /* silent */ }
 }
 </script>
 
+<!-- FIX: All styles in external file — no more inline <style> block -->
 <style>
-/* Styles moved to external file: src/assets/notifications.css */
 @import '../assets/notifications.css';
-
-.notifications-card {
-  cursor: pointer;
-}
-
-.notifications-card:hover {
-  background: var(--color-surface);
-}
-
-.source-chip {
-  display: inline-block;
-  font-size: var(--text-xs);
-  font-family: var(--font-primary);
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  margin-bottom: 4px;
-}
-.chip-red        { background: #FFEBEE; color: #B71C1C; }
-.chip-dark_blue  { background: #E8EAF6; color: #1A237E; }
-.chip-green      { background: #E8F5E9; color: #1B5E20; }
-.chip-charcoal   { background: #ECEFF1; color: #263238; }
-.chip-purple     { background: #F3E5F5; color: #4A148C; }
-.chip-teal       { background: #E0F2F1; color: #004D40; }
-.chip-amber      { background: #FFF8E1; color: #E65100; }
-.chip-blue       { background: #E3F2FD; color: #0D47A1; }
-.chip-dark_green { background: #E8F5E9; color: #33691E; }
-.chip-indigo     { background: #E8EAF6; color: #283593; }
-.chip-brown      { background: #EFEBE9; color: #4E342E; }
-.chip-orange     { background: #FFF3E0; color: #E65100; }
 </style>

@@ -187,6 +187,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import useMapPanZoom from '../composables/useMapPanZoom.js'
 import { useRoute } from 'vue-router'
 import offlineData from '../services/offlineData.js'
 import { isOnline } from '../services/sync.js'
@@ -197,11 +198,12 @@ const route = useRoute()
 
 // Map state
 const mapRef = ref(null)
-const scale = ref(1)
-const tx = ref(0)
-const ty = ref(0)
-const isPanning = ref(false)
-const panStart = ref({ x: 0, y: 0 })
+const {
+  scale, translateX: tx, translateY: ty,
+  transformStyle: navTransformStyle,
+  zoomIn, zoomOut, onPointerDown, onPointerMove, onPointerUp, onWheel,
+  onTouchStart, onTouchMove, initTransform
+} = useMapPanZoom()
 
 // Navigation state
 const fromLocation = ref('')
@@ -226,9 +228,7 @@ onMounted(async () => {
   }
   if (mapRef.value) {
     const rect = mapRef.value.getBoundingClientRect()
-    scale.value = Math.min(1, rect.width / 800)
-    tx.value = (rect.width - 800) / 2
-    ty.value = (rect.height - 600) / 2
+    initTransform(rect.width, rect.height)
   }
 })
 
@@ -243,10 +243,7 @@ const mockLocations = import.meta.env.DEV ? [
   'CR1', 'CR2', 'CR3', 'CR4',
 ] : []
 
-const transformStyle = computed(() => ({
-  transform: `translate(${tx.value}px, ${ty.value}px) scale(${scale.value})`,
-  transformOrigin: '50% 50%',
-}))
+const transformStyle = navTransformStyle
 
 const routePointsStr = computed(() => {
   return routePoints.value.map(p => `${p.x},${p.y}`).join(' ')
@@ -382,49 +379,7 @@ function getMarkerPos(marker) {
   }
 }
 
-// Pan/Zoom
-function zoomIn() { scale.value = Math.min(scale.value * 1.3, 5) }
-function zoomOut() { scale.value = Math.max(scale.value / 1.3, 0.5) }
-function onWheel(e) { e.deltaY < 0 ? zoomIn() : zoomOut() }
-
-function onPointerDown(e) {
-  isPanning.value = true
-  panStart.value = { x: e.clientX - tx.value, y: e.clientY - ty.value }
-}
-function onPointerMove(e) {
-  if (!isPanning.value) return
-  tx.value = e.clientX - panStart.value.x
-  ty.value = e.clientY - panStart.value.y
-}
-function onPointerUp() { isPanning.value = false }
-
-let lastTouchDist = 0
-function onTouchStart(e) {
-  if (e.touches.length === 2) {
-    lastTouchDist = Math.hypot(
-      e.touches[0].clientX - e.touches[1].clientX,
-      e.touches[0].clientY - e.touches[1].clientY
-    )
-  } else if (e.touches.length === 1) {
-    isPanning.value = true
-    panStart.value = { x: e.touches[0].clientX - tx.value, y: e.touches[0].clientY - ty.value }
-  }
-}
-function onTouchMove(e) {
-  if (e.touches.length === 2) {
-    const dist = Math.hypot(
-      e.touches[0].clientX - e.touches[1].clientX,
-      e.touches[0].clientY - e.touches[1].clientY
-    )
-    if (lastTouchDist > 0) {
-      scale.value = Math.max(0.5, Math.min(5, scale.value * (dist / lastTouchDist)))
-    }
-    lastTouchDist = dist
-  } else if (e.touches.length === 1 && isPanning.value) {
-    tx.value = e.touches[0].clientX - panStart.value.x
-    ty.value = e.touches[0].clientY - panStart.value.y
-  }
-}
+// pan/zoom handled by useMapPanZoom composable
 
 // Data
 async function loadData() {

@@ -13,6 +13,21 @@ load_dotenv()
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
+
+import os
+
+# OpenAI client — key stays server-side, never sent to browser
+try:
+    import openai
+    _openai_key = os.environ.get('OPENAI_API_KEY', '')
+    if _openai_key:
+        openai.api_key = _openai_key
+        OPENAI_ENABLED = True
+    else:
+        OPENAI_ENABLED = False
+except ImportError:
+    OPENAI_ENABLED = False
+
 app = Flask(__name__)
 # Restrict CORS to known origins for security
 CORS(app, origins=[

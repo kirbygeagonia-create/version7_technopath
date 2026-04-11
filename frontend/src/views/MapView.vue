@@ -155,6 +155,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import useMapPanZoom from '../composables/useMapPanZoom.js'
 import { useRouter } from 'vue-router'
 import offlineData from '../services/offlineData.js'
 import { isOnline } from '../services/sync.js'
@@ -166,11 +167,11 @@ const lastSync = ref(null)
 
 // Map state
 const canvasRef = ref(null)
-const scale = ref(1)
-const tx = ref(0)
-const ty = ref(0)
-const isPanning = ref(false)
-const panStart = ref({ x: 0, y: 0 })
+const {
+  scale, translateX: tx, translateY: ty, isPanning, transformStyle: transformStylePanZoom,
+  zoomIn, zoomOut, onPointerDown, onPointerMove, onPointerUp, onWheel,
+  onTouchStart, onTouchMove, initTransform
+} = useMapPanZoom()
 const showLabels = ref(true)
 const showLegend = ref(false)  // Default collapsed for cleaner UI
 const activeFilter = ref('all')
@@ -198,10 +199,7 @@ const legendItems = [
 ]
 
 // Computed
-const transformStyle = computed(() => ({
-  transform: `translate(${tx.value}px, ${ty.value}px) scale(${scale.value})`,
-  transformOrigin: '50% 50%',
-}))
+const transformStyle = transformStylePanZoom
 
 const visibleMarkers = computed(() => {
   if (activeFilter.value === 'all') return mapMarkers.value
@@ -210,12 +208,11 @@ const visibleMarkers = computed(() => {
 
 const floors = computed(() => {
   if (!selectedMarker.value || selectedMarker.value.marker_type !== 'facility') return []
-  const name = selectedMarker.value.name
-  const floorMap = {
-    'MST Building': 4, 'JST Building': 4, 'RST Building': 3,
-    'Library': 2, 'Registrar Office': 1, 'Cafeteria': 1, 'Gymnasium': 1,
-  }
-  const count = floorMap[name] || 1
+  // Use total_floors from the actual facility record in the database
+  const facility = facilities.value.find(
+    f => f.name === selectedMarker.value.name || f.id === selectedMarker.value.facility_id
+  )
+  const count = facility?.total_floors || 1
   return Array.from({ length: count }, (_, i) => i + 1)
 })
 
@@ -356,28 +353,7 @@ function addFavorite() {
 }
 
 // Pan & Zoom
-function zoomIn() { scale.value = Math.min(scale.value * 1.3, 5) }
-function zoomOut() { scale.value = Math.max(scale.value / 1.3, 0.5) }
-
-function onWheel(e) {
-  if (e.deltaY < 0) zoomIn()
-  else zoomOut()
-}
-
-function onPointerDown(e) {
-  isPanning.value = true
-  panStart.value = { x: e.clientX - tx.value, y: e.clientY - ty.value }
-}
-
-function onPointerMove(e) {
-  if (!isPanning.value) return
-  tx.value = e.clientX - panStart.value.x
-  ty.value = e.clientY - panStart.value.y
-}
-
-function onPointerUp() {
-  isPanning.value = false
-}
+// pan/zoom handled by useMapPanZoom composable
 
 let lastTouchDist = 0
 function onTouchStart(e) {
@@ -413,11 +389,7 @@ onMounted(async () => {
   await loadData()
   if (canvasRef.value) {
     const rect = canvasRef.value.getBoundingClientRect()
-    // Ensure map is not microscopic on mobile devices (min scale 0.8 on small screens)
-    const baseScale = window.innerWidth < 768 ? Math.max(0.8, rect.width / 800) : Math.min(1, rect.width / 800)
-    scale.value = baseScale
-    tx.value = (rect.width - (800 * baseScale)) / 2
-    ty.value = (rect.height - (600 * baseScale)) / 2
+    initTransform(rect.width, rect.height)
   }
 })
 </script>

@@ -246,24 +246,11 @@ async function loadData() {
     edges.value = edgesRes.data
     buildings.value = buildingsRes.data
   } catch (e) {
-    console.error('Failed to load navigation data:', e)
-    // Mock data with normalized coordinates (0.0-1.0 range)
-    nodes.value = [
-      { id: 1, node_id: 'ENTRANCE_MAIN', name: 'Main Entrance', type: 'entrance', building: 'MAIN-ACAD', floor: 1, x: 0.0, y: 0.5 },
-      { id: 2, node_id: 'J1_F1', name: 'Junction 1', type: 'junction', building: 'MAIN-ACAD', floor: 1, x: 0.25, y: 0.5 },
-      { id: 3, node_id: 'ROOM_101', name: 'Room 101', type: 'room', building: 'MAIN-ACAD', floor: 1, x: 0.5, y: 0.6 },
-      { id: 4, node_id: 'ROOM_102', name: 'Room 102', type: 'room', building: 'MAIN-ACAD', floor: 1, x: 0.5, y: 0.4 },
-      { id: 5, node_id: 'STAIR_A', name: 'Stairwell A', type: 'stairs', building: 'MAIN-ACAD', floor: 1, x: 0.4, y: 0.5 }
-    ]
-    edges.value = [
-      { id: 1, from: 'ENTRANCE_MAIN', to: 'J1_F1', weight: 10 },
-      { id: 2, from: 'J1_F1', to: 'ROOM_101', weight: 15 },
-      { id: 3, from: 'J1_F1', to: 'ROOM_102', weight: 15 },
-      { id: 4, from: 'J1_F1', to: 'STAIR_A', weight: 5 }
-    ]
-    buildings.value = [
-      { id: 1, code: 'MAIN-ACAD', name: 'Main Academic Building' }
-    ]
+    // Show empty state — no fake mock data that misleads admins
+    console.warn('[AdminNavGraph] Could not load navigation data:', e.message)
+    nodes.value     = []
+    edges.value     = []
+    buildings.value = []
   }
 }
 

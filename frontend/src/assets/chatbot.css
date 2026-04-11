@@ -385,3 +385,68 @@
     max-width: 70%;
   }
 }
+/* ── ChatbotView styles — moved from inline <style> block ───── */
+/* FIX: These were in a <style> block inside ChatbotView.vue,
+   causing styles to be split across two locations.
+   Append these to the END of frontend/src/assets/chatbot.css   */
+
+.chatbot-status {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.chatbot-status .material-icons {
+  font-size: 14px;
+}
+
+.status-offline {
+  color: var(--color-warning);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-ai {
+  color: var(--color-success);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-basic {
+  color: var(--color-info);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chatbot-message-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.chatbot-message-source {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.chatbot-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-2) var(--space-4);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+}

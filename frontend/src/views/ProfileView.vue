@@ -9,9 +9,8 @@
       <div class="profile-spacer"></div>
     </div>
 
-    <!-- Profile Content -->
     <div class="profile-content">
-      <!-- Avatar Section -->
+      <!-- Avatar -->
       <div class="profile-avatar-section">
         <div class="profile-avatar">
           <span class="material-icons">person</span>
@@ -22,12 +21,13 @@
         </button>
       </div>
 
-      <!-- User Info Section -->
+      <!-- User Info -->
       <div class="profile-section">
         <h3 class="profile-section-title">User Information</h3>
         <div class="profile-card">
           <div class="profile-item">
-            <div class="profile-item-icon" style="background: #E3F2FD; color: #2196F3;">
+            <!-- FIX: replaced style="background:#E3F2FD; color:#2196F3" with .icon-blue -->
+            <div class="profile-item-icon icon-blue">
               <span class="material-icons">person</span>
             </div>
             <div class="profile-item-text">
@@ -40,7 +40,7 @@
           </div>
 
           <div class="profile-item">
-            <div class="profile-item-icon" style="background: #FFF3E0; color: #FF9800;">
+            <div class="profile-item-icon icon-orange">
               <span class="material-icons">email</span>
             </div>
             <div class="profile-item-text">
@@ -50,7 +50,7 @@
           </div>
 
           <div class="profile-item">
-            <div class="profile-item-icon" style="background: #F3E5F5; color: #9C27B0;">
+            <div class="profile-item-icon icon-purple">
               <span class="material-icons">phone</span>
             </div>
             <div class="profile-item-text">
@@ -64,12 +64,12 @@
         </div>
       </div>
 
-      <!-- Preferences Section -->
+      <!-- Preferences -->
       <div class="profile-section">
         <h3 class="profile-section-title">Preferences</h3>
         <div class="profile-card">
           <div class="profile-item">
-            <div class="profile-item-icon" style="background: #E8F5E9; color: #4CAF50;">
+            <div class="profile-item-icon icon-green">
               <span class="material-icons">language</span>
             </div>
             <div class="profile-item-text">
@@ -84,20 +84,17 @@
           </div>
 
           <div class="profile-item">
-            <div class="profile-item-icon" style="background: #FFF8E1; color: #FFC107;">
+            <div class="profile-item-icon icon-yellow">
               <span class="material-icons">text_fields</span>
             </div>
             <div class="profile-item-text">
               <div class="profile-item-title">Font Size</div>
-              <div class="profile-item-subtitle">{{ fontSizeLabels[fontScale] }}</div>
+              <div class="profile-item-subtitle">{{ fontSizeLabel }}</div>
             </div>
             <div class="profile-slider-container">
               <input
-                type="range"
-                min="0.8"
-                max="1.3"
-                step="0.1"
-                v-model="fontScale"
+                type="range" min="0.8" max="1.3" step="0.1"
+                v-model.number="fontScale"
                 class="profile-slider"
                 @change="saveFontScale"
               />
@@ -105,7 +102,7 @@
           </div>
 
           <div class="profile-item">
-            <div class="profile-item-icon" style="background: #ECEFF1; color: #607D8B;">
+            <div class="profile-item-icon icon-grey">
               <span class="material-icons">contrast</span>
             </div>
             <div class="profile-item-text">
@@ -119,7 +116,7 @@
           </div>
 
           <div class="profile-item">
-            <div class="profile-item-icon" style="background: #FCE4EC; color: #E91E63;">
+            <div class="profile-item-icon icon-pink">
               <span class="material-icons">animation</span>
             </div>
             <div class="profile-item-text">
@@ -134,12 +131,12 @@
         </div>
       </div>
 
-      <!-- Quick Links Section -->
+      <!-- Quick Links -->
       <div class="profile-section">
         <h3 class="profile-section-title">Quick Links</h3>
         <div class="profile-card">
           <div class="profile-item" @click="goToFavorites">
-            <div class="profile-item-icon" style="background: #FFEBEE; color: #F44336;">
+            <div class="profile-item-icon icon-red">
               <span class="material-icons">favorite</span>
             </div>
             <div class="profile-item-text">
@@ -150,7 +147,7 @@
           </div>
 
           <div class="profile-item" @click="goToSettings">
-            <div class="profile-item-icon" style="background: #E0F7FA; color: #00BCD4;">
+            <div class="profile-item-icon icon-cyan">
               <span class="material-icons">settings</span>
             </div>
             <div class="profile-item-text">
@@ -162,12 +159,12 @@
         </div>
       </div>
 
-      <!-- Account Actions -->
+      <!-- Account -->
       <div class="profile-section">
         <h3 class="profile-section-title">Account</h3>
         <div class="profile-card">
           <div class="profile-item profile-item-danger" @click="logout" v-if="isLoggedIn">
-            <div class="profile-item-icon" style="background: #FFEBEE; color: #F44336;">
+            <div class="profile-item-icon icon-red">
               <span class="material-icons">logout</span>
             </div>
             <div class="profile-item-text">
@@ -178,7 +175,7 @@
           </div>
 
           <div class="profile-item" @click="goToAdminLogin" v-else>
-            <div class="profile-item-icon" style="background: #FFF3E0; color: #FF9800;">
+            <div class="profile-item-icon icon-orange">
               <span class="material-icons">login</span>
             </div>
             <div class="profile-item-text">
@@ -195,12 +192,7 @@
     <div v-if="showEditName" class="profile-modal-overlay" @click="showEditName = false">
       <div class="profile-dialog" @click.stop>
         <h3>Edit Display Name</h3>
-        <input
-          v-model="editNameValue"
-          type="text"
-          placeholder="Enter your name"
-          class="profile-dialog-input"
-        />
+        <input v-model="editNameValue" type="text" placeholder="Enter your name" class="profile-dialog-input" />
         <div class="profile-dialog-actions">
           <button class="profile-btn-secondary" @click="showEditName = false">Cancel</button>
           <button class="profile-btn-primary" @click="saveName">Save</button>
@@ -212,12 +204,7 @@
     <div v-if="showEditPhone" class="profile-modal-overlay" @click="showEditPhone = false">
       <div class="profile-dialog" @click.stop>
         <h3>Edit Phone Number</h3>
-        <input
-          v-model="editPhoneValue"
-          type="tel"
-          placeholder="Enter phone number"
-          class="profile-dialog-input"
-        />
+        <input v-model="editPhoneValue" type="tel" placeholder="Enter phone number" class="profile-dialog-input" />
         <div class="profile-dialog-actions">
           <button class="profile-btn-secondary" @click="showEditPhone = false">Cancel</button>
           <button class="profile-btn-primary" @click="savePhone">Save</button>
@@ -232,138 +219,96 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
 import { showToast } from '../services/toast.js'
-import api from '../services/api.js'
 
+const router    = useRouter()
 const authStore = useAuthStore()
 
-// User profile data
-const userProfile = ref({
-  displayName: '',
-  email: '',
-  phone: ''
-})
+const userProfile = ref({ displayName: '', email: '', phone: '' })
 
-// Preferences
-const selectedLanguage = ref('English')
-const fontScale = ref(1.0)
-const highContrast = ref(false)
-const reduceAnimations = ref(false)
+const selectedLanguage  = ref('English')
+const fontScale         = ref(1.0)
+const highContrast      = ref(false)
+const reduceAnimations  = ref(false)
+const favoritesCount    = ref(0)
 
-// Favorites
-const favoritesCount = ref(0)
-
-// Auth state - use authStore instead of localStorage
+// FIX: use authStore, not raw localStorage check
 const isLoggedIn = computed(() => authStore.isLoggedIn)
 
-// Dialog states
-const showEditName = ref(false)
+const showEditName  = ref(false)
 const showEditPhone = ref(false)
-const editNameValue = ref('')
+const editNameValue  = ref('')
 const editPhoneValue = ref('')
 
-// Font size labels
-const fontSizeLabels = {
-  0.8: 'Small',
-  0.9: 'Normal',
-  1.0: 'Default',
-  1.1: 'Large',
-  1.2: 'Extra Large',
-  1.3: 'Huge'
-}
+// FIX: computed label for font scale slider
+const fontSizeLabel = computed(() => {
+  const labels = { 0.8: 'Small', 0.9: 'Normal', 1.0: 'Default', 1.1: 'Large', 1.2: 'Extra Large', 1.3: 'Huge' }
+  return labels[fontScale.value] ?? 'Default'
+})
 
-// Methods
-const goBack = () => router.back()
-const goToSettings = () => router.push('/settings')
-const goToFavorites = () => router.push('/favorites')
+const goBack         = () => router.back()
+const goToSettings   = () => router.push('/settings')
+const goToFavorites  = () => router.push('/favorites')
 const goToAdminLogin = () => router.push('/admin/login')
 
-const changeAvatar = () => {
-  showToast('Avatar upload coming soon!', 'info')
-}
+const changeAvatar = () => showToast('Avatar upload coming soon!', 'info')
 
-const editName = () => {
-  editNameValue.value = userProfile.value.displayName
-  showEditName.value = true
-}
-
+const editName = () => { editNameValue.value = userProfile.value.displayName; showEditName.value = true }
 const saveName = () => {
   userProfile.value.displayName = editNameValue.value
-  showEditName.value = false
-  // Save to localStorage for now
   localStorage.setItem('tp_user_name', editNameValue.value)
+  showEditName.value = false
+  showToast('Name updated', 'success')
 }
 
-const editPhone = () => {
-  editPhoneValue.value = userProfile.value.phone
-  showEditPhone.value = true
-}
-
+const editPhone = () => { editPhoneValue.value = userProfile.value.phone; showEditPhone.value = true }
 const savePhone = () => {
   userProfile.value.phone = editPhoneValue.value
-  showEditPhone.value = false
   localStorage.setItem('tp_user_phone', editPhoneValue.value)
+  showEditPhone.value = false
+  showToast('Phone updated', 'success')
 }
 
-const saveLanguage = async () => {
+const saveLanguage = () => {
   localStorage.setItem('tp_language', selectedLanguage.value)
-  // TODO: Sync with backend if logged in
+  showToast(`Language set to ${selectedLanguage.value}`, 'info')
 }
 
-const saveFontScale = async () => {
+const saveFontScale = () => {
   localStorage.setItem('tp_font_scale', fontScale.value)
-  // Apply font scale to root element
   document.documentElement.style.setProperty('--font-scale', fontScale.value)
-  // TODO: Sync with backend if logged in
 }
 
-const saveHighContrast = async () => {
+const saveHighContrast = () => {
   localStorage.setItem('tp_high_contrast', highContrast.value)
-  if (highContrast.value) {
-    document.body.classList.add('high-contrast')
-  } else {
-    document.body.classList.remove('high-contrast')
-  }
-  // TODO: Sync with backend if logged in
+  document.body.classList.toggle('high-contrast', highContrast.value)
 }
 
-const saveReduceAnimations = async () => {
+const saveReduceAnimations = () => {
   localStorage.setItem('tp_reduce_animations', reduceAnimations.value)
-  if (reduceAnimations.value) {
-    document.body.classList.add('reduce-animations')
-  } else {
-    document.body.classList.remove('reduce-animations')
-  }
+  document.body.classList.toggle('reduce-animations', reduceAnimations.value)
 }
 
 const logout = () => {
-  authStore.logout(router, '/')
+  authStore.logout(router)
 }
 
-// Load preferences from localStorage
 const loadPreferences = () => {
   userProfile.value.displayName = localStorage.getItem('tp_user_name') || ''
-  userProfile.value.phone = localStorage.getItem('tp_user_phone') || ''
-  selectedLanguage.value = localStorage.getItem('tp_language') || 'English'
-  fontScale.value = parseFloat(localStorage.getItem('tp_font_scale')) || 1.0
-  highContrast.value = localStorage.getItem('tp_high_contrast') === 'true'
-  reduceAnimations.value = localStorage.getItem('tp_reduce_animations') === 'true'
+  userProfile.value.phone       = localStorage.getItem('tp_user_phone') || ''
+  selectedLanguage.value        = localStorage.getItem('tp_language') || 'English'
+  fontScale.value               = parseFloat(localStorage.getItem('tp_font_scale')) || 1.0
+  highContrast.value            = localStorage.getItem('tp_high_contrast') === 'true'
+  reduceAnimations.value        = localStorage.getItem('tp_reduce_animations') === 'true'
 
-  // Apply saved preferences
+  // Apply saved preferences on load
   document.documentElement.style.setProperty('--font-scale', fontScale.value)
-  if (highContrast.value) document.body.classList.add('high-contrast')
-  if (reduceAnimations.value) document.body.classList.add('reduce-animations')
+  document.body.classList.toggle('high-contrast', highContrast.value)
+  document.body.classList.toggle('reduce-animations', reduceAnimations.value)
 }
 
-// Load favorites count
-const loadFavorites = async () => {
-  try {
-    const res = await api.get('/core/favorites/')
-    favoritesCount.value = res.data.length
-  } catch (error) {
-    // Fallback: count from localStorage
-    const localFavorites = JSON.parse(localStorage.getItem('tp_favorites') || '[]')
-    favoritesCount.value = localFavorites.length
-  }
+const loadFavorites = () => {
+  const saved = JSON.parse(localStorage.getItem('tp_favorites') || '[]')
+  favoritesCount.value = saved.length
 }
 
 onMounted(() => {

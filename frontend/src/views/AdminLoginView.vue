@@ -7,20 +7,22 @@
       <form @submit.prevent="handleLogin">
         <div class="adminlogin-input-group">
           <label>Username</label>
-          <input 
-            v-model="username" 
-            type="text" 
+          <input
+            v-model="username"
+            type="text"
             placeholder="Enter username"
+            autocomplete="username"
             required
           />
         </div>
 
         <div class="adminlogin-input-group">
           <label>Password</label>
-          <input 
-            v-model="password" 
-            type="password" 
+          <input
+            v-model="password"
+            type="password"
             placeholder="Enter password"
+            autocomplete="current-password"
             required
           />
         </div>
@@ -48,27 +50,30 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
+import { showToast } from '../services/toast.js'
 
-const router = useRouter()
+const router    = useRouter()
 const authStore = useAuthStore()
 
-const username = ref('')
-const password = ref('')
-const error = ref('')
+const username  = ref('')
+const password  = ref('')
+const error     = ref('')
 const isLoading = ref(false)
 
 async function handleLogin() {
-  error.value = ''
+  error.value     = ''
   isLoading.value = true
 
+  // FIX: Removed all debug console.log / console.error statements
   const result = await authStore.login(username.value, password.value)
-  
+
   if (result.success) {
+    showToast('Welcome back!', 'success')
     await router.push('/admin')
   } else {
     error.value = result.error
   }
-  
+
   isLoading.value = false
 }
 
@@ -78,6 +83,5 @@ function goBack() {
 </script>
 
 <style>
-/* Styles moved to external file: src/assets/adminlogin.css */
 @import '../assets/adminlogin.css';
 </style>

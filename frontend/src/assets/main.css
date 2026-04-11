@@ -765,3 +765,140 @@ button:disabled, [role="button"][disabled] {
 .shadow-sm { box-shadow: var(--shadow-sm); }
 .overflow-hidden { overflow: hidden; }
 .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* ============================================================
+   APPEND THESE RULES TO THE END OF frontend/src/assets/main.css
+   ============================================================
+
+   These fix three things:
+   1. Profile/Settings icon colour classes (replaces 20+ hardcoded inline hex colours)
+   2. High-contrast mode (was applied but never styled in CSS)
+   3. Reduce-animations mode (same)
+   4. Font-scale CSS variable support
+   ============================================================ */
+
+
+/* ── Profile / Settings icon colour tokens ────────────────── */
+/*  Replace inline style="background:#E3F2FD; color:#2196F3"
+    with class="icon-blue" etc. Works in both light & dark mode.  */
+
+.icon-blue   { background: var(--color-info-bg);    color: var(--color-info);    }
+.icon-orange { background: var(--color-primary-light); color: var(--color-primary-dark); }
+.icon-purple { background: #F3E5F5; color: #9C27B0; }
+.icon-green  { background: var(--color-success-bg); color: var(--color-success); }
+.icon-yellow { background: #FFF8E1; color: #F9A825; }
+.icon-grey   { background: var(--color-surface-2);  color: var(--color-text-secondary); }
+.icon-pink   { background: #FCE4EC; color: #E91E63; }
+.icon-red    { background: var(--color-danger-bg);  color: var(--color-danger);  }
+.icon-cyan   { background: #E0F7FA; color: #00838F; }
+.icon-deep-orange { background: #FBE9E7; color: #E64A19; }
+
+/* Dark mode overrides for icon colours */
+body.dark-mode .icon-purple { background: #2D1B38; color: #CE93D8; }
+body.dark-mode .icon-yellow { background: #2C2000; color: #FFD54F; }
+body.dark-mode .icon-pink   { background: #3B0B1A; color: #F48FB1; }
+body.dark-mode .icon-cyan   { background: #00232B; color: #4DD0E1; }
+body.dark-mode .icon-deep-orange { background: #2C1000; color: #FF8A65; }
+
+
+/* ── Font scale ───────────────────────────────────────────── */
+/*  ProfileView sets --font-scale on :root via JS.
+    These rules propagate it to base text sizes.                 */
+
+:root {
+  --font-scale: 1;   /* default — overridden by ProfileView JS  */
+}
+
+body {
+  font-size: calc(var(--text-base) * var(--font-scale));
+}
+
+
+/* ── High-contrast mode ───────────────────────────────────── */
+/*  Applied when ProfileView sets body.high-contrast            */
+
+body.high-contrast {
+  --color-text-primary:   #000000;
+  --color-text-secondary: #1A1A1A;
+  --color-border:         #000000;
+  --color-bg:             #FFFFFF;
+  --color-surface:        #F0F0F0;
+  --color-primary:        #B35E00;
+  --color-primary-dark:   #7A3E00;
+}
+
+body.dark-mode.high-contrast {
+  --color-text-primary:   #FFFFFF;
+  --color-text-secondary: #E0E0E0;
+  --color-border:         #FFFFFF;
+  --color-bg:             #000000;
+  --color-surface:        #1A1A1A;
+  --color-primary:        #FFB74D;
+  --color-primary-dark:   #FFD54F;
+}
+
+
+/* ── Reduce animations mode ───────────────────────────────── */
+/*  Applied when ProfileView sets body.reduce-animations        */
+
+body.reduce-animations *,
+body.reduce-animations *::before,
+body.reduce-animations *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Also respects system preference if user hasn't set a manual override */
+@media (prefers-reduced-motion: reduce) {
+  body:not(.reduce-animations-override) *,
+  body:not(.reduce-animations-override) *::before,
+  body:not(.reduce-animations-override) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* ── Vue error boundary fallback ─────────────────────────── */
+/*  Shown by the global error handler in main.js               */
+
+.tp-error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+  padding: var(--space-8);
+  text-align: center;
+  gap: var(--space-4);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.tp-error-boundary .material-icons {
+  font-size: 56px;
+  color: var(--color-danger);
+}
+
+.tp-error-boundary h2 {
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+.tp-error-boundary p {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  max-width: 320px;
+}
+
+.tp-error-boundary button {
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
