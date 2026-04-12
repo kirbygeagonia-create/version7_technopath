@@ -206,7 +206,8 @@ export function startPolling() {
       })
 
       await db.transaction('rw', db.notifications, async () => {
-          await db.notifications.clear()
+          // Upsert by PK — no clear() so there is no window where the table is empty.
+          // Any notification the user is reading right now won't disappear mid-poll.
           await db.notifications.bulkPut(newNotifs)
       })
       

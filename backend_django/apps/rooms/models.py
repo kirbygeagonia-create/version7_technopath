@@ -16,6 +16,12 @@ class Room(models.Model):
     is_office = models.BooleanField(default=False)
     is_crucial = models.BooleanField(default=False)
     search_count = models.IntegerField(default=0)
+    # Course filter fields — allow map highlighting by academic program
+    # e.g. 'BSIT', 'BSCS', 'Criminology'. Null = shared/general room.
+    course_code  = models.CharField(max_length=20, blank=True, null=True,
+                   help_text='Academic program that primarily uses this room (e.g. BSIT, BSCS)')
+    course_color = models.CharField(max_length=7, blank=True, null=True,
+                   help_text='Hex highlight color for map (e.g. #FF5722). Auto-assigned if blank.')
     is_deleted = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
