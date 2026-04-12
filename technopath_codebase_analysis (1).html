@@ -1,0 +1,391 @@
+
+<h2 class="sr-only">TechnoPath Codebase Analysis Report — Panelist Review</h2>
+
+<style>
+:root {
+  --c-crit: #A32D2D; --c-crit-bg: #FCEBEB; --c-crit-bd: #F09595;
+  --c-high: #854F0B; --c-high-bg: #FAEEDA; --c-high-bd: #EF9F27;
+  --c-med:  #185FA5; --c-med-bg: #E6F1FB; --c-med-bd: #85B7EB;
+  --c-low:  #3B6D11; --c-low-bg: #EAF3DE; --c-low-bd: #97C459;
+  --c-ok:   #0F6E56; --c-ok-bg: #E1F5EE;  --c-ok-bd: #5DCAA5;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-size: 14px; line-height: 1.6; color: var(--color-text-primary); }
+.wrap { max-width: 860px; padding: 1.5rem 0; }
+.sys-title { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
+.sys-sub { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1.5rem; }
+.score-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.score-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; flex: 1; min-width: 100px; }
+.score-card .label { font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .04em; }
+.score-card .val { font-size: 22px; font-weight: 500; margin-top: 2px; }
+.score-card .val.ok { color: var(--c-ok); }
+.score-card .val.warn { color: var(--c-high); }
+.score-card .val.bad { color: var(--c-crit); }
+.section { margin-bottom: 1.5rem; }
+.section-hd { font-size: 15px; font-weight: 500; padding: 6px 10px; border-radius: var(--border-radius-md); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.section-hd.fe  { background: var(--c-med-bg);  color: var(--c-med);  border-left: 3px solid var(--c-med-bd); }
+.section-hd.be  { background: var(--c-high-bg); color: var(--c-high); border-left: 3px solid var(--c-high-bd); }
+.section-hd.db  { background: var(--c-low-bg);  color: var(--c-low);  border-left: 3px solid var(--c-low-bd); }
+.section-hd.sec { background: var(--c-crit-bg); color: var(--c-crit); border-left: 3px solid var(--c-crit-bd); }
+.section-hd.ok  { background: var(--c-ok-bg);   color: var(--c-ok);   border-left: 3px solid var(--c-ok-bd); }
+.issue { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); margin-bottom: 6px; overflow: hidden; }
+.issue-hd { display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; cursor: pointer; user-select: none; }
+.issue-hd:hover { background: var(--color-background-secondary); }
+.badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+.badge.CRITICAL  { background: var(--c-crit-bg); color: var(--c-crit); }
+.badge.HIGH      { background: var(--c-high-bg); color: var(--c-high); }
+.badge.MEDIUM    { background: var(--c-med-bg);  color: var(--c-med); }
+.badge.LOW       { background: var(--c-low-bg);  color: var(--c-low); }
+.badge.GOOD      { background: var(--c-ok-bg);   color: var(--c-ok); }
+.issue-title { font-size: 13px; font-weight: 500; flex: 1; }
+.issue-loc { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; font-family: var(--font-mono); }
+.arrow { font-size: 11px; color: var(--color-text-tertiary); margin-top: 3px; transition: transform .15s; }
+.issue-body { display: none; padding: 0 12px 10px 12px; font-size: 12.5px; color: var(--color-text-secondary); line-height: 1.6; border-top: 0.5px solid var(--color-border-tertiary); }
+.issue-body.open { display: block; }
+.issue-body code { font-family: var(--font-mono); font-size: 11.5px; background: var(--color-background-secondary); padding: 1px 5px; border-radius: 4px; color: var(--color-text-primary); }
+.issue-body pre { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 8px 10px; margin: 6px 0; font-size: 11.5px; font-family: var(--font-mono); overflow-x: auto; color: var(--color-text-primary); }
+.issue-body .fix { margin-top: 6px; color: var(--c-ok); font-weight: 500; }
+.divider { height: 0.5px; background: var(--color-border-tertiary); margin: 1rem 0; }
+.praise-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+.praise-card { background: var(--c-ok-bg); border: 0.5px solid var(--c-ok-bd); border-radius: var(--border-radius-md); padding: 9px 12px; font-size: 12.5px; color: var(--c-ok); }
+.praise-card strong { display: block; font-weight: 500; margin-bottom: 2px; color: #085041; }
+</style>
+
+<div class="wrap">
+<p class="sys-title">TechnoPath — Panelist Codebase Review</p>
+<p class="sys-sub">SEAIT Campus Guide Map & Navigation System · Vue 3 + Django REST + Flask · click any issue to expand</p>
+
+<div class="score-row">
+  <div class="score-card"><div class="label">Frontend</div><div class="val warn">6 / 10</div></div>
+  <div class="score-card"><div class="label">Backend</div><div class="val warn">6.5 / 10</div></div>
+  <div class="score-card"><div class="label">Database</div><div class="val ok">7.5 / 10</div></div>
+  <div class="score-card"><div class="label">Security</div><div class="val warn">5.5 / 10</div></div>
+  <div class="score-card"><div class="label">Architecture</div><div class="val ok">7 / 10</div></div>
+  <div class="score-card"><div class="label">Critical Bugs</div><div class="val bad">7</div></div>
+</div>
+
+<div class="section">
+  <div class="section-hd sec">🔒 Security Issues</div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge CRITICAL">CRITICAL</span>
+      <div><div class="issue-title">JWT tokens stored in localStorage — XSS vulnerable</div><div class="issue-loc">frontend/src/services/api.js · stores/authStore.js</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      Access tokens and refresh tokens are stored in <code>localStorage</code>, which is readable by any JavaScript running on the page. A single XSS injection could steal admin tokens and give an attacker full admin access.
+      <div class="fix">Fix: Store tokens in <code>HttpOnly</code> cookies set by the Django backend, not in localStorage. Then Django handles CSRF protection automatically.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge CRITICAL">CRITICAL</span>
+      <div><div class="issue-title">No rate limiting on login endpoint — brute-force possible beyond lockout</div><div class="issue-loc">backend_django/technopath/settings.py · apps/users/views.py</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      Django REST Framework has no <code>DEFAULT_THROTTLE_CLASSES</code> configured anywhere. While there is a 5-attempt lockout per account, an attacker can spray credentials across many accounts simultaneously with no server-side rate limit.
+      <div class="fix">Fix: Add <code>AnonRateThrottle</code> and <code>UserRateThrottle</code> in DRF settings. Also add Django's <code>django-axes</code> for IP-based lockout.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge CRITICAL">CRITICAL</span>
+      <div><div class="issue-title">Default insecure SECRET_KEY in settings.py — committed to repo</div><div class="issue-loc">backend_django/technopath/settings.py line 5</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The fallback default value is <code>'django-insecure-technopath-seait-dev-key-change-in-production'</code>. If deployed without a proper <code>.env</code> file, this known key is used in production — compromising all HMAC signatures including JWT tokens.
+      <div class="fix">Fix: Remove the fallback entirely: <code>SECRET_KEY = config('SECRET_KEY')</code> with no default. This forces a crash if the env var is missing, preventing silent misconfiguration.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">Chatbot Flask app has duplicate OpenAI client initialization</div><div class="issue-loc">chatbot_flask/app.py lines 7–27</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The Flask chatbot creates an <code>OpenAI</code> client via the new SDK on line 14 (<code>client = OpenAI(...)</code>), then immediately creates a second one using the legacy <code>openai.api_key</code> pattern on lines 21–26. The first client object is used in the actual chat function. The second block is dead code and suggests copy-paste confusion.
+      <div class="fix">Fix: Remove the second legacy block entirely. Keep only the <code>client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))</code> pattern and guard with <code>if not key: raise RuntimeError()</code>.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">No chatbot rate limiting — OpenAI API cost exposure</div><div class="issue-loc">chatbot_flask/app.py</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The Flask chatbot's <code>/chat</code> endpoint has no rate limiting. Any user can spam the endpoint, triggering unlimited OpenAI API calls and running up costs with no safeguard.
+      <div class="fix">Fix: Add <code>flask-limiter</code> with per-IP limits (e.g. 20 requests/minute). Also add message length validation before calling the OpenAI API.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-hd be">⚙ Backend Issues</div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge CRITICAL">CRITICAL</span>
+      <div><div class="issue-title">AuditLog filters applied after QuerySet slice — silently broken</div><div class="issue-loc">backend_django/apps/users/views.py · AuditLogView.get()</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The queryset is sliced to 300 rows <em>before</em> filters are applied:
+      <pre>qs = AdminAuditLog.objects.select_related('admin').order_by('-created_at')[:300]
+if request.query_params.get('entity_type'):
+    qs = qs.filter(entity_type=...)</pre>
+      In Django, calling <code>.filter()</code> on a sliced QuerySet raises a <code>TypeError</code> at runtime. The admin audit log filter UI will crash for any filter query.
+      <div class="fix">Fix: Apply all filters before slicing.
+      <pre>qs = AdminAuditLog.objects.select_related('admin').order_by('-created_at')
+if ...: qs = qs.filter(...)
+qs = qs[:300]</pre></div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge CRITICAL">CRITICAL</span>
+      <div><div class="issue-title">CanManageRoom.has_object_permission() references wrong attribute</div><div class="issue-loc">backend_django/apps/users/permissions.py line 63</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The permission check does:
+      <pre>return obj.facility.department.code == request.user.department</pre>
+      But <code>Facility.department</code> is a <code>ForeignKey</code> to <code>core.Department</code>. The <code>Department</code> model has a <code>code</code> field. This would work if the FK is resolved — but <code>request.user.department</code> stores the plain string code (e.g. <code>'college_ict'</code>) while <code>Department.code</code> is something like <code>'ICT'</code>. These won't match, meaning non-super-admin users can never pass the object-level permission check.
+      <div class="fix">Fix: Align the comparison. Either compare <code>obj.facility.department.code</code> to the correct format, or use the department FK id directly. Also add a null guard for <code>obj.facility.department</code>.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">PublicDirectoryView calls non-existent method get_role_label()</div><div class="issue-loc">backend_django/apps/users/views.py · PublicDirectoryView</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The view serializes user data with <code>'role': user.get_role_label()</code>, but <code>AdminUser</code> has no such method. The correct method is <code>get_role_display()</code> (Django's auto-generated choices display method).
+      <div class="fix">Fix: Replace <code>user.get_role_label()</code> with <code>user.get_role_display()</code>. This endpoint will raise a <code>500 AttributeError</code> every time it is called.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">django-filters not in requirements.txt — will crash on import</div><div class="issue-loc">backend_django/requirements.txt · apps/core/views.py</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      <code>apps/core/views.py</code> imports <code>from django_filters.rest_framework import DjangoFilterBackend</code> and is listed in <code>INSTALLED_APPS</code> as <code>django_filters</code>. However <code>django-filter</code> is absent from <code>requirements.txt</code>. A fresh deployment will fail to start with an <code>ImportError</code>.
+      <div class="fix">Fix: Add <code>django-filter>=23.0</code> to <code>requirements.txt</code>.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">Navigation delete uses hard-delete via DestroyAPIView instead of soft-delete</div><div class="issue-loc">backend_django/apps/navigation/views.py</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      <code>NavigationNodeDetailView</code> and <code>NavigationEdgeDetailView</code> extend <code>RetrieveUpdateDestroyAPIView</code> with no custom <code>perform_destroy()</code>. This means DELETE on a navigation node permanently removes it from the database, even though the model has an <code>is_deleted</code> field intended for soft delete. In contrast, Rooms correctly overrides <code>perform_destroy</code> to set <code>is_deleted = True</code>.
+      <div class="fix">Fix: Add <code>perform_destroy(self, instance): instance.is_deleted = True; instance.save()</code> to both navigation detail views.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge MEDIUM">MEDIUM</span>
+      <div><div class="issue-title">Announcement.publish() called twice when SuperAdmin directly publishes</div><div class="issue-loc">backend_django/apps/announcements/views.py · AnnouncementCreateView.post()</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      When <code>publishes_direct=True</code>, the view sets <code>status='published'</code> before <code>a.save()</code>, then immediately calls <code>a.publish()</code> which sets the same fields again and creates a <code>Notification</code>. This is harmless but creates an unnecessary extra <code>UPDATE</code> SQL and is confusing — the model already has a clean <code>publish()</code> method meant for this.
+      <div class="fix">Fix: For the direct-publish path, do not pre-set status before save. Let <code>a.publish()</code> handle it exclusively.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge MEDIUM">MEDIUM</span>
+      <div><div class="issue-title">SQLite in production — not suitable for concurrent use</div><div class="issue-loc">backend_django/technopath/settings.py</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The database is configured as SQLite with no override path for production. SQLite cannot handle concurrent writes and will lock under any real multi-user load. It is fine for development but must not be deployed to production.
+      <div class="fix">Fix: Add a separate production settings file that uses PostgreSQL. Use <code>dj-database-url</code> to read the <code>DATABASE_URL</code> environment variable.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-hd fe">🖥 Frontend Issues</div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge CRITICAL">CRITICAL</span>
+      <div><div class="issue-title">MapView.vue uses undefined variables panStart and showToast</div><div class="issue-loc">frontend/src/views/MapView.vue · onTouchStart(), addFavorite()</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      <code>onTouchStart</code> sets <code>panStart.value = ...</code> and reads <code>panStart.value</code> in <code>onTouchMove</code>, but <code>panStart</code> is never declared with <code>ref()</code> in the script. Similarly, <code>addFavorite()</code> calls <code>showToast(...)</code> which is never imported or defined. Both are runtime errors — touch panning will crash on mobile and favoriting will throw a ReferenceError.
+      <div class="fix">Fix: Add <code>const panStart = ref({ x: 0, y: 0 })</code>, and import/define a <code>showToast</code> function. The <code>toast.js</code> service already exists in <code>/services/toast.js</code>.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">NavigateView route overlay uses fixed SVG viewBox — misaligned on real data</div><div class="issue-loc">frontend/src/views/NavigateView.vue · route SVG overlay</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The route polyline SVG has a hardcoded <code>viewBox="0 0 800 600"</code> with <code>preserveAspectRatio="none"</code>, and path coordinates are computed as <code>node.x * 800, node.y * 600</code>. But the actual SEAIT_Map.svg has its own natural dimensions. If the map renders at any other aspect ratio, all route points will be displaced from the buildings they reference.
+      <div class="fix">Fix: The route SVG overlay should use the same viewBox as the map image dimensions, or use percentage-based CSS positioning for each waypoint node instead of a fixed SVG.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">NavigateView locationDropdown shows all facilities+rooms unsorted, no search</div><div class="issue-loc">frontend/src/views/NavigateView.vue · loadData()</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      Location selection uses a plain <code>&lt;select&gt;</code> dropdown loaded with the full flat list of all facilities and all rooms merged together. With enough data this becomes very hard to use on mobile. There is also no type-ahead or search.
+      <div class="fix">Recommendation: Replace both selects with a searchable autocomplete input — the existing <code>SearchBar.vue</code> component should be reused here with type-ahead filtering.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">Mock hardcoded room data leaks into production builds</div><div class="issue-loc">frontend/src/views/MapView.vue · useMockRooms()</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      <code>useMockRooms()</code> contains hardcoded room data for MST, JST, and RST buildings and is called unconditionally whenever the API returns 0 rooms — regardless of whether it is a dev or production build. This means if a real building is created in the database with 0 rooms, the app shows stale hardcoded mock data to users in production.
+      <div class="fix">Fix: Wrap the mock fallback in <code>if (import.meta.env.DEV)</code>. In production, show an empty state message instead of mock data.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge MEDIUM">MEDIUM</span>
+      <div><div class="issue-title">Dijkstra distance calculation uses raw database units, not real meters</div><div class="issue-loc">frontend/src/services/pathfinder.js · generateSteps()</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The step distance is computed as <code>Math.sqrt(dx*dx + dy*dy)</code> where <code>dx = (curr.x - prev.x) * 200</code>. This 200 scale factor is arbitrary and has no relationship to actual campus meters. The displayed distance (e.g. "~47m") can be meaninglessly inaccurate.
+      <div class="fix">Fix: The <code>NavigationEdge.distance</code> field in the database is where accurate real-world distances should be stored (in meters). The frontend should use <code>result.distance</code> from Dijkstra directly, which sums edge weights.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge MEDIUM">MEDIUM</span>
+      <div><div class="issue-title">Router splash guard fires on every first visit — not just first install</div><div class="issue-loc">frontend/src/router/index.js</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The splash screen guard checks <code>sessionStorage.getItem('tp_splash_shown')</code>. Since session storage is cleared whenever the browser tab is closed, the splash plays every single new tab/session, not just on first app install. This may frustrate returning users.
+      <div class="fix">Fix: Use <code>localStorage</code> with a versioned key (e.g. <code>tp_splash_v1</code>) so the splash only plays once per device, not every session.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge LOW">LOW</span>
+      <div><div class="issue-title">No error boundary — unhandled promise rejections silently fail</div><div class="issue-loc">frontend/src/main.js · general</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      Vue's global error handler (<code>app.config.errorHandler</code>) is not configured. Unhandled errors in async lifecycle hooks or watchers will silently swallow in production, making debugging very difficult.
+      <div class="fix">Fix: Add <code>app.config.errorHandler = (err, instance, info) => { console.error(err); showToast('An error occurred', 'error') }</code> in <code>main.js</code>.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-hd db">🗃 Database / Schema Issues</div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">Feedback and core Rating models are duplicates — schema split</div><div class="issue-loc">apps/feedback/models.py · apps/core/models.py</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      There are two separate models for user feedback: <code>apps.feedback.Feedback</code> (table <code>feedback</code>) and <code>apps.core.Rating</code> (table <code>ratings</code>). Both have <code>rating</code>, <code>comment</code>, <code>category</code>, <code>facility</code>, and <code>room</code> fields. Additionally there is a <code>FeedbackFlag</code> in core that references <code>Rating</code> instead of <code>Feedback</code>, making the flag system only work on one of the two tables.
+      <div class="fix">Fix: Consolidate into a single <code>Feedback</code> model and migrate all data. Remove the duplicate <code>Rating</code> model from core.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge MEDIUM">MEDIUM</span>
+      <div><div class="issue-title">NavigationNode has no unique constraint on map_svg_id — pathfinder can't reliably look up nodes</div><div class="issue-loc">backend_django/apps/navigation/models.py</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      <code>map_svg_id</code> is used by the pathfinder to find nodes by SVG element name, but there is no <code>unique=True</code> constraint. Duplicate SVG IDs can be created silently, and the pathfinder's <code>.find()</code> will return the first match, potentially routing to the wrong node.
+      <div class="fix">Fix: Add <code>unique=True</code> to <code>map_svg_id</code> (with <code>blank=True, null=True</code> to allow nulls for waypoints that have no SVG element) and add a database migration.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge MEDIUM">MEDIUM</span>
+      <div><div class="issue-title">AppUsage and UsageAnalytics models are never populated — dead schema</div><div class="issue-loc">backend_django/apps/core/models.py</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The database has <code>app_usage</code>, <code>usage_analytics</code>, <code>device_preferences</code>, <code>connectivity_log</code>, and <code>search_history</code> tables defined in core models but no corresponding API views, serializers, or frontend code that writes to them. These are schema stubs that add migration complexity with no current value.
+      <div class="fix">Recommendation: Either implement the analytics pipeline or remove these models until needed. Unused schema creates confusion during code reviews.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge LOW">LOW</span>
+      <div><div class="issue-title">NotificationReadStatus only works for admin users — public users' read state lost</div><div class="issue-loc">backend_django/apps/notifications/models.py</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      <code>NotificationReadStatus</code> has a FK to <code>AdminUser</code>. The comment says "Guest users track read status locally in IndexedDB." This means if a user clears their browser data, all read/unread notification state is permanently lost. A notification badge count may be permanently wrong.
+      <div class="fix">Recommendation: Use a device-fingerprint or anonymous session ID to persist read state more reliably, or accept this as a known limitation and document it.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-hd ok">✓ What Works Well</div>
+  <div class="praise-grid">
+    <div class="praise-card"><strong>Dijkstra implementation</strong>Binary heap priority queue is correct and efficient. Normalization helpers handle field name mismatches gracefully.</div>
+    <div class="praise-card"><strong>Role-based permissions</strong>The multi-role system (super_admin, dean, program_head, basic_ed_head) is well-thought-out with clear permission delegation and object-level checks.</div>
+    <div class="praise-card"><strong>Offline-first architecture</strong>IndexedDB caching with stale-check logic and network-first/cache-fallback pattern is the correct approach for a campus app.</div>
+    <div class="praise-card"><strong>Announcement workflow</strong>The approval pipeline (pending → published/rejected → archived) with role-scoped publishing rules is well-designed and properly modeled.</div>
+    <div class="praise-card"><strong>JWT refresh with queue</strong>The token refresh logic in api.js correctly queues concurrent requests while refreshing, preventing multiple simultaneous refresh calls.</div>
+    <div class="praise-card"><strong>Soft delete everywhere</strong>Consistent use of <code>is_deleted</code> flags across facilities, rooms, and navigation data preserves history. (Except navigation views — see above.)</div>
+    <div class="praise-card"><strong>Audit logging</strong>The <code>write_audit()</code> helper and <code>AdminAuditLog</code> model provide good traceability for all admin actions with IP capture.</div>
+    <div class="praise-card"><strong>PWA configuration</strong>Vite PWA plugin is properly configured with service worker, manifest, and NetworkFirst caching strategy for the API.</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function toggle(hd) {
+  const body = hd.parentElement.querySelector('.issue-body')
+  const arrow = hd.querySelector('.arrow')
+  const open = body.classList.toggle('open')
+  arrow.style.transform = open ? 'rotate(90deg)' : ''
+}
+</script>

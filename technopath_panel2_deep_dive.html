@@ -1,0 +1,319 @@
+
+<h2 class="sr-only">TechnoPath Deep Dive — Panel 2: Admin, Sync, and Data Layer</h2>
+<style>
+:root {
+  --c-crit: #A32D2D; --c-crit-bg: #FCEBEB; --c-crit-bd: #F09595;
+  --c-high: #854F0B; --c-high-bg: #FAEEDA; --c-high-bd: #EF9F27;
+  --c-med:  #185FA5; --c-med-bg: #E6F1FB; --c-med-bd: #85B7EB;
+  --c-low:  #3B6D11; --c-low-bg: #EAF3DE; --c-low-bd: #97C459;
+  --c-ok:   #0F6E56; --c-ok-bg: #E1F5EE;  --c-ok-bd: #5DCAA5;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-size: 14px; line-height: 1.6; color: var(--color-text-primary); }
+.wrap { max-width: 860px; padding: 1.5rem 0; }
+.pg-title { font-size: 20px; font-weight: 500; margin-bottom: 2px; }
+.pg-sub { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1.5rem; }
+.section { margin-bottom: 1.5rem; }
+.section-hd { font-size: 15px; font-weight: 500; padding: 6px 10px; border-radius: var(--border-radius-md); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.section-hd.fe  { background: var(--c-med-bg);  color: var(--c-med);  border-left: 3px solid var(--c-med-bd); }
+.section-hd.be  { background: var(--c-high-bg); color: var(--c-high); border-left: 3px solid var(--c-high-bd); }
+.section-hd.sec { background: var(--c-crit-bg); color: var(--c-crit); border-left: 3px solid var(--c-crit-bd); }
+.section-hd.sync { background: #F3E5F5; color: #6A1B9A; border-left: 3px solid #CE93D8; }
+.section-hd.db  { background: var(--c-low-bg);  color: var(--c-low);  border-left: 3px solid var(--c-low-bd); }
+.issue { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); margin-bottom: 6px; overflow: hidden; }
+.issue-hd { display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; cursor: pointer; user-select: none; }
+.issue-hd:hover { background: var(--color-background-secondary); }
+.badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+.badge.CRITICAL { background: var(--c-crit-bg); color: var(--c-crit); }
+.badge.HIGH     { background: var(--c-high-bg); color: var(--c-high); }
+.badge.MEDIUM   { background: var(--c-med-bg);  color: var(--c-med); }
+.badge.LOW      { background: var(--c-low-bg);  color: var(--c-low); }
+.issue-title { font-size: 13px; font-weight: 500; flex: 1; }
+.issue-loc   { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; font-family: var(--font-mono); }
+.arrow { font-size: 11px; color: var(--color-text-tertiary); margin-top: 3px; transition: transform .15s; }
+.issue-body { display: none; padding: 0 12px 10px; font-size: 12.5px; color: var(--color-text-secondary); line-height: 1.65; border-top: 0.5px solid var(--color-border-tertiary); }
+.issue-body.open { display: block; }
+.issue-body code { font-family: var(--font-mono); font-size: 11.5px; background: var(--color-background-secondary); padding: 1px 5px; border-radius: 4px; color: var(--color-text-primary); }
+.issue-body pre  { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 8px 10px; margin: 6px 0; font-size: 11.5px; font-family: var(--font-mono); overflow-x: auto; color: var(--color-text-primary); }
+.issue-body .fix { margin-top: 6px; color: #085041; font-weight: 500; }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin-bottom: 1.5rem; }
+.summary-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; }
+.summary-card .lbl { font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .04em; }
+.summary-card .val { font-size: 18px; font-weight: 500; margin-top: 2px; }
+.val.bad  { color: var(--c-crit); }
+.val.warn { color: var(--c-high); }
+.val.ok   { color: var(--c-ok); }
+.priority-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 1.5rem; }
+.priority-table th { text-align: left; padding: 6px 10px; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); }
+.priority-table td { padding: 7px 10px; border-bottom: 0.5px solid var(--color-border-tertiary); vertical-align: top; }
+.priority-table tr:last-child td { border-bottom: none; }
+.priority-table .file { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-secondary); }
+.priority-table .sev { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
+.sev.c { background: var(--c-crit-bg); color: var(--c-crit); }
+.sev.h { background: var(--c-high-bg); color: var(--c-high); }
+.sev.m { background: var(--c-med-bg);  color: var(--c-med); }
+.sev.l { background: var(--c-low-bg);  color: var(--c-low); }
+</style>
+
+<div class="wrap">
+<p class="pg-title">Panel 2 — Deep Dive: Admin, Sync Engine & Data Layer</p>
+<p class="pg-sub">Continued analysis · click issues to expand</p>
+
+<div class="summary-grid">
+  <div class="summary-card"><div class="lbl">New bugs found</div><div class="val bad">11</div></div>
+  <div class="summary-card"><div class="lbl">Sync crashes</div><div class="val bad">2</div></div>
+  <div class="summary-card"><div class="lbl">Privacy violations</div><div class="val bad">2</div></div>
+  <div class="summary-card"><div class="lbl">Admin UI data mismatches</div><div class="val warn">4</div></div>
+</div>
+
+<div class="section">
+  <div class="section-hd sync">🔄 Sync Engine — services/sync.js</div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge CRITICAL">CRITICAL</span>
+      <div><div class="issue-title">sync.js writes to db.notification_types — table was deleted in db.js v5</div><div class="issue-loc">frontend/src/services/sync.js lines 87, 115–116 · src/services/db.js v5</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The db.js schema comment explicitly lists <code>notification_types</code> as a table that was removed: <em>"Removed: notification_types, notification_preferences, users..."</em>. Yet <code>syncAllData()</code> still fetches <code>/core/notification-types/</code>, includes <code>db.notification_types</code> in the transaction, and calls <code>db.notification_types.clear()</code> and <code>db.notification_types.bulkPut()</code>.
+      <pre>await db.transaction('rw',
+  ...
+  db.notification_types,  // ← this table no longer exists
+  ...</pre>
+      Dexie will throw a <code>TypeError: Cannot read properties of undefined</code> when the sync runs, causing the <strong>entire sync to fail</strong> — no data at all gets cached for offline use.
+      <div class="fix">Fix: Remove the <code>notificationTypesRes</code> fetch, the <code>db.notification_types</code> transaction entry, and the two write lines from <code>syncAllData()</code>.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge CRITICAL">CRITICAL</span>
+      <div><div class="issue-title">syncAllData() is all-or-nothing — one failing API endpoint breaks all offline caching</div><div class="issue-loc">frontend/src/services/sync.js · Promise.all()</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      All 11 API calls are wrapped in a single <code>Promise.all()</code>. If any one endpoint returns an error (e.g. the <code>/core/app-config/</code> endpoint is slow or unavailable), the entire <code>Promise.all</code> rejects, the <code>catch</code> block fires, the IndexedDB transaction never runs, and the app has zero cached data for offline use. A single flaky endpoint starves the entire offline cache.
+      <div class="fix">Fix: Fetch each resource individually with its own try/catch, or use <code>Promise.allSettled()</code> and only write the successfully-fetched items. This way a single broken endpoint doesn't block the others.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">Dashboard calls /core/audit-log/ — URL does not exist; correct URL is /users/audit-log/</div><div class="issue-loc">frontend/src/components/admin/AdminDashboard.vue line 297</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      <code>AdminDashboard</code> fetches recent activity from <code>api.get('/core/audit-log/?limit=5')</code>. But the audit log is registered under the users app: <code>path('api/users/', include('apps.users.urls'))</code> → <code>path('audit-log/', AuditLogView)</code>, meaning the correct URL is <code>/api/users/audit-log/</code>. The <code>/api/core/</code> prefix has a different <code>AdminAuditLogListView</code> (a duplicate) under <code>path('admin-audit-logs/', ...)</code>. The dashboard is calling neither of these correctly — it will get a <code>404</code> every load.
+      <div class="fix">Fix: Change the dashboard fetch to <code>api.get('/users/audit-log/')</code>, or consolidate the two audit log endpoints into one.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge MEDIUM">MEDIUM</span>
+      <div><div class="issue-title">Polling replaces all notifications every 30 seconds — read state survives but badge count races</div><div class="issue-loc">frontend/src/services/sync.js · startPolling()</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      Every 30 seconds the poller clears and replaces the entire notifications table. It preserves read state via a read-state map, but any notification that arrives between the <code>clear()</code> and <code>bulkPut()</code> in a concurrent read will temporarily disappear. More importantly, if the user is actively viewing the notifications page during a poll cycle, the UI may flicker or lose its selected item.
+      <div class="fix">Recommendation: Use an upsert/merge strategy instead of clear+replace. Add only new notifications (by id) and update existing ones only if changed.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-hd fe">🖥 Admin UI — Field & API Mismatches</div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge CRITICAL">CRITICAL</span>
+      <div><div class="issue-title">AdminNavGraph creates edges using node_id string — backend expects integer primary key</div><div class="issue-loc">frontend/src/components/admin/AdminNavGraph.vue line 529 · createEdge()</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      When the admin connects two nodes in the canvas, the connect-mode click handler calls:
+      <pre>createEdge(connectStartNode.value.node_id, clickedNode.node_id)</pre>
+      Where <code>node_id</code> is the local string identifier like <code>"ROOM_101"</code>. But <code>createEdge()</code> posts to <code>/navigation/edges/</code> with:
+      <pre>{ from_node: fromNodeId, to_node: toNodeId, ... }</pre>
+      Django's <code>NavigationEdge</code> model has <code>from_node</code> and <code>to_node</code> as integer ForeignKey fields. Sending a string like <code>"ROOM_101"</code> will cause a Django <code>ValidationError</code>. Every edge created via the canvas UI will fail silently (the error is only <code>console.error</code>'d).
+      <div class="fix">Fix: Pass <code>connectStartNode.value.id</code> and <code>clickedNode.id</code> (the database integer PK) to <code>createEdge()</code>, not <code>node_id</code>.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">AdminFacilities filters and stats by facility.type — field does not exist in backend model</div><div class="issue-loc">frontend/src/components/admin/AdminFacilities.vue · Facility model</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The admin facilities component filters by <code>f.type</code> (academic, admin, facility, library, canteen) and renders a type badge with <code>facility.type</code>. But the <code>Facility</code> model has no <code>type</code> field at all — it has <code>code</code>, <code>department</code>, <code>description</code>, and <code>total_floors</code>, but nothing called <code>type</code>.
+      <pre>facilities.filter(f => f.type === 'academic').length  // → always 0</pre>
+      All three stat counters (Academic, Administrative, Facilities) will always show 0. The type filter dropdown will never match anything. Type badges will be blank.
+      <div class="fix">Fix: Either add a <code>facility_type</code> field to the <code>Facility</code> model with the appropriate choices, or remove the type-based filtering from the admin UI and replace with department-based grouping.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">AdminNavGraph canvas renders node.node_id label — backend field is map_svg_id not node_id</div><div class="issue-loc">frontend/src/components/admin/AdminNavGraph.vue lines 98, 415</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The canvas draws labels from <code>node.node_id</code> and the table shows <code>node.node_id</code>. The <code>NavigationNode</code> model has no <code>node_id</code> field — the corresponding field is <code>map_svg_id</code>. The nodeForm also has a <code>node_id</code> input that maps to this phantom field. Everything displayed as the node identifier in the graph editor will be <code>undefined</code>.
+      <div class="fix">Fix: Rename all references from <code>node_id</code> to <code>map_svg_id</code> throughout <code>AdminNavGraph.vue</code>. Also update the nodeForm field name and the canvas label rendering.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">AdminNavGraph edge lookup uses node.node_id but edges store integer IDs — graph draws no connections</div><div class="issue-loc">frontend/src/components/admin/AdminNavGraph.vue lines 360–361</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      When drawing edges on the canvas:
+      <pre>const fromNode = nodes.value.find(n => n.node_id === edge.from)
+const toNode   = nodes.value.find(n => n.node_id === edge.to)</pre>
+      But edges from the API have <code>from_node_id</code> and <code>to_node_id</code> (integer FKs). So <code>edge.from</code> and <code>edge.to</code> are <code>undefined</code>. Both <code>find()</code> calls return <code>undefined</code>, and no lines are drawn between nodes. The graph canvas will show nodes floating in space with no visible connections at all.
+      <div class="fix">Fix: Change the lookup to use the correct serializer field names: <code>nodes.value.find(n => n.id === edge.from_node_id)</code> and <code>n.id === edge.to_node_id</code>.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge MEDIUM">MEDIUM</span>
+      <div><div class="issue-title">AdminNavGraph saveNode sends full nodeForm including phantom node_id field to backend</div><div class="issue-loc">frontend/src/components/admin/AdminNavGraph.vue · saveNode()</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      <code>saveNode()</code> calls <code>api.put('/navigation/nodes/...', normalizedNode)</code> where <code>normalizedNode</code> is a spread of the full <code>nodeForm</code> object which includes <code>node_id</code>, <code>type</code>, and <code>building</code> fields. The backend serializer accepts only <code>name</code>, <code>node_type</code>, <code>map_svg_id</code>, <code>x</code>, <code>y</code>, <code>floor</code>, <code>facility</code>, <code>room</code>. The extra fields are ignored by DRF, but the correct fields are missing — specifically <code>node_type</code> (sent as <code>type</code>) so node type is never saved.
+      <div class="fix">Fix: Map form fields to backend field names before POST/PUT. The form's <code>type</code> → <code>node_type</code>, <code>node_id</code> → <code>map_svg_id</code>.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-hd sec">🔒 Privacy & Access Control</div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge CRITICAL">CRITICAL</span>
+      <div><div class="issue-title">FeedbackListView is publicly readable — anyone can read all feedback including non-anonymous submissions</div><div class="issue-loc">backend_django/apps/feedback/views.py · FeedbackListView</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      <code>FeedbackListView</code> uses <code>permission_classes = [IsAuthenticatedOrReadOnly]</code>, meaning any unauthenticated user can do a GET to <code>/api/feedback/</code> and read all feedback records. The serializer uses <code>fields = '__all__'</code> so every field including <code>is_anonymous</code>, <code>comment</code>, and <code>location</code> is exposed. A student who submits feedback believing it is anonymous can have it read by anyone with API access.
+      <div class="fix">Fix: Change permission to <code>IsAuthenticated</code> (admin-only read), and create a separate write-only public endpoint for submitting feedback. For admin reads, filter based on role: super admin sees all, dean sees only department-scoped feedback.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">FeedbackDetailView allows unauthenticated PATCH/DELETE on any feedback record</div><div class="issue-loc">backend_django/apps/feedback/views.py · FeedbackDetailView</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      <code>FeedbackDetailView</code> also uses <code>IsAuthenticatedOrReadOnly</code>. The <code>IsAuthenticatedOrReadOnly</code> permission class allows unsafe methods (PUT, PATCH, DELETE) only when authenticated. However since any admin token grants full access, there is no object-level check — a dean can delete another department's feedback, or a program head can modify feedback not related to their area.
+      <div class="fix">Fix: Use <code>IsSuperAdmin</code> for delete, and for the admin role who submitted the feedback for read/edit access. Add object-level permissions.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">HomeView implements its own pan/zoom instead of using useMapPanZoom composable</div><div class="issue-loc">frontend/src/views/HomeView.vue</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      <code>MapView.vue</code> and <code>NavigateView.vue</code> correctly use the <code>useMapPanZoom</code> composable. But <code>HomeView.vue</code> has its own duplicate pan/zoom implementation with <code>startPan</code>, <code>handlePan</code>, <code>startTouchPan</code>, <code>handleTouchPan</code>, and <code>handleZoom</code> — all re-implemented from scratch (~60 lines of duplicated logic). Any bug fix or enhancement to pan/zoom must be done in two places.
+      <div class="fix">Fix: Replace HomeView's inline pan/zoom implementation with <code>useMapPanZoom()</code>. This is a pure refactor — zero behaviour change, but eliminates the duplication.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-hd be">⚙ Backend — Additional Issues</div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge HIGH">HIGH</span>
+      <div><div class="issue-title">Two separate AuditLog endpoints exist — /users/audit-log/ and /core/admin-audit-logs/ — returning different data</div><div class="issue-loc">backend_django/apps/users/urls.py · apps/core/urls.py</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The users app has <code>AuditLogView</code> at <code>/api/users/audit-log/</code> (used by AdminAuditLog view in the frontend). Core app has a separate <code>AdminAuditLogListView</code> at <code>/api/core/admin-audit-logs/</code> using a different serializer. They read from the same table but different views, filters, and permission logic. This creates confusion about which endpoint is authoritative and may return inconsistent results depending on which one is called.
+      <div class="fix">Fix: Delete one of the two endpoints. Keep <code>/api/users/audit-log/</code> as it has the role-permission check, and remove the core duplicate.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge MEDIUM">MEDIUM</span>
+      <div><div class="issue-title">ChatbotView hardcodes Flask URL to localhost — fails in any deployed environment</div><div class="issue-loc">frontend/src/services/aiChatbot.js line 1 · VITE_FLASK_CHATBOT_URL</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The Flask chatbot URL defaults to <code>http://localhost:5000</code> when <code>VITE_FLASK_CHATBOT_URL</code> is not set. There is no Vite proxy configured for the Flask endpoint (only <code>/api</code> is proxied to Django). In any deployed or staging environment without the env variable, the chatbot will make cross-origin requests to <code>localhost:5000</code> which will fail. The Flask app has no <code>ALLOWED_HOSTS</code>-equivalent for production domains.
+      <div class="fix">Fix: Add the Flask chatbot to the Vite proxy config under a path like <code>/chatbot-api</code> pointing to the Flask server. Add the production domain to Flask CORS origins.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge MEDIUM">MEDIUM</span>
+      <div><div class="issue-title">Chatbot has no message length cap — very long inputs sent directly to OpenAI</div><div class="issue-loc">chatbot_flask/app.py · /chat endpoint</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      After checking for an empty message, there is no maximum length validation. A user can send a 50,000-character message that gets passed directly to OpenAI, consuming a large number of tokens and potentially triggering a context-length error from the model.
+      <div class="fix">Fix: Add <code>if len(message) > 1000: return jsonify({"error": "Message too long"}), 400</code> after the empty check. Also truncate conversation history tokens before sending.</div>
+    </div>
+  </div>
+
+  <div class="issue">
+    <div class="issue-hd" onclick="toggle(this)">
+      <span class="badge LOW">LOW</span>
+      <div><div class="issue-title">NavigationNodeSerializer exposes both x/y and x_position/y_position — redundant fields</div><div class="issue-loc">backend_django/apps/navigation/serializers.py</div></div>
+      <span class="arrow">▸</span>
+    </div>
+    <div class="issue-body">
+      The serializer adds <code>x_position</code> and <code>y_position</code> as read-only aliases for <code>x</code> and <code>y</code>. This is a forward-compat shim, but it means the API response contains both <code>x: 0.3</code> and <code>x_position: 0.3</code>. The pathfinder's <code>normalizeNode()</code> uses <code>??</code> chains to handle both. This dual-field approach adds confusion — pick one and stick to it.
+      <div class="fix">Recommendation: Standardize on <code>x</code> and <code>y</code> in the model and API. Update the pathfinder to only read <code>x</code> and <code>y</code>. Remove the aliases once the frontend is updated.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-hd db">📋 Consolidated Fix Priority List</div>
+  <table class="priority-table">
+    <thead><tr><th>#</th><th>Issue</th><th>Severity</th><th>File</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>sync.js writes to deleted notification_types table — crashes all offline caching</td><td><span class="sev c">CRITICAL</span></td><td class="file">services/sync.js</td></tr>
+      <tr><td>2</td><td>AdminNavGraph edge creation sends string node_id instead of integer PK</td><td><span class="sev c">CRITICAL</span></td><td class="file">AdminNavGraph.vue:529</td></tr>
+      <tr><td>3</td><td>FeedbackListView publicly readable — anonymous feedback exposed</td><td><span class="sev c">CRITICAL</span></td><td class="file">feedback/views.py</td></tr>
+      <tr><td>4</td><td>syncAllData() is all-or-nothing — one broken endpoint kills offline cache</td><td><span class="sev c">CRITICAL</span></td><td class="file">services/sync.js</td></tr>
+      <tr><td>5</td><td>AdminNavGraph canvas draws no edges — wrong field names for edge lookup</td><td><span class="sev h">HIGH</span></td><td class="file">AdminNavGraph.vue:360</td></tr>
+      <tr><td>6</td><td>AdminNavGraph canvas labels all show undefined — node_id vs map_svg_id</td><td><span class="sev h">HIGH</span></td><td class="file">AdminNavGraph.vue:415</td></tr>
+      <tr><td>7</td><td>AdminFacilities type filter always returns 0 — field doesn't exist in model</td><td><span class="sev h">HIGH</span></td><td class="file">AdminFacilities.vue</td></tr>
+      <tr><td>8</td><td>Dashboard audit log fetch hits wrong URL — 404 on every load</td><td><span class="sev h">HIGH</span></td><td class="file">AdminDashboard.vue:297</td></tr>
+      <tr><td>9</td><td>saveNode() sends wrong field names — node type never saved</td><td><span class="sev m">MEDIUM</span></td><td class="file">AdminNavGraph.vue:272</td></tr>
+      <tr><td>10</td><td>ChatbotView Flask URL defaults to localhost — broken in deployment</td><td><span class="sev m">MEDIUM</span></td><td class="file">aiChatbot.js</td></tr>
+      <tr><td>11</td><td>HomeView duplicates useMapPanZoom composable inline</td><td><span class="sev l">LOW</span></td><td class="file">HomeView.vue</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+<script>
+function toggle(hd) {
+  const body = hd.parentElement.querySelector('.issue-body')
+  const arrow = hd.querySelector('.arrow')
+  const open = body.classList.toggle('open')
+  arrow.style.transform = open ? 'rotate(90deg)' : ''
+}
+</script>

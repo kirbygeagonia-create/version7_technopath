@@ -1,0 +1,281 @@
+
+<h2 class="sr-only">TechnoPath Strategic & UX Analysis — Module Review, Room Logic, and Navigation Design</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-size:14px;line-height:1.65;color:var(--color-text-primary)}
+.wrap{max-width:880px;padding:1.5rem 0}
+.pg-title{font-size:20px;font-weight:500;margin-bottom:3px}
+.pg-sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.5rem}
+.section{margin-bottom:1.8rem}
+.sh{font-size:15px;font-weight:500;padding:7px 12px;border-radius:var(--border-radius-md);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sh.mod{background:#EAF3DE;color:#3B6D11;border-left:3px solid #97C459}
+.sh.ux{background:#E6F1FB;color:#185FA5;border-left:3px solid #85B7EB}
+.sh.room{background:#FAEEDA;color:#854F0B;border-left:3px solid #EF9F27}
+.sh.new{background:#E1F5EE;color:#0F6E56;border-left:3px solid #5DCAA5}
+.sh.nav{background:#EEEDFE;color:#534AB7;border-left:3px solid #AFA9EC}
+.card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:8px;font-size:13px}
+.card h4{font-size:13.5px;font-weight:500;margin-bottom:6px}
+.card p{color:var(--color-text-secondary);line-height:1.6}
+.card .verdict{margin-top:8px;padding:7px 10px;border-radius:var(--border-radius-md);font-size:12.5px;font-weight:500}
+.verdict.keep{background:#E1F5EE;color:#085041}
+.verdict.merge{background:#FAEEDA;color:#633806}
+.verdict.simplify{background:#E6F1FB;color:#0C447C}
+.verdict.add{background:#EAF3DE;color:#27500A}
+.verdict.remove{background:#FCEBEB;color:#791F1F}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:3px 9px;border-radius:20px;font-weight:500}
+.pill.good{background:#E1F5EE;color:#085041}
+.pill.warn{background:#FAEEDA;color:#633806}
+.pill.bad{background:#FCEBEB;color:#791F1F}
+.pill.idea{background:#EEEDFE;color:#3C3489}
+.ux-item{padding:9px 12px;border-radius:var(--border-radius-md);margin-bottom:6px;font-size:12.5px;border:0.5px solid var(--color-border-tertiary)}
+.ux-item .ux-label{font-weight:500;margin-bottom:3px;font-size:13px}
+.ux-item .ux-desc{color:var(--color-text-secondary);line-height:1.55}
+.ux-item.bad{border-left:3px solid #F09595}
+.ux-item.warn{border-left:3px solid #EF9F27}
+.ux-item.ok{border-left:3px solid #5DCAA5}
+.ux-item.idea{border-left:3px solid #AFA9EC}
+.flow-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;margin:8px 0;font-size:12.5px}
+.flow-box code{font-family:var(--font-mono);font-size:11.5px;background:var(--color-background-primary);padding:1px 5px;border-radius:4px;color:var(--color-text-primary)}
+.arrow-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:6px 0;font-size:12px}
+.arrow-row .box{padding:3px 9px;border-radius:var(--border-radius-md);font-size:11.5px;font-weight:500}
+.box.a{background:#EEEDFE;color:#3C3489}
+.box.b{background:#E6F1FB;color:#0C447C}
+.box.c{background:#E1F5EE;color:#085041}
+.box.d{background:#FAEEDA;color:#633806}
+.box.x{background:#FCEBEB;color:#791F1F}
+.divider{height:0.5px;background:var(--color-border-tertiary);margin:1.2rem 0}
+.note{font-size:12px;color:var(--color-text-secondary);margin-top:6px;font-style:italic}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
+th{text-align:left;padding:6px 10px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary)}
+td{padding:7px 10px;border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+</style>
+
+<div class="wrap">
+<p class="pg-title">TechnoPath — Strategic, Module & UX Analysis</p>
+<p class="pg-sub">Module necessity review · Room & facility edit logic · Course filter feature · Full UX audit</p>
+
+<div class="section">
+<div class="sh mod">📦 Module Necessity Review</div>
+
+<div class="card">
+  <h4>Announcement → Notification pipeline</h4>
+  <p>You asked: <em>are they the same thing?</em> — Almost, but not quite. They serve two different audiences. An <strong>Announcement</strong> is an admin-side content object with an editorial workflow (draft → approval → publish). A <strong>Notification</strong> is the read-only mobile-side card users see in their feed. One Announcement creates exactly one Notification when published. The split is actually correct design — but the <em>implementation</em> is more complex than it needs to be for your campus size.</p>
+  <div class="verdict merge">💡 Recommendation: Keep the split model but collapse the admin UI. Instead of two separate sidebar items (Announcements + Pending Approvals), merge them into one "Bulletin Board" screen with tabs: My Posts · Pending · Published · Archived. Super Admin sees all tabs. Program Head sees only "My Posts." This removes confusion without changing the data model.</div>
+</div>
+
+<div class="card">
+  <h4>Approval workflow — is it necessary?</h4>
+  <p>For a small campus with a small admin team, a full 3-step approval pipeline (submit → pending → approve/reject) adds friction. The current setup requires a Program Head to submit, then wait for a Dean or Super Admin to approve before anything goes live. If the campus has fast-moving announcements (class suspensions, schedule changes), this delay is harmful.</p>
+  <div class="two-col" style="margin-top:8px">
+    <div class="verdict keep">✓ Keep approval for campus-wide posts — these affect everyone and warrant a review gate.</div>
+    <div class="verdict simplify">→ Simplify: Give Deans direct-publish for their department. Give Program Heads direct-publish for routine room/class notices. Only campus-wide posts from non-super-admin need approval.</div>
+  </div>
+  <p class="note">The code already supports this logic — it just needs the permission flags adjusted. <code>can_publish_directly</code> for Dean is already true for department scope. Extend it to Program Head for their own department.</p>
+</div>
+
+<div class="card">
+  <h4>Favorites — keep as-is</h4>
+  <p>Storing frequently visited rooms/buildings locally is genuinely useful for a campus guide. A student going to CL3 every MWF will use this. Well implemented with composite IDs. The data stays local (localStorage) which is fine — no privacy concern.</p>
+  <div class="verdict keep">✓ Keep. Small, useful, low maintenance.</div>
+</div>
+
+<div class="card">
+  <h4>Profile view — mostly unnecessary for public users</h4>
+  <p>The Profile view lets a guest user set a display name, email, phone, and language preference — all stored in localStorage. The email and phone fields serve no system purpose (they aren't used anywhere). Changing avatar calls <code>changeAvatar()</code> which does nothing. This is UI scaffolding with no real value for non-admin users.</p>
+  <div class="verdict simplify">→ Simplify: Remove email/phone/avatar from the public profile. Keep only display name (for chatbot greeting) and language preference. For admin users, the admin panel already has profile info.</div>
+</div>
+
+<div class="card">
+  <h4>Chatbot FAQ module — keep but simplify admin UI</h4>
+  <p>The FAQ entries cached in IndexedDB are used as the offline fallback when Flask is unavailable. This is good design — the chatbot degrades gracefully. The admin FAQ editor (under Super Admin only) is also appropriate. However, the chatbot currently has two separate services (Flask with OpenAI, and rule-based in the frontend) creating three separate code paths for answering the same question.</p>
+  <div class="verdict simplify">→ Simplify: One rule-based engine in the frontend is enough for a small campus chatbot. The OpenAI integration adds cost and complexity. Consider removing Flask and using only the FAQ-driven frontend chatbot — it will be faster, offline, and free.</div>
+</div>
+
+<div class="card">
+  <h4>Ratings (core.Rating) — redundant, should be removed</h4>
+  <p>As noted in Panel 1, <code>core.Rating</code> and <code>feedback.Feedback</code> are the same concept stored in two tables. The Ratings model is tied to a <code>FeedbackFlag</code> system that itself is never populated. The app's rating dialog (<em>"Rate this App"</em>) posts to <code>/core/ratings/</code> which stores in the Rating model — separately from all other feedback.</p>
+  <div class="verdict remove">✗ Remove: Migrate the app rating to post to <code>/api/feedback/</code> with <code>category='app'</code>. Delete <code>core.Rating</code>, <code>core.FeedbackFlag</code>, and the related tables.</div>
+</div>
+</div>
+
+<div class="section">
+<div class="sh room">🏛 Room & Facility Edit Logic — Your Exact Question</div>
+
+<div class="card">
+  <h4>What can admins actually edit right now?</h4>
+  <p>Looking at the code, the admin room editor sends a full <code>PUT</code> to <code>/api/rooms/&lt;id&gt;/</code> with all room fields — including <code>name</code>, <code>code</code>, <code>room_number</code>, <code>floor</code>, <code>room_type</code>, and <code>map_svg_id</code>. So currently: admins can rename rooms, change floor, change type — everything. There is no restriction on what can be edited.</p>
+  <div class="flow-box">
+    Current: <code>PUT /rooms/42/ { name: "MST 305", floor: 4, room_type: "classroom" }</code> — all fields writable by any authorized admin
+  </div>
+</div>
+
+<div class="card">
+  <h4>Your instinct is correct — and here is the right model</h4>
+  <p>Since your campus is small and rooms are shared across courses, the room name (e.g. "MST 305") is a permanent physical label — it refers to the actual room location in the building. It should never be renamed by an admin. What changes is <em>what label the map shows</em> for that room in a given context. This distinction is the key insight.</p>
+
+  <div class="flow-box" style="margin-top:8px">
+    <strong>Proposed separation:</strong><br><br>
+    <div class="arrow-row">
+      <div class="box a">Room (permanent)</div>
+      <span>→</span>
+      <span style="font-size:11.5px;color:var(--color-text-secondary)">name, floor, building — never changes</span>
+    </div>
+    <div class="arrow-row">
+      <div class="box b">RoomLabel (editable)</div>
+      <span>→</span>
+      <span style="font-size:11.5px;color:var(--color-text-secondary)">what course/use is assigned to this room right now</span>
+    </div>
+    <div class="arrow-row">
+      <div class="box c">CourseFilter (new)</div>
+      <span>→</span>
+      <span style="font-size:11.5px;color:var(--color-text-secondary)">what the student picks to see their course's rooms highlighted</span>
+    </div>
+  </div>
+  <div class="verdict add">✓ What admin should be able to edit: Room floor (if physically relocated), room_type (classroom → lab), and which course it is assigned to. The room name itself should be read-only after creation.</div>
+</div>
+
+<div class="card">
+  <h4>The "MST 305 moved to another floor" scenario</h4>
+  <p>Your example is perfect. If Room MST 305 is physically relocated from floor 3 to floor 4, the admin should update <code>floor = 4</code> and the corresponding <code>NavigationNode.y</code> position on the map. The room name stays "MST 305." The map marker moves. This is clean and already supported by the data model — you just need to restrict the UI to prevent name edits.</p>
+  <div class="verdict simplify">→ In AdminRooms.vue: Make the <code>name</code> field read-only in the edit form. Show it as a label, not an input. Only allow editing: floor, room_type, description, map_svg_id (position), and course assignment.</div>
+</div>
+</div>
+
+<div class="section">
+<div class="sh new">🎓 Course Filter Feature — Your New Idea</div>
+
+<div class="card">
+  <h4>Is this feasible and is it worth building?</h4>
+  <p>Yes — and it is actually the most valuable feature improvement you could make given your shared-building campus. Here is how it works end-to-end:</p>
+
+  <div class="flow-box">
+    <strong>Data model needed (minimal additions):</strong><br><br>
+    <div class="arrow-row"><div class="box a">Course</div><span style="font-size:11px">name, code, department_id, color_hex</span></div>
+    <div class="arrow-row"><div class="box b">RoomCourseAssignment</div><span style="font-size:11px">room_id · course_id · schedule_label (e.g. "MWF 7-9AM") · semester</span></div>
+  </div>
+
+  <div class="flow-box" style="margin-top:6px">
+    <strong>User flow on the map:</strong><br><br>
+    <div class="arrow-row">
+      <div class="box c">Open app</div><span>→</span>
+      <div class="box c">See default map (all buildings labeled)</div><span>→</span>
+    </div>
+    <div class="arrow-row">
+      <div class="box b">Tap "My Course" in nav</div><span>→</span>
+      <div class="box b">Pick: BSIT · BSCS · Criminology · etc.</div><span>→</span>
+    </div>
+    <div class="arrow-row">
+      <div class="box a">Map highlights rooms assigned to that course</div><span>→</span>
+      <div class="box a">Other rooms dimmed/gray</div>
+    </div>
+  </div>
+
+  <div class="verdict add">✓ Build this. It directly solves the shared-building confusion problem. Students from BSIT see their labs highlighted in orange. Criminology students see their rooms highlighted in blue. Implementation is a filter on the existing map markers — no major architecture changes needed.</div>
+  <p class="note">Admin side: Super Admin or Department Head assigns rooms to courses. This replaces the confusing "type: academic/admin/facility" filter that doesn't work anyway.</p>
+</div>
+
+<div class="card">
+  <h4>How the map filter would work in code (simple version)</h4>
+  <div class="flow-box">
+    1. Add <code>course_id</code> FK to <code>Room</code> model (nullable, multiple via junction table)<br>
+    2. <code>GET /api/courses/</code> returns list of courses<br>
+    3. Frontend stores selected course in localStorage as <code>tp_selected_course</code><br>
+    4. <code>filteredMarkers</code> computed property: if course selected → show only rooms belonging to that course + all facilities. If no course → show all (current behavior)<br>
+    5. Map marker color changes based on course color_hex
+  </div>
+  <p class="note">The existing <code>activeFilter</code> and <code>visibleMarkers</code> computed in MapView.vue already does this pattern — you just extend it with a course dimension.</p>
+</div>
+</div>
+
+<div class="section">
+<div class="sh ux">🎨 Full UX Audit</div>
+
+<div class="ux-item bad">
+  <div class="ux-label">❌ Mobile bottom nav — 5 items + 1 floating = 6 destinations, too crowded</div>
+  <div class="ux-desc">The bottom nav has: Home, Navigate, Chatbot, Feedback, Settings — plus a hardcoded Notifications link appended as a 6th item. That is 6 tap targets in a bar designed for 4–5. On a 360px phone, each item gets ~60px which is below the 44px minimum comfortable tap target when labels are included. The Notifications icon is duplicated — it also appears as an action button inside HomeView. <strong>Fix:</strong> Remove the standalone Notifications from the bottom nav. Move it into HomeView's top-right area (a bell icon with badge). Bottom nav should be: Home · Navigate · Chatbot · Feedback · Settings — exactly 5.</div>
+</div>
+
+<div class="ux-item bad">
+  <div class="ux-label">❌ HomeView — two overlapping search bars (mobile + desktop both rendered)</div>
+  <div class="ux-desc">HomeView has a <code>.desktop-search</code> bar inside the map wrapper AND a <code>.search-container</code> inside <code>.bottom-controls.mobile-only</code>. Both bind to the same <code>searchText</code> ref. On desktop, the mobile bar is hidden via CSS. But both bars fire the same event handlers, meaning search suggestions can appear from either input — causing z-index conflicts and duplicate DOM nodes. <strong>Fix:</strong> Use a single <code>SearchBar</code> component (already exists at <code>components/SearchBar.vue</code>) with conditional placement.</div>
+</div>
+
+<div class="ux-item bad">
+  <div class="ux-label">❌ NavigateView — dropdown selects for locations, not searchable on mobile</div>
+  <div class="ux-desc">When the campus eventually has 50+ rooms, scrolling a <code>&lt;select&gt;</code> dropdown on mobile becomes unusable. iOS native selects open a modal wheel-picker which is particularly bad for long lists. The existing <code>SearchBar.vue</code> component exists but is not used here. <strong>Fix:</strong> Replace both selects with an autocomplete text input that filters the locations list as the user types.</div>
+</div>
+
+<div class="ux-item warn">
+  <div class="ux-label">⚠ Facility/Room dropdown on HomeView top bar — purpose is unclear to new users</div>
+  <div class="ux-desc">Two dropdowns sit at the top of the home screen: "Select Facility" and "Select Room." Selecting them filters map markers — but there is no label, no instruction, and no visual feedback on the map when a filter is active. A new user has no idea what these controls do. The "Select Facility" dropdown also expands downward overlapping the map canvas. <strong>Fix:</strong> Replace with a pill-style filter bar with icons and a visible "Active filter: MST Building" chip when selected. Add a clear (×) button.</div>
+</div>
+
+<div class="ux-item warn">
+  <div class="ux-label">⚠ HomeView "star" rating button in mobile action row — poorly placed and surprising</div>
+  <div class="ux-desc">The action buttons row in HomeView (bottom-right) has: location pin · star · notifications · chatbot. The star opens an "Rate this App" dialog mid-session. Users tap it expecting a favorites or bookmark action (star = save in most apps). This causes confusion. The rating dialog also posts to <code>/core/ratings/</code> which is a dead endpoint (table is redundant). <strong>Fix:</strong> Move app rating to Settings. Replace the star button with a "Favorites" bookmark icon that goes to <code>/favorites</code>.</div>
+</div>
+
+<div class="ux-item warn">
+  <div class="ux-label">⚠ Notification badge shown on both "Feedback" nav item and "Notifications" nav item simultaneously</div>
+  <div class="ux-desc">In App.vue, <code>unreadCount</code> is fetched from <code>/api/notifications/unread-count/</code> and displayed as a badge on both the <code>/feedback</code> nav item AND the separate <code>/notifications</code> nav link. Feedback and Notifications are different things — the badge should only appear on Notifications. <strong>Fix:</strong> Apply the badge only to the Notifications link. Use a separate <code>newFeedback</code> count (from <code>/api/feedback/?unreviewed=true</code>) if a Feedback badge is needed.</div>
+</div>
+
+<div class="ux-item warn">
+  <div class="ux-label">⚠ MapView and NavigateView have separate pan/zoom implementations — different feel</div>
+  <div class="ux-desc">Despite both using <code>useMapPanZoom</code>, MapView.vue overrides <code>onTouchStart</code> and <code>onTouchMove</code> locally (the bug from Panel 1). NavigateView also overrides them. This means the pinch-to-zoom feel may be inconsistent between the two map screens. <strong>Fix:</strong> Use the composable exclusively — remove all local overrides.</div>
+</div>
+
+<div class="ux-item ok">
+  <div class="ux-label">✓ Slide-up bottom sheet for marker detail — correct mobile pattern</div>
+  <div class="ux-desc">MapView uses a <code>&lt;transition name="slide-up"&gt;</code> bottom sheet for the selected marker detail. This is the right UX pattern for mobile — matches Google Maps behavior. The handle bar, close button, and action buttons are all in good positions.</div>
+</div>
+
+<div class="ux-item ok">
+  <div class="ux-label">✓ Dark mode — properly token-based via CSS custom properties</div>
+  <div class="ux-desc">The design system uses <code>--color-bg</code>, <code>--color-text-primary</code> etc. throughout. Dark mode toggle works via <code>themeStore</code> and body class switching. No hardcoded hex colors in CSS (except a few legacy spots in HomeView inline styles).</div>
+</div>
+
+<div class="ux-item ok">
+  <div class="ux-label">✓ Offline banner — correct placement and messaging</div>
+  <div class="ux-desc">"You are offline — map and navigation still work using saved data" is an excellent offline message. Specific, reassuring, not alarming.</div>
+</div>
+
+<div class="ux-item idea">
+  <div class="ux-label">💡 Missing: Map has no "You are here" or current building context indicator</div>
+  <div class="ux-desc">When a user opens the map, there is no indication of where they currently are on campus. The "Set Location" dialog exists but is buried (manual text entry). On a small campus, a simple "I am at: [Main Gate / MST Building / etc.]" selector chip at the top of the map would massively improve the Navigate flow — the "From" field in NavigateView could auto-fill from this.</div>
+</div>
+
+<div class="ux-item idea">
+  <div class="ux-label">💡 Missing: Turn-by-turn directions should highlight the current step, not list all at once</div>
+  <div class="ux-desc">NavigateView shows all steps in a scrollable list. For a campus walk, showing only the active step (Step 2 of 4) with a "Next" button matches how people actually navigate. The current list is fine for preview but the active navigation mode should be step-by-step.</div>
+</div>
+
+<div class="ux-item idea">
+  <div class="ux-label">💡 Missing: No loading skeletons — map markers and dropdowns just "pop in"</div>
+  <div class="ux-desc">When data loads, markers and dropdown items appear instantly without transition. On a slow connection the screen looks empty for 1–2 seconds then fills suddenly. Adding skeleton placeholders (grey shimmer boxes where markers will appear) would make the app feel faster and more polished.</div>
+</div>
+</div>
+
+<div class="section">
+<div class="sh nav">📋 Summary — Priority Actions</div>
+<table>
+  <thead><tr><th>#</th><th>Action</th><th>Effort</th><th>Impact</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Build Course Filter for map — highlight rooms by course</td><td>Medium</td><td>🔥 Very High</td></tr>
+    <tr><td>2</td><td>Make Room name read-only in edit form; only floor/type/assignment editable</td><td>Low</td><td>High</td></tr>
+    <tr><td>3</td><td>Merge Announcements + Pending Approvals into one "Bulletin Board" admin screen</td><td>Low</td><td>High</td></tr>
+    <tr><td>4</td><td>Fix bottom nav — remove 6th Notifications item, replace HomeView star with Favorites</td><td>Low</td><td>High</td></tr>
+    <tr><td>5</td><td>Replace NavigateView selects with searchable autocomplete inputs</td><td>Low</td><td>High</td></tr>
+    <tr><td>6</td><td>Replace HomeView dual dropdowns with pill filter chips</td><td>Medium</td><td>Medium</td></tr>
+    <tr><td>7</td><td>Remove core.Rating / FeedbackFlag — merge into Feedback model</td><td>Medium</td><td>Medium</td></tr>
+    <tr><td>8</td><td>Simplify ProfileView — remove email/phone/avatar (no backend support)</td><td>Low</td><td>Medium</td></tr>
+    <tr><td>9</td><td>Add "current location" context chip to HomeView for Navigate auto-fill</td><td>Medium</td><td>Medium</td></tr>
+    <tr><td>10</td><td>Consider removing Flask/OpenAI chatbot — use FAQ-only offline chatbot</td><td>Medium</td><td>Low-Medium</td></tr>
+  </tbody>
+</table>
+</div>
+
+</div>
