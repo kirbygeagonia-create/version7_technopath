@@ -1313,3 +1313,51 @@
     font-size: 13px;
   }
 }
+
+/* ── Course Filter Row ─────────────────────────────────────────── */
+.course-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 6px;
+  border-top: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-primary);
+}
+
+.course-filter-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.course-chips-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 1px;
+}
+.course-chips-scroll::-webkit-scrollbar { display: none; }
+
+.course-chip {
+  flex-shrink: 0;
+  padding: 3px 11px;
+  border-radius: 20px;
+  border: 1.5px solid var(--color-border-secondary);
+  background: transparent;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.course-chip.active {
+  font-weight: 600;
+}
+.course-chip:hover { opacity: 0.8; }

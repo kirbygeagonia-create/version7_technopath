@@ -122,8 +122,8 @@
         >
           <span class="material-icons">{{ item.icon }}</span>
           <span class="app-nav-label">{{ item.label }}</span>
-          <!-- Notification badge for feedback -->
-          <span v-if="item.path === '/feedback' && unreadCount > 0" class="nav-badge">
+          <!-- Badge only on /notifications — feedback ≠ notifications -->
+          <span v-if="item.path === '/notifications' && unreadCount > 0" class="nav-badge">
             {{ unreadCount > 9 ? '9+' : unreadCount }}
           </span>
         </router-link>

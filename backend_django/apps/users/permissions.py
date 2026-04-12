@@ -58,10 +58,6 @@ class CanManageRoom(BasePermission):
             return True
         if request.user.role == 'super_admin':
             return True
-        # Check room's facility department matches user's department
-        # AdminUser.department is a choice string (e.g. 'college_ict')
-        # Facility.department is a FK to core.Department (with .code e.g. 'ICT')
-        # We compare the Department FK id via user's department string
         user_dept = request.user.department
         if not user_dept:
             return False
@@ -70,10 +66,11 @@ class CanManageRoom(BasePermission):
         facility_dept = obj.facility.department
         if not facility_dept:
             return False
-        # Match by checking if department name/code is contained in user's department choice
-        # e.g. user.department='college_ict' should match Department whose code contains 'ict'
-        dept_code_lower = (facility_dept.code or '').lower()
-        return dept_code_lower and dept_code_lower in user_dept.lower()
+        # Exact case-insensitive match.
+        # AdminUser.department stores the raw code string set at account creation
+        # (e.g. 'college_ict'). Department.code stores the same value.
+        # A substring check was fragile ('it' matching 'college_ict' unintentionally).
+        return (facility_dept.code or '').lower() == user_dept.lower()
 
 
 class CanApproveAnnouncements(BasePermission):

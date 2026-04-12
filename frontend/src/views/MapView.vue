@@ -37,12 +37,13 @@
           v-for="marker in visibleMarkers" 
           :key="marker.id"
           class="mapview-marker"
-          :class="{ 
+          :class="{
             'mapview-marker-selected': selectedMarker?.id === marker.id,
             'mapview-marker-facility': marker.marker_type === 'facility',
-            'mapview-marker-room': marker.marker_type === 'room'
+            'mapview-marker-room': marker.marker_type === 'room',
+            'mapview-marker-dimmed': isCourseFiltered(marker)
           }"
-          :style="getMarkerPosition(marker)"
+          :style="getMarkerStyle(marker)"
           @click.stop="selectMarker(marker)"
         >
           <div class="mapview-marker-pin">
@@ -65,7 +66,7 @@
       </button>
     </div>
 
-    <!-- Filter chips -->
+    <!-- Type filter chips -->
     <div class="mapview-filters">
       <button 
         v-for="ft in filterTypes" :key="ft.value"
@@ -76,6 +77,27 @@
         <span class="material-icons">{{ ft.icon }}</span>
         {{ ft.label }}
       </button>
+    </div>
+
+    <!-- Course Filter chips — highlight rooms belonging to a specific program -->
+    <div v-if="courses.length > 0" class="mapview-course-filters">
+      <span class="mapview-course-label">
+        <span class="material-icons" style="font-size:14px;vertical-align:middle">school</span>
+        My Course:
+      </span>
+      <button
+        class="mapview-course-chip"
+        :class="{ active: !activeCourse }"
+        @click="activeCourse = ''"
+      >All</button>
+      <button
+        v-for="course in courses"
+        :key="course.course_code"
+        class="mapview-course-chip"
+        :class="{ active: activeCourse === course.course_code }"
+        :style="activeCourse === course.course_code ? { background: course.course_color, color: '#fff', borderColor: course.course_color } : { borderColor: course.course_color, color: course.course_color }"
+        @click="activeCourse = activeCourse === course.course_code ? '' : course.course_code"
+      >{{ course.course_code }}</button>
     </div>
 
     <!-- Legend -->
@@ -154,12 +176,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import useMapPanZoom from '../composables/useMapPanZoom.js'
 import { useRouter } from 'vue-router'
 import offlineData from '../services/offlineData.js'
 import { isOnline } from '../services/sync.js'
 import { showToast } from '../services/toast.js'
+import api from '../services/api.js'
 
 const router = useRouter()
 
@@ -173,10 +196,19 @@ const {
   zoomIn, zoomOut, onPointerDown, onPointerMove, onPointerUp, onWheel,
   onTouchStart, onTouchMove, initTransform
 } = useMapPanZoom()
+
+// panStart: declared here to prevent ReferenceError if any residual touch handler references it.
+// The actual touch pan/zoom is fully handled by the useMapPanZoom composable above.
+const panStart = ref({ x: 0, y: 0 })
+
 const showLabels = ref(true)
 const showLegend = ref(false)  // Default collapsed for cleaner UI
 const activeFilter = ref('all')
 const mapLoaded = ref(false)
+
+// Course filter — stores courses from /api/rooms/courses/
+const courses = ref([])
+const activeCourse = ref('')  // '' = show all; 'BSIT' = highlight BSIT rooms only
 
 // Data
 const facilities = ref([])
@@ -227,6 +259,26 @@ function getMarkerPosition(marker) {
     left: `${(marker.x_position || 0.5) * 100}%`,
     top: `${(marker.y_position || 0.5) * 100}%`,
   }
+}
+
+function getMarkerStyle(marker) {
+  const base = getMarkerPosition(marker)
+  // If a course is active and this is a room marker belonging to that course,
+  // apply the course highlight color
+  if (activeCourse.value && marker.marker_type === 'room') {
+    const matchedCourse = courses.value.find(c => c.course_code === activeCourse.value)
+    if (matchedCourse && marker.course_code === activeCourse.value) {
+      return { ...base, '--marker-color': matchedCourse.course_color }
+    }
+  }
+  return base
+}
+
+function isCourseFiltered(marker) {
+  // Dimmed when a course is selected and this marker is NOT in that course
+  if (!activeCourse.value) return false
+  if (marker.marker_type === 'facility') return false  // Never dim buildings
+  return marker.course_code !== activeCourse.value
 }
 
 function getMarkerIcon(marker) {
@@ -301,9 +353,24 @@ async function loadData() {
       offlineData.getFacilities(),
       offlineData.getMapMarkers()
     ])
-    
+
     facilities.value = facilitiesRes.data
     mapMarkers.value = markerRes.data
+
+    // Load course list for the filter chips (non-critical — silently skip if offline)
+    if (isOnline()) {
+      try {
+        const coursesRes = await api.get('/rooms/courses/')
+        courses.value = coursesRes.data
+        // Restore previously selected course from localStorage
+        const saved = localStorage.getItem('tp_selected_course')
+        if (saved && courses.value.find(c => c.course_code === saved)) {
+          activeCourse.value = saved
+        }
+      } catch {
+        courses.value = []
+      }
+    }
     
     // Track offline status
     isOffline.value = !isOnline() || facilitiesRes.source === 'cache'
@@ -356,6 +423,15 @@ function addFavorite() {
 
 // Pan & Zoom handled entirely by useMapPanZoom composable
 // Touch events (onTouchStart, onTouchMove) come from the composable
+
+// Persist course selection across navigation
+watch(activeCourse, (val) => {
+  if (val) {
+    localStorage.setItem('tp_selected_course', val)
+  } else {
+    localStorage.removeItem('tp_selected_course')
+  }
+})
 
 onMounted(async () => {
   await loadData()

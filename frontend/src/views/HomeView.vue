@@ -65,6 +65,31 @@
           {{ facility.name }}
         </button>
       </div>
+
+      <!-- Course Filter Row — highlight rooms by academic program -->
+      <div v-if="courses.length > 0" class="course-filter-row">
+        <span class="course-filter-label">
+          <span class="material-icons" style="font-size:13px;vertical-align:middle">school</span>
+          My Course:
+        </span>
+        <div class="course-chips-scroll">
+          <button
+            class="course-chip"
+            :class="{ active: !activeCourse }"
+            @click="setCourse('')"
+          >All</button>
+          <button
+            v-for="course in courses"
+            :key="course.course_code"
+            class="course-chip"
+            :class="{ active: activeCourse === course.course_code }"
+            :style="activeCourse === course.course_code
+              ? { background: course.course_color, color: '#fff', borderColor: course.course_color }
+              : { borderColor: course.course_color, color: course.course_color }"
+            @click="setCourse(course.course_code)"
+          >{{ course.course_code }}</button>
+        </div>
+      </div>
     </div>
 
     <!-- Map container with markers -->
@@ -100,7 +125,7 @@
             v-for="marker in filteredMarkers"
             :key="marker.id"
             class="map-marker"
-            :style="getMarkerStyle(marker)"
+            :style="[getMarkerStyle(marker), markerCourseStyle(marker)]"
             @click.stop="showMarkerInfo(marker)"
           >
             <div class="marker-icon">
@@ -313,6 +338,9 @@ const rooms = ref([])
 const mapMarkers = ref([])
 const selectedFacility = ref('')
 const selectedRoom = ref('')
+// Course filter — populated from /api/rooms/courses/
+const courses = ref([])
+const activeCourse = ref(localStorage.getItem('tp_selected_course') || '')
 const isFacilitiesExpanded = ref(false)
 const isRoomsExpanded = ref(false)
 const searchText = ref('')
@@ -348,19 +376,42 @@ const {
 
 // Filtered markers based on selection
 const filteredMarkers = computed(() => {
-  if (!selectedFacility.value && !selectedRoom.value) {
-    return mapMarkers.value
+  let base = mapMarkers.value
+
+  // Facility/room type filter
+  if (selectedFacility.value || selectedRoom.value) {
+    base = base.filter(marker => {
+      if (selectedFacility.value && marker.marker_type === 'facility') {
+        return marker.name === selectedFacility.value
+      }
+      if (selectedRoom.value && marker.marker_type === 'room') {
+        return marker.name === selectedRoom.value
+      }
+      return false
+    })
   }
-  return mapMarkers.value.filter(marker => {
-    if (selectedFacility.value && marker.marker_type === 'facility') {
-      return marker.name === selectedFacility.value
-    }
-    if (selectedRoom.value && marker.marker_type === 'room') {
-      return marker.name === selectedRoom.value
-    }
-    return false
-  })
+
+  return base
 })
+
+// Separate from filter — dim markers that don't belong to selected course
+function markerCourseStyle(marker) {
+  if (!activeCourse.value) return {}
+  if (marker.marker_type === 'facility') return {}
+  const matched = marker.course_code === activeCourse.value
+  if (!matched) return { opacity: '0.15', filter: 'grayscale(1)', pointerEvents: 'none' }
+  const course = courses.value.find(c => c.course_code === activeCourse.value)
+  return course ? { '--marker-color': course.course_color } : {}
+}
+
+function setCourse(code) {
+  activeCourse.value = activeCourse.value === code ? '' : code
+  if (activeCourse.value) {
+    localStorage.setItem('tp_selected_course', activeCourse.value)
+  } else {
+    localStorage.removeItem('tp_selected_course')
+  }
+}
 
 // Methods
 const loadData = async () => {
@@ -384,6 +435,16 @@ const loadData = async () => {
       console.log('[HomeView] Using cached data - will sync when connection is available')
     }
     
+    // Load course list for filter chips
+    if (isOnline()) {
+      try {
+        const coursesRes = await api.get('/rooms/courses/')
+        courses.value = coursesRes.data
+      } catch {
+        courses.value = []
+      }
+    }
+
     // Try to load search history from API if online
     if (isOnline()) {
       try {

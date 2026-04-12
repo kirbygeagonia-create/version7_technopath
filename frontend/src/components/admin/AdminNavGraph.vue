@@ -271,13 +271,26 @@ function normalizeCoordinates(node) {
 
 async function saveNode() {
   try {
-    // Normalize coordinates before saving
     const normalizedNode = normalizeCoordinates(nodeForm.value)
-    
+
+    // Explicit payload — only the fields the backend serializer accepts.
+    // Spreading the whole nodeForm would include client-only fields and
+    // potentially overwrite read-only fields on the backend.
+    const payload = {
+      name:       normalizedNode.name,
+      node_type:  normalizedNode.node_type,
+      map_svg_id: normalizedNode.map_svg_id,
+      x:          normalizedNode.x,
+      y:          normalizedNode.y,
+      floor:      normalizedNode.floor,
+      facility:   normalizedNode.facility ?? null,
+      room:       normalizedNode.room ?? null,
+    }
+
     if (showEditNodeModal.value) {
-      await api.put(`/navigation/nodes/${normalizedNode.id}/`, normalizedNode)
+      await api.put(`/navigation/nodes/${normalizedNode.id}/`, payload)
     } else {
-      await api.post('/navigation/nodes/', normalizedNode)
+      await api.post('/navigation/nodes/', payload)
     }
     closeModal()
     loadData()
