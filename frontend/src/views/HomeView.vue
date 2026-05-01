@@ -916,13 +916,9 @@ const useFallbackData = () => {
 
 
 const getMarkerStyle = (marker) => ({
-
-  left: `${marker.x_position * 100}%`,
-
-  top: `${marker.y_position * 100}%`,
-
+  left: `${((marker.x_position ?? 0.5) * 100).toFixed(2)}%`,
+  top: `${((marker.y_position ?? 0.5) * 100).toFixed(2)}%`,
   color: marker.marker_type === 'facility' ? '#FF9800' : '#4CAF50'
-
 })
 
 

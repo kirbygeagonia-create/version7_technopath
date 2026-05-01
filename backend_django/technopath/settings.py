@@ -105,14 +105,17 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://127.0.0.1:5173',
-    'http://localhost:4173',
-    'http://localhost:4174',
-    'http://localhost:4175',
-    'http://localhost:4176',
-    'http://localhost:4177',
+    o for o in [
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'http://127.0.0.1:5173',
+        'http://localhost:4173',
+        'http://localhost:4174',
+        'http://localhost:4175',
+        'http://localhost:4176',
+        'http://localhost:4177',
+        config('CORS_EXTRA_ORIGIN', default=''),
+    ] if o
 ]
 CORS_ALLOW_CREDENTIALS = True
 

@@ -38,14 +38,8 @@ app = Flask(__name__)
 # )
 
 # Restrict CORS to known origins for security
-CORS(app, origins=[
-    "http://localhost:5173",  # Vite dev server
-    "http://localhost:4173",  # Vite preview
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:4173",
-    # Production domains - add your deployed URLs here
-    # "https://yourdomain.com",
-], supports_credentials=True)
+ALLOWED_ORIGINS = [o.strip() for o in os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173').split(',') if o.strip()]
+CORS(app, origins=ALLOWED_ORIGINS, supports_credentials=True)
 DB_PATH = Path(__file__).parent / "chatbot.db"
 
 
