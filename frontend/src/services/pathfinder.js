@@ -77,18 +77,17 @@ function normalizeEdge(edge) {
 }
 
 /**
- * Normalize node fields for backward compatibility
- * Handles both x/y and x_position/y_position field names
+ * Normalize node fields
  */
 function normalizeNode(node) {
   return {
     id: node.id,
     name: node.name,
-    x_position: node.x_position ?? node.x ?? 0.5,
-    y_position: node.y_position ?? node.y ?? 0.5,
+    x: node.x ?? 0.5,
+    y: node.y ?? 0.5,
     floor: node.floor ?? 1,
     map_svg_id: node.map_svg_id,
-    node_type: node.node_type,
+    node_type: node.type || node.node_type,
     is_deleted: node.is_deleted ?? false
   }
 }
@@ -211,8 +210,8 @@ export async function findPath(startName, endName) {
       return {
         id: node.id,
         name: node.name,
-        x: node.x_position ?? node.x,
-        y: node.y_position ?? node.y,
+        x: node.x ?? 0.5,
+        y: node.y ?? 0.5,
         floor: node.floor
       }
     })

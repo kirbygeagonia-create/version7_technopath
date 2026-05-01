@@ -92,13 +92,6 @@
 
       </div>
 
-<<<<<<< HEAD
-
-
-    </div>
-
-
-
     <!-- SEAIT Information Section -->
 
     <div class="seait-info-section">
@@ -194,8 +187,7 @@
             @touchmove="handleTouchPan"
 
             @touchend="endPan"
-
-=======
+          >
       <!-- Scrollable Filter Chips -->
       <div class="filter-chips-container">
         <button 
@@ -277,44 +269,13 @@
             class="map-marker"
             :style="[getMarkerStyle(marker), markerCourseStyle(marker)]"
             @click.stop="showMarkerInfo(marker)"
->>>>>>> 2120b5cc5792784b71f56272822728812e4d775e
           >
-
-            <div 
-
-              class="map-content"
-
-              :style="mapTransformStyle"
-
-            >
-
-              <div class="campus-map-wrapper">
-
-                <img
-
-                  src="../assets/Map_labeled.svg"
-
-                  class="campus-map-image"
-
-                  alt="Campus Map"
-
-                  draggable="false"
-
-                />
-
-              </div>
-
-            </div>
-
           </div>
-
         </div>
-
       </div>
-
-
-
-      <!-- Campus Image Gallery -->
+    </div>
+  </div>
+  <!-- Campus Image Gallery -->
 
       <div class="seait-gallery">
 
@@ -648,13 +609,9 @@ const rooms = ref([])
 const selectedFacility = ref('')
 
 const selectedRoom = ref('')
-<<<<<<< HEAD
-
-=======
 // Course filter — populated from /api/rooms/courses/
 const courses = ref([])
 const activeCourse = ref(localStorage.getItem('tp_selected_course') || '')
->>>>>>> 2120b5cc5792784b71f56272822728812e4d775e
 const isFacilitiesExpanded = ref(false)
 
 const isRoomsExpanded = ref(false)
@@ -719,41 +676,6 @@ const {
 
 } = useMapPanZoom()
 
-<<<<<<< HEAD
-
-
-// Filtered markers - DISABLED (markers removed from map view)
-
-// const filteredMarkers = computed(() => {
-
-//   if (!selectedFacility.value && !selectedRoom.value) {
-
-//     return mapMarkers.value
-
-//   }
-
-//   return mapMarkers.value.filter(marker => {
-
-//     if (selectedFacility.value && marker.marker_type === 'facility') {
-
-//       return marker.name === selectedFacility.value
-
-//     }
-
-//     if (selectedRoom.value && marker.marker_type === 'room') {
-
-//       return marker.name === selectedRoom.value
-
-//     }
-
-//     return true
-
-//   })
-
-// })
-
-
-=======
 // Filtered markers based on selection
 const filteredMarkers = computed(() => {
   let base = mapMarkers.value
@@ -773,7 +695,6 @@ const filteredMarkers = computed(() => {
 
   return base
 })
->>>>>>> 2120b5cc5792784b71f56272822728812e4d775e
 
 // Separate from filter — dim markers that don't belong to selected course
 function markerCourseStyle(marker) {
@@ -836,9 +757,6 @@ const loadData = async () => {
 
     }
 
-    
-<<<<<<< HEAD
-=======
     // Load course list for filter chips
     if (isOnline()) {
       try {
@@ -848,7 +766,6 @@ const loadData = async () => {
         courses.value = []
       }
     }
->>>>>>> 2120b5cc5792784b71f56272822728812e4d775e
 
     // Try to load search history from API if online
 

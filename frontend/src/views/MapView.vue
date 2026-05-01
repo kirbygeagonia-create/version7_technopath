@@ -23,9 +23,6 @@
           @load="onMapLoad"
         />
 
-<<<<<<< HEAD
-        <!-- Markers overlay - REMOVED per user request -->
-=======
         <!-- Markers overlay -->
         <div 
           v-for="marker in visibleMarkers" 
@@ -47,7 +44,6 @@
           </div>
           <span v-if="showLabels" class="mapview-marker-label">{{ marker.name }}</span>
         </div>
->>>>>>> 2120b5cc5792784b71f56272822728812e4d775e
       </div>
     </div>
 

@@ -225,18 +225,28 @@ class AuditLogView(APIView):
             qs = qs.filter(entity_type=request.query_params['entity_type'])
         if request.query_params.get('action'):
             qs = qs.filter(action=request.query_params['action'])
-        qs = qs[:300]
-        return Response([{
-            'id':           l.id,
-            'admin':        l.admin.display_name if l.admin else 'Unknown',
-            'department':   l.admin.get_department_label() if l.admin else '',
-            'action':       l.action,
-            'entity_type':  l.entity_type,
-            'entity_id':    l.entity_id,
-            'entity_label': l.entity_label,
-            'ip_address':   l.ip_address,
-            'created_at':   l.created_at,
-        } for l in qs])
+        # Pagination
+        page_size = min(int(request.query_params.get('page_size', 50)), 200)
+        page      = max(int(request.query_params.get('page', 1)), 1)
+        total     = qs.count()
+        qs        = qs[(page - 1) * page_size : page * page_size]
+        return Response({
+            'count':     total,
+            'page':      page,
+            'page_size': page_size,
+            'pages':     (total + page_size - 1) // page_size,
+            'results': [{
+                'id':           l.id,
+                'admin':        l.admin.display_name if l.admin else 'Unknown',
+                'department':   l.admin.get_department_label() if l.admin else '',
+                'action':       l.action,
+                'entity_type':  l.entity_type,
+                'entity_id':    l.entity_id,
+                'entity_label': l.entity_label,
+                'ip_address':   l.ip_address,
+                'created_at':   l.created_at,
+            } for l in qs]
+        })
 
 
 class PublicDirectoryView(APIView):

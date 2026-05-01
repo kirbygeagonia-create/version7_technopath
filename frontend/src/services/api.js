@@ -15,7 +15,7 @@ let refreshSubscribers = []
 
 // Attach JWT token to every request automatically
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('tp_token')
+  const token = sessionStorage.getItem('tp_token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
@@ -48,14 +48,15 @@ api.interceptors.response.use(
     isRefreshing = true
     
     try {
-      const refresh = localStorage.getItem('tp_refresh')
+      const refresh = sessionStorage.getItem('tp_refresh')
       if (!refresh) {
         throw new Error('No refresh token')
       }
       
-      const res = await axios.post('/api/auth/refresh/', { refresh })
+      const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+      const res = await axios.post(`${backendUrl}/auth/refresh/`, { refresh })
       const newToken = res.data.access
-      localStorage.setItem('tp_token', newToken)
+      sessionStorage.setItem('tp_token', newToken)
       
       // Notify subscribers
       refreshSubscribers.forEach((callback) => callback(newToken))
@@ -65,8 +66,8 @@ api.interceptors.response.use(
       return api(original)
     } catch (refreshError) {
       // Clear tokens but don't redirect on public pages
-      localStorage.removeItem('tp_token')
-      localStorage.removeItem('tp_refresh')
+      sessionStorage.removeItem('tp_token')
+      sessionStorage.removeItem('tp_refresh')
       
       // Only redirect to login if on admin page
       if (window.location.pathname.startsWith('/admin')) {

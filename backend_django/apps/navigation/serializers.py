@@ -2,13 +2,10 @@ from rest_framework import serializers
 from .models import NavigationNode, NavigationEdge, Path, PathPoint
 
 class NavigationNodeSerializer(serializers.ModelSerializer):
-    x_position = serializers.FloatField(source='x', read_only=True)
-    y_position = serializers.FloatField(source='y', read_only=True)
-    
     class Meta:
         model = NavigationNode
-        fields = ['id', 'name', 'node_type', 'facility', 'room', 'map_svg_id', 
-                  'x', 'y', 'x_position', 'y_position', 'floor', 'is_deleted', 
+        fields = ['id', 'name', 'node_type', 'facility', 'room', 'map_svg_id',
+                  'x', 'y', 'floor', 'is_deleted',
                   'created_at', 'updated_at']
 
 class NavigationEdgeSerializer(serializers.ModelSerializer):

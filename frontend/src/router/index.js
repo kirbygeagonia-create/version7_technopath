@@ -31,6 +31,16 @@ const routes = [
     component: () => import('../views/AdminView.vue'),
     meta: { requiresAuth: true },
   },
+
+  // 404 catch-all — redirect unknown routes to home
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    beforeEnter: (to, from, next) => {
+      console.warn(`[Router] No route matched: ${to.fullPath} — redirecting to home`)
+      next('/')
+    }
+  },
 ]
 
 const router = createRouter({
@@ -40,7 +50,10 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   // Show splash on first session visit to /
-  if (to.path === '/' && !localStorage.getItem('tp_splash_v1') && from.path !== '/splash') {
+  const isInitialLoad = from.matched.length === 0
+  const hasSeenSplash = sessionStorage.getItem('tp_splash_seen')
+  if (to.path === '/' && isInitialLoad && !hasSeenSplash) {
+    sessionStorage.setItem('tp_splash_seen', '1')
     next('/splash')
     return
   }

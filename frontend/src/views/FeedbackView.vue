@@ -35,12 +35,12 @@
           <div class="feedback-category-chips">
             <button
               v-for="cat in categories"
-              :key="cat"
+              :key="cat.value"
               class="feedback-chip"
-              :class="{ 'feedback-selected': category === cat }"
-              @click="category = cat"
+              :class="{ 'feedback-selected': category === cat.value }"
+              @click="category = cat.value"
             >
-              {{ cat }}
+              {{ cat.label }}
             </button>
           </div>
         </div>
@@ -58,7 +58,7 @@
         </div>
 
         <!-- Location Selector -->
-        <div class="feedback-location-section" v-if="category === 'Map Accuracy' || category === 'Navigation'">
+        <div class="feedback-location-section" v-if="category === 'map_accuracy' || category === 'navigation'">
           <h3 class="feedback-section-label">Related Facility/Room (Optional)</h3>
           <div class="feedback-select-wrapper">
             <select v-model="selectedLocation" class="feedback-input-field">
@@ -109,7 +109,7 @@ const router = useRouter()
 
 // State
 const rating = ref(0)
-const category = ref('General')
+const category = ref('general')
 const comment = ref('')
 const isSubmitting = ref(false)
 const submitted = ref(false)
@@ -118,7 +118,13 @@ const selectedLocation = ref('')
 
 const locations = ['Main Gate', 'MST Building', 'JST Building', 'RST Building', 'Library', 'Registrar Office', 'Cafeteria', 'Gymnasium', 'CL1', 'CL2', 'CL3', 'CL4', 'CL5', 'CL6', 'CR1', 'CR2', 'CR3', 'CR4']
 
-const categories = ['General', 'Map Accuracy', 'Navigation', 'AI Chatbot', 'Bug Report']
+const categories = [
+  { value: 'general', label: 'General' },
+  { value: 'map_accuracy', label: 'Map Accuracy' },
+  { value: 'navigation', label: 'Navigation' },
+  { value: 'ai_chatbot', label: 'AI Chatbot' },
+  { value: 'bug_report', label: 'Bug Report' }
+]
 
 const ratingText = computed(() => {
   const texts = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent']
@@ -130,25 +136,16 @@ const goBack = () => {
   router.replace('/')
 }
 
-// Category mapping from UI display names to backend values
-const categoryMap = {
-  'General': 'general',
-  'Map Accuracy': 'map_accuracy',
-  'Navigation': 'navigation',
-  'AI Chatbot': 'ai_chatbot',
-  'Bug Report': 'bug_report'
-}
-
 const submitFeedback = async () => {
   if (!rating.value) return
 
   isSubmitting.value = true
   error.value = ''
 
-  // API payload - only valid backend fields
+  // API payload - category is already snake_case
   const apiPayload = {
     rating: rating.value,
-    category: categoryMap[category.value] || 'general',
+    category: category.value || 'general',
     comment: comment.value
   }
 

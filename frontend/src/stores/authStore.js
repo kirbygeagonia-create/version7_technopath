@@ -3,9 +3,9 @@ import api from '../services/api.js'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user:         JSON.parse(localStorage.getItem('tp_user')  || 'null'),
-    token:        localStorage.getItem('tp_token')            || null,
-    refreshToken: localStorage.getItem('tp_refresh')          || null,
+    user:         JSON.parse(sessionStorage.getItem('tp_user')  || 'null'),
+    token:        sessionStorage.getItem('tp_token')            || null,
+    refreshToken: sessionStorage.getItem('tp_refresh')          || null,
   }),
 
   getters: {
@@ -48,9 +48,10 @@ export const useAuthStore = defineStore('auth', {
         this.token        = access
         this.refreshToken = refresh
         this.user         = user
-        localStorage.setItem('tp_token',   access)
-        localStorage.setItem('tp_refresh', refresh)
-        localStorage.setItem('tp_user',    JSON.stringify(user))
+        // SECURITY: sessionStorage clears on tab close (reduces XSS exposure window)
+        sessionStorage.setItem('tp_token',   access)
+        sessionStorage.setItem('tp_refresh', refresh)
+        sessionStorage.setItem('tp_user',    JSON.stringify(user))
         return { success: true, user }
       } catch (error) {
         const message = error.response?.data?.detail 
@@ -64,9 +65,9 @@ export const useAuthStore = defineStore('auth', {
     logout(router = null, redirectPath = '/') {
       api.post('/users/logout/').catch(() => {})
       this.token = this.refreshToken = this.user = null
-      localStorage.removeItem('tp_token')
-      localStorage.removeItem('tp_refresh')
-      localStorage.removeItem('tp_user')
+      sessionStorage.removeItem('tp_token')
+      sessionStorage.removeItem('tp_refresh')
+      sessionStorage.removeItem('tp_user')
       
       // Redirect if router provided
       if (router) {
@@ -76,9 +77,9 @@ export const useAuthStore = defineStore('auth', {
     
     clearTokens() {
       this.token = this.refreshToken = this.user = null
-      localStorage.removeItem('tp_token')
-      localStorage.removeItem('tp_refresh')
-      localStorage.removeItem('tp_user')
+      sessionStorage.removeItem('tp_token')
+      sessionStorage.removeItem('tp_refresh')
+      sessionStorage.removeItem('tp_user')
     }
   },
 })

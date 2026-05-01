@@ -156,7 +156,9 @@
 import { ref, computed, onMounted } from 'vue'
 import api from '../../services/api.js'
 import { showToast } from '../../services/toast.js'
+import { useAuthStore } from '../../stores/authStore.js'
 
+const auth = useAuthStore()
 const feedback = ref([])
 const searchQuery = ref('')
 const filterRating = ref('')
@@ -224,9 +226,22 @@ function closeResponseModal() {
   responseText.value = ''
 }
 
+// Check permissions - allow if user can view all OR department-level feedback
+const canViewFeedback = computed(() => auth.canViewAllFeedback || auth.canViewDeptFeedback)
+
 async function loadFeedback() {
+  if (!canViewFeedback.value) {
+    console.warn('[AdminFeedback] User lacks permission to view feedback')
+    feedback.value = []
+    return
+  }
+
   try {
-    const response = await api.get('/feedback/')
+    // Use department filter if user only has dept-level permission
+    const endpoint = auth.canViewAllFeedback
+      ? '/feedback/'
+      : `/feedback/?department=${auth.department}`
+    const response = await api.get(endpoint)
     feedback.value = response.data
   } catch (e) {
     console.error('Failed to load feedback:', e)

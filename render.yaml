@@ -1,0 +1,54 @@
+services:
+  # Django Backend API
+  - type: web
+    name: technopath-backend
+    runtime: python
+    plan: free
+    rootDir: backend_django
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate
+    startCommand: gunicorn technopath.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 60
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        sync: false   # Set manually in Render dashboard
+      - key: DATABASE_URL
+        sync: false   # Set manually in Render dashboard — use PostgreSQL
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+
+  # Flask Chatbot AI Service
+  - type: web
+    name: technopath-chatbot
+    runtime: python
+    plan: free
+    rootDir: chatbot_flask
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 60
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      - key: FLASK_DEBUG
+        value: "false"
+      - key: OPENAI_API_KEY
+        sync: false   # Set manually in Render dashboard — NEVER commit this key
+
+  # Vue 3 Frontend (Vite)
+  - type: web
+    name: technopath-frontend
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: NODE_VERSION
+        value: "18.20.4"
+      - key: VITE_API_BASE_URL
+        value: https://technopath-backend.onrender.com/api
+      - key: VITE_FLASK_CHATBOT_URL
+        value: https://technopath-chatbot.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
