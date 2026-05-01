@@ -7,6 +7,7 @@ import '@fontsource/inter/500.css'
 import '@fontsource/inter/600.css'
 import '@fontsource/inter/700.css'
 import './assets/main.css'
+import './assets/animations.css'
 import 'material-icons/iconfont/material-icons.css'
 import { registerConnectivityListener } from './services/sync.js'
 

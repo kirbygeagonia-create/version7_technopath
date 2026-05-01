@@ -17,6 +17,7 @@
     <div class="splash-spinner-wrap">
       <div class="splash-spinner"></div>
     </div>
+    <VerticalTileWipe :active="isExiting" color="#FF9800" />
   </div>
 </template>
 
@@ -24,8 +25,9 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { syncAllData } from '../services/sync.js'
+import VerticalTileWipe from '../components/VerticalTileWipe.vue'
 
-const router    = ref(useRouter())
+const router    = useRouter()
 const logoFailed = ref(false)
 const isExiting  = ref(false)
 
@@ -52,8 +54,8 @@ onMounted(async () => {
   // Wait for CSS exit animation (450ms fade-out in splash.css)
   setTimeout(() => {
     localStorage.setItem('tp_splash_v1', '1')
-    router.value.replace('/')
-  }, 450)
+    router.replace('/')
+  }, 620)
 })
 </script>
 

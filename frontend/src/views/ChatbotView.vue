@@ -16,18 +16,26 @@
               <span class="material-icons">wifi_off</span> Offline Mode
             </span>
             <span v-else-if="flaskConnected" class="status-ai">
-              <span class="material-icons">psychology</span> AI Powered (GPT)
+              <PulseDot color="#4CAF50" size="8px" label="AI connected" /> AI Powered
             </span>
-            <span v-else class="status-basic">
-              <span class="material-icons">chat</span> Connecting...
+            <span v-else-if="chatbotChecked" class="status-basic">
+              <span class="material-icons">chat</span> Basic Mode
+            </span>
+            <span v-else class="status-connecting">
+              <span class="material-icons">chat</span> Connecting…
             </span>
           </p>
         </div>
       </div>
     </header>
 
+    <!-- FAQ Skeleton -->
+    <div v-if="chatLoading" class="chatbot-faq-sk-wrap">
+      <AppSkeleton :loading="true" name="chatbot-faq" animate="shimmer" />
+    </div>
+
     <!-- FAQ Section -->
-    <div class="chatbot-faq-section" v-if="showFAQ">
+    <div class="chatbot-faq-section" v-else-if="showFAQ">
       <h3 class="chatbot-faq-title">
         <span class="material-icons">help_outline</span>
         Frequently Asked Questions
@@ -68,6 +76,9 @@
           <span></span>
           <span></span>
         </div>
+      </div>
+      <div v-if="isBotTyping" class="chatbot-typing-bubble">
+        <BouncingDots color="#FF9800" />
       </div>
       <div v-if="error" class="chatbot-error">
         <span class="material-icons">error_outline</span>
@@ -115,6 +126,26 @@ import { useRouter } from 'vue-router'
 import aiChatbot from '../services/aiChatbot.js'
 import { isOnline } from '../services/sync.js'
 import { getFAQEntries } from '../services/offlineData.js'
+import { registerBones } from 'boneyard-js'
+import AppSkeleton from '../components/AppSkeleton.vue'
+import BouncingDots from '../components/BouncingDots.vue'
+import PulseDot from '../components/PulseDot.vue'
+
+registerBones({
+  'chatbot-faq': {
+    width: 390, height: 240,
+    bones: [
+      { x: 0, y: 0,   w: 100, h: 52, r: 12 },
+      { x: 0, y: 60,  w: 100, h: 52, r: 12 },
+      { x: 0, y: 120, w: 100, h: 52, r: 12 },
+      { x: 0, y: 180, w: 100, h: 52, r: 12 },
+    ]
+  }
+})
+
+const chatLoading = ref(true)
+const isBotTyping = ref(false)
+const chatbotChecked = ref(false)
 
 const router = useRouter()
 
@@ -141,16 +172,22 @@ const isAIEnabled = computed(() => {
   return status.isAIEnabled
 })
 
-// Check Flask connection on mount
+// Check Flask connection on mount with 5-second timeout
 async function checkFlaskConnection() {
   try {
+    const ctrl = new AbortController()
+    const tid = setTimeout(() => ctrl.abort(), 5000)
     const response = await fetch(`${import.meta.env.VITE_FLASK_CHATBOT_URL || '/chatbot-api'}/health`, {
       method: 'GET',
-      mode: 'cors'
+      mode: 'cors',
+      signal: ctrl.signal
     })
+    clearTimeout(tid)
     flaskConnected.value = response.ok
   } catch {
     flaskConnected.value = false
+  } finally {
+    chatbotChecked.value = true
   }
 }
 
@@ -230,6 +267,7 @@ async function sendMessage() {
   
   userInput.value = ''
   isTyping.value = true
+  isBotTyping.value = true
   showQuickActions.value = false
   scrollToBottom()
 
@@ -238,6 +276,7 @@ async function sendMessage() {
     const result = await aiChatbot.sendMessage(userMessage)
     
     isTyping.value = false
+    isBotTyping.value = false
     
     // Determine source label
     let sourceLabel = ''
@@ -257,6 +296,7 @@ async function sendMessage() {
     })
   } catch (err) {
     isTyping.value = false
+    isBotTyping.value = false
     error.value = 'Sorry, I had trouble processing that. Please try again.'
     console.error('[Chatbot] Error:', err)
     
@@ -277,9 +317,20 @@ onMounted(async () => {
   await checkFlaskConnection()
   await loadFAQ()
   await aiChatbot.initChatHistory()
+  setTimeout(() => { chatLoading.value = false }, 700)
 })
 </script>
 
 <style>
 @import '../assets/chatbot.css';
+
+.chatbot-faq-sk-wrap { padding: 16px; height: 256px; }
+
+.chatbot-typing-bubble {
+  display: flex; align-items: center;
+  padding: 12px 16px;
+  background: var(--color-surface-alt, #f5f5f5);
+  border-radius: 18px 18px 18px 4px;
+  width: fit-content; margin: 6px 0;
+}
 </style>

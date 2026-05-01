@@ -601,24 +601,29 @@
 <script setup>
 
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-
 import { useRoute, useRouter } from 'vue-router'
-
 import offlineData from '../services/offlineData.js'
-
 import { useSyncStore } from '../stores/syncStore.js'
-
 import { useAuthStore } from '../stores/authStore.js'
-
 import { showToast } from '../services/toast.js'
-
 import OnboardingTutorial from '../components/OnboardingTutorial.vue'
-
 import { isOnline } from '../services/sync.js'
-
 import api from '../services/api.js'
-
 import useMapPanZoom from '../composables/useMapPanZoom.js'
+import { registerBones } from 'boneyard-js'
+import AppSkeleton from '../components/AppSkeleton.vue'
+
+registerBones({
+  'home-announcement': {
+    width: 400, height: 90,
+    bones: [
+      { x: 0, y: 0,  w: 22, h: 18, r: 9 },
+      { x: 0, y: 26, w: 68, h: 16, r: 6 },
+      { x: 0, y: 50, w: 90, h: 12, r: 5 },
+      { x: 0, y: 68, w: 72, h: 12, r: 5 },
+    ]
+  }
+})
 
 
 
@@ -1594,6 +1599,13 @@ onMounted(async () => {
   justify-content: center;
   padding: 0 5px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.home-announcement-sk-wrap {
+  height: 90px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {

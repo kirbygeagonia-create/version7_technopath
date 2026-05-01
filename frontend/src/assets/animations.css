@@ -1,0 +1,18 @@
+/*
+  Animata staggered-card pattern (github.com/codse/animata)
+  Original: Framer Motion AnimatePresence + motion.li with delay: i * 0.06
+  Ported to: CSS animation-delay equivalents
+*/
+@keyframes animataStaggerIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+.stagger-card { opacity: 0; animation: animataStaggerIn 0.35s cubic-bezier(0,0,0.2,1) forwards; }
+.stagger-card:nth-child(1)  { animation-delay:   0ms; }
+.stagger-card:nth-child(2)  { animation-delay:  60ms; }
+.stagger-card:nth-child(3)  { animation-delay: 120ms; }
+.stagger-card:nth-child(4)  { animation-delay: 180ms; }
+.stagger-card:nth-child(5)  { animation-delay: 240ms; }
+.stagger-card:nth-child(6)  { animation-delay: 300ms; }
+.stagger-card:nth-child(7)  { animation-delay: 360ms; }
+.stagger-card:nth-child(8)  { animation-delay: 420ms; }

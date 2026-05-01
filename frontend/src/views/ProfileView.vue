@@ -9,7 +9,10 @@
       <div class="profile-spacer"></div>
     </div>
 
-    <div class="profile-content">
+    <div v-if="skeletonLoading" class="profile-sk-wrap">
+      <AppSkeleton :loading="true" name="profile-card" animate="shimmer" />
+    </div>
+    <div class="profile-content" v-else>
       <!-- Avatar -->
       <div class="profile-avatar-section">
         <div class="profile-avatar">
@@ -200,10 +203,31 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
 import { showToast } from '../services/toast.js'
+import { registerBones } from 'boneyard-js'
+import AppSkeleton from '../components/AppSkeleton.vue'
+
+registerBones({
+  'profile-card': {
+    width: 390, height: 280,
+    bones: [
+      { x: 33, y: 0,   w: 34, h: 80,  r: '50%' },
+      { x: 25, y: 92,  w: 50, h: 20,  r: 8     },
+      { x: 20, y: 120, w: 60, h: 14,  r: 6     },
+      { x: 0,  y: 155, w: 40, h: 14,  r: 6     },
+      { x: 55, y: 155, w: 45, h: 14,  r: 6     },
+      { x: 0,  y: 180, w: 40, h: 14,  r: 6     },
+      { x: 55, y: 180, w: 45, h: 14,  r: 6     },
+      { x: 0,  y: 205, w: 40, h: 14,  r: 6     },
+      { x: 55, y: 205, w: 45, h: 14,  r: 6     },
+    ]
+  }
+})
+
+const skeletonLoading = ref(true)
 
 const router    = useRouter()
 const authStore = useAuthStore()
@@ -299,9 +323,12 @@ const loadFavorites = () => {
 onMounted(() => {
   loadPreferences()
   loadFavorites()
+  setTimeout(() => { skeletonLoading.value = false }, 450)
 })
 </script>
 
 <style>
 @import '../assets/profileview.css';
+
+.profile-sk-wrap { padding: 24px; height: 320px; }
 </style>

@@ -91,11 +91,11 @@
 
         <!-- Router View -->
         <main class="app-main-content">
-          <router-view v-slot="{ Component }">
-            <keep-alive :include="['HomeView', 'SettingsView']">
-              <component :is="Component" />
-            </keep-alive>
-          </router-view>
+          <RouterView v-slot="{ Component, route }">
+            <Transition :name="route.meta.transition || 'page-slide'" mode="out-in">
+              <component :is="Component" :key="route.path" />
+            </Transition>
+          </RouterView>
         </main>
       </div>
     </template>
@@ -114,11 +114,13 @@
 
       <!-- Main Content -->
       <div class="app-content-area">
-        <router-view v-slot="{ Component }">
-          <keep-alive :include="['HomeView', 'SettingsView']">
-            <component :is="Component" />
-          </keep-alive>
-        </router-view>
+        <RouterView v-slot="{ Component, route }">
+          <Transition :name="route.meta.transition || 'page-slide'" mode="out-in">
+            <keep-alive :include="['HomeView', 'SettingsView']">
+              <component :is="Component" :key="route.path" />
+            </keep-alive>
+          </Transition>
+        </RouterView>
       </div>
 
       <!-- Bottom Navigation for Mobile -->
