@@ -6,7 +6,7 @@ import { ref, computed } from 'vue'
  */
 export function useMapPanZoom(options = {}) {
   const {
-    minScale = 0.5,
+    minScale = 0.2,
     maxScale = 5,
     zoomStep = 1.3,
     defaultScale = 1

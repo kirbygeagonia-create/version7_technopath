@@ -100,7 +100,7 @@
           <p>No recent activity</p>
         </div>
         <div v-else class="activity-list">
-          <div v-for="activity in recentActivity" :key="activity.id" class="activity-item">
+          <div v-for="activity in displayedActivities" :key="activity.id" class="activity-item">
             <div class="activity-icon" :class="'activity-' + activity.type">
               <span class="material-icons">{{ activity.icon }}</span>
             </div>
@@ -110,6 +110,13 @@
             </div>
           </div>
         </div>
+        <button 
+          v-if="recentActivity.length > 3" 
+          class="view-all-btn" 
+          @click="showAllActivities = !showAllActivities"
+        >
+          {{ showAllActivities ? 'Show Less' : `See More (${recentActivity.length - 3})` }}
+        </button>
       </div>
 
       <!-- My Announcements -->
@@ -208,7 +215,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '../../stores/authStore.js'
 import api from '../../services/api.js'
 
@@ -224,6 +231,15 @@ const stats = ref({
 const myAnnouncements = ref([])
 const recentActivity = ref([])
 const lastUpdated = ref('Just now')
+const showAllActivities = ref(false)
+
+// Computed property to limit displayed activities
+const displayedActivities = computed(() => {
+  if (showAllActivities.value) {
+    return recentActivity.value
+  }
+  return recentActivity.value.slice(0, 3)
+})
 
 function navigateTo(section) {
   // Emit event or use a global state to navigate
@@ -339,9 +355,13 @@ onMounted(loadDashboardData)
 
 <style scoped>
 .admindashboard-section { 
-  padding: 0; 
+  padding: 24px; 
   font-family: var(--font-primary);
-  max-width: 1400px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 1024px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .dashboard-header {
@@ -390,9 +410,16 @@ onMounted(loadDashboardData)
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
   margin-bottom: 24px;
+  width: 100%;
+}
+
+@media (max-width: 1400px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .stat-card {
@@ -455,14 +482,15 @@ onMounted(loadDashboardData)
 
 .content-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
   margin-bottom: 24px;
+  width: 100%;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .content-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1.5fr 1fr;
   }
 }
 
@@ -471,6 +499,7 @@ onMounted(loadDashboardData)
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .panel-card h2 {
@@ -496,13 +525,13 @@ onMounted(loadDashboardData)
 
 .actions-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
 }
 
 @media (max-width: 1200px) {
   .actions-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   }
 }
 
@@ -523,6 +552,8 @@ onMounted(loadDashboardData)
   text-align: left;
   white-space: nowrap;
   min-height: 48px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  width: 100%;
 }
 
 .action-btn:hover {

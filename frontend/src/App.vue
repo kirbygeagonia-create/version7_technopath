@@ -6,7 +6,7 @@
       <aside class="app-side-nav" v-if="showSideNav">
         <div class="app-side-nav-header">
           <img 
-            src="/src/assets/SEAITlogo.png" 
+            src="./assets/SEAITlogo.png" 
             alt="SEAIT Logo" 
             class="app-logo-img"
             @error="$event.target.style.display='none'"
@@ -22,8 +22,18 @@
             class="app-side-nav-item"
             :class="{ 'app-active': currentRoute === item.path }"
           >
-            <span class="material-icons">{{ item.icon }}</span>
+            <span class="material-icons">
+              {{ item.icon }}
+              <!-- Notification badge for desktop -->
+              <span v-if="item.path === '/notifications' && unreadCount > 0" class="nav-badge desktop-badge">
+                {{ unreadCount > 99 ? '99+' : unreadCount }}
+              </span>
+            </span>
             <span class="app-nav-text">{{ item.label }}</span>
+            <!-- Notification badge alternative position -->
+            <span v-if="item.path === '/notifications' && unreadCount > 0" class="nav-badge-alt">
+              {{ unreadCount > 99 ? '99+' : unreadCount }}
+            </span>
           </router-link>
         </nav>
 
@@ -120,11 +130,23 @@
           class="app-nav-item"
           :class="{ 'app-active': isActiveRoute(item.path) }"
         >
-          <span class="material-icons">{{ item.icon }}</span>
+          <span class="material-icons">
+            {{ item.icon }}
+            <!-- Notification dot for bell icon -->
+            <span v-if="item.path === '/notifications' && unreadCount > 0" class="nav-dot"></span>
+          </span>
           <span class="app-nav-label">{{ item.label }}</span>
+<<<<<<< HEAD
+          <!-- Notification badge -->
+=======
           <!-- Badge only on /notifications — feedback ≠ notifications -->
+>>>>>>> 2120b5cc5792784b71f56272822728812e4d775e
           <span v-if="item.path === '/notifications' && unreadCount > 0" class="nav-badge">
             {{ unreadCount > 9 ? '9+' : unreadCount }}
+          </span>
+          <!-- Notification badge for feedback -->
+          <span v-if="item.path === '/feedback' && unreadFeedbackCount > 0" class="nav-badge feedback-badge">
+            {{ unreadFeedbackCount > 9 ? '9+' : unreadFeedbackCount }}
           </span>
         </router-link>
 
@@ -165,7 +187,6 @@ const isActiveRoute = (path) => {
 // Full menu for desktop side nav
 const menuItems = [
   { path: '/', label: 'Home', icon: 'home' },
-  { path: '/map', label: 'Explore Map', icon: 'map' },
   { path: '/navigate', label: 'Navigate', icon: 'directions' },
   { path: '/chatbot', label: 'Chatbot', icon: 'smart_toy' },
   { path: '/notifications', label: 'Notifications', icon: 'notifications' },
@@ -177,23 +198,49 @@ const menuItems = [
 const mobileMenuItems = [
   { path: '/', label: 'Home', icon: 'home' },
   { path: '/navigate', label: 'Navigate', icon: 'directions' },
-  { path: '/chatbot', label: 'Chatbot', icon: 'smart_toy' },
   { path: '/feedback', label: 'Feedback', icon: 'star' },
   { path: '/settings', label: 'Settings', icon: 'settings' },
 ]
 
 // Unread notifications count
 const unreadCount = ref(0)
+const unreadFeedbackCount = ref(0)
 
 async function loadUnreadCount() {
+  // Check if user is authenticated first
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token')
+  if (!token) {
+    unreadCount.value = 0
+    unreadFeedbackCount.value = 0
+    return
+  }
+  
   try {
-    const res = await fetch('/api/notifications/unread-count/')
+    // Load notification count
+    const res = await fetch('/api/notifications/unread-count/', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
     if (res.ok) {
       const data = await res.json()
       unreadCount.value = data.count || 0
+    } else {
+      unreadCount.value = 0
+    }
+    
+    // Load feedback count (for admin users)
+    const feedbackRes = await fetch('/api/feedback/pending-count/', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (feedbackRes.ok) {
+      const feedbackData = await feedbackRes.json()
+      unreadFeedbackCount.value = feedbackData.count || 0
+    } else {
+      unreadFeedbackCount.value = 0
     }
   } catch {
     // Silent fail - offline or error
+    unreadCount.value = 0
+    unreadFeedbackCount.value = 0
   }
 }
 

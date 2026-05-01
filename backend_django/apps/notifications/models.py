@@ -37,6 +37,7 @@ class Notification(models.Model):
         default=1,
         choices=[(1,'Normal'), (2,'Important'), (3,'Urgent'), (4,'Emergency')]
     )
+    is_read = models.BooleanField(default=False)
     expires_at = models.DateTimeField(blank=True, null=True)
     created_by = models.ForeignKey(
         'users.AdminUser', on_delete=models.SET_NULL, null=True, blank=True

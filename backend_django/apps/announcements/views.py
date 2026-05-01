@@ -9,13 +9,36 @@ from apps.users.views import write_audit
 
 
 class AnnouncementPublicListView(APIView):
-    """Public endpoint — mobile app syncs from here. Returns published only."""
+    """Public endpoint — mobile app syncs from here. Returns published only.
+    Filters by user's ID/username for specific_users scope announcements."""
     permission_classes = []
 
     def get(self, request):
+        user = request.user if request.user.is_authenticated else None
+        user_id = str(getattr(user, 'id', ''))
+        username = getattr(user, 'username', '') or getattr(user, 'email', '')
+        
+        # Get all published announcements
         qs = Announcement.objects.filter(
             status='published', is_deleted=False
         ).order_by('-created_at')[:200]
+        
+        # Filter to only show visible announcements
+        visible = []
+        for a in qs:
+            if a.scope == 'campus_wide':
+                visible.append(a)
+            elif a.scope == 'all_college' and getattr(user, 'role', None) == 'college_student':
+                visible.append(a)
+            elif a.scope == 'basic_ed_only' and getattr(user, 'role', None) == 'basic_ed_student':
+                visible.append(a)
+            elif a.scope == 'department' and getattr(user, 'department', None) == a.target_department:
+                visible.append(a)
+            elif a.scope == 'specific_users':
+                targets = [str(t).lower() for t in (a.target_users or [])]
+                if user_id.lower() in targets or username.lower() in targets:
+                    visible.append(a)
+        
         return Response([{
             'id':           a.id,
             'title':        a.title,
@@ -25,7 +48,7 @@ class AnnouncementPublicListView(APIView):
             'scope':        a.scope,
             'approved_at':  a.approved_at,
             'created_at':   a.created_at,
-        } for a in qs])
+        } for a in visible])
 
 
 class AnnouncementCreateView(APIView):
@@ -61,6 +84,7 @@ class AnnouncementCreateView(APIView):
             source_color      = user.get_department_color(),
             scope             = scope,
             target_department = d.get('target_department', ''),
+            target_users      = d.get('target_users', []) if scope == 'specific_users' else [],
             status            = 'pending_approval',
             requires_approval = not publishes_direct,
         )

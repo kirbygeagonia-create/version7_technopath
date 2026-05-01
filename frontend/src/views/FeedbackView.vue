@@ -68,17 +68,6 @@
           </div>
         </div>
 
-        <!-- Anonymous Toggle -->
-        <div class="feedback-toggle-section">
-          <label class="feedback-toggle-label">
-            <span>Submit Anonymously</span>
-            <div class="toggle-switch">
-              <input type="checkbox" v-model="isAnonymous" />
-              <span class="toggle-slider"></span>
-            </div>
-          </label>
-        </div>
-
         <!-- Submit Button -->
         <div class="feedback-submit-section">
           <button
@@ -125,7 +114,6 @@ const comment = ref('')
 const isSubmitting = ref(false)
 const submitted = ref(false)
 const error = ref('')
-const isAnonymous = ref(false)
 const selectedLocation = ref('')
 
 const locations = ['Main Gate', 'MST Building', 'JST Building', 'RST Building', 'Library', 'Registrar Office', 'Cafeteria', 'Gymnasium', 'CL1', 'CL2', 'CL3', 'CL4', 'CL5', 'CL6', 'CR1', 'CR2', 'CR3', 'CR4']
@@ -169,7 +157,6 @@ const submitFeedback = async () => {
     rating: rating.value,
     category: category.value,
     comment: comment.value,
-    is_anonymous: isAnonymous.value,
     location: selectedLocation.value,
     created_at: new Date().toISOString()
   }
