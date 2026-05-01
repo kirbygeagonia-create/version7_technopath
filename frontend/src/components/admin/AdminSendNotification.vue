@@ -7,22 +7,6 @@
       </div>
     </div>
 
-    <!-- Stats -->
-    <div class="stats-row">
-      <div class="stat-box">
-        <span class="stat-number">{{ stats.totalSent }}</span>
-        <span class="stat-label">Total Sent</span>
-      </div>
-      <div class="stat-box">
-        <span class="stat-number">{{ stats.thisWeek }}</span>
-        <span class="stat-label">This Week</span>
-      </div>
-      <div class="stat-box">
-        <span class="stat-number">{{ stats.pending }}</span>
-        <span class="stat-label">Pending</span>
-      </div>
-    </div>
-
     <div class="content-grid">
       <!-- Send Form -->
       <div class="form-panel">
@@ -107,37 +91,11 @@
       </div>
     </div>
 
-    <!-- Recent History -->
-    <div class="history-section">
-      <h2>Recent Notifications</h2>
-      <div class="history-list">
-        <div v-for="notif in history" :key="notif.id" class="history-item">
-          <div class="history-icon">
-            <span class="material-icons">notifications</span>
-          </div>
-          <div class="history-content">
-            <h4>{{ notif.title }}</h4>
-            <p>{{ notif.body }}</p>
-            <div class="history-meta">
-              <span class="target">{{ getTargetLabel(notif.target) }}</span>
-              <span class="priority" :class="notif.priority">{{ notif.priority }}</span>
-              <span class="time">{{ formatTime(notif.sent_at) }}</span>
-            </div>
-          </div>
-          <div class="history-stats">
-            <span class="stat">
-              <span class="material-icons">done_all</span>
-              {{ notif.delivered }}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref } from 'vue'
 import api from '../../services/api.js'
 import { showToast } from '../../services/toast.js'
 
@@ -151,21 +109,9 @@ const form = ref({
   scheduledTime: ''
 })
 
-const history = ref([])
-
-const stats = computed(() => ({
-  totalSent: history.value.length,
-  thisWeek: history.value.filter(h => new Date(h.sent_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length,
-  pending: history.value.filter(h => h.status === 'pending').length
-}))
-
 function getTargetLabel(target) {
   const labels = { all: 'All Users', students: 'Students', faculty: 'Faculty', department: 'My Department' }
   return labels[target] || target
-}
-
-function formatTime(date) {
-  return new Date(date).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 function previewNotification() {
@@ -177,7 +123,6 @@ async function sendNotification() {
   try {
     await api.post('/notifications/send/', form.value)
     form.value = { title: '', body: '', target: 'all', priority: 'normal', schedule: false, scheduledTime: '' }
-    loadHistory()
   } catch (e) {
     console.error('Failed to send notification:', e)
     showToast('Failed to send notification', 'error')
@@ -185,21 +130,6 @@ async function sendNotification() {
     sending.value = false
   }
 }
-
-async function loadHistory() {
-  try {
-    const response = await api.get('/notifications/history/')
-    history.value = response.data
-  } catch (e) {
-    console.error('Failed to load history:', e)
-    history.value = [
-      { id: 1, title: 'Campus Maintenance', body: 'Main building will be closed for maintenance this weekend.', target: 'all', priority: 'high', sent_at: new Date().toISOString(), delivered: 1245 },
-      { id: 2, title: 'New Feature Available', body: 'QR code scanning is now available in the app!', target: 'all', priority: 'normal', sent_at: new Date(Date.now() - 86400000).toISOString(), delivered: 982 }
-    ]
-  }
-}
-
-onMounted(loadHistory)
 </script>
 
 <style scoped>

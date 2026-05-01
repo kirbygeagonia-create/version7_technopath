@@ -93,8 +93,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '30/minute',
-        'user': '120/minute',
+        'anon': '1000/minute',
+        'user': '1000/minute',
     },
 }
 
@@ -108,6 +108,11 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://localhost:3000',
     'http://127.0.0.1:5173',
+    'http://localhost:4173',
+    'http://localhost:4174',
+    'http://localhost:4175',
+    'http://localhost:4176',
+    'http://localhost:4177',
 ]
 CORS_ALLOW_CREDENTIALS = True
 

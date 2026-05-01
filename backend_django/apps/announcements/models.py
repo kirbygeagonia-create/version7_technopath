@@ -15,6 +15,7 @@ class Announcement(models.Model):
         ('all_college',       'All College Students'),
         ('basic_ed_only',     'Basic Education Only'),
         ('department',        'Specific Department Only'),
+        ('specific_users',    'Specific Users (by name)'),
     ]
 
     # Content
@@ -49,6 +50,10 @@ class Announcement(models.Model):
         max_length=50, blank=True, null=True,
         help_text='Set when scope=department to filter which users see this'
     )
+    target_users = models.JSONField(
+        default=list, blank=True,
+        help_text='List of user IDs/names when scope=specific_users. Format: ["user1", "user2"]'
+    )
 
     # Approval workflow
     status            = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending_approval')
@@ -77,6 +82,26 @@ class Announcement(models.Model):
 
     # Soft delete
     is_deleted        = models.BooleanField(default=False)
+    
+    def is_visible_to(self, user):
+        """Check if this announcement should be visible to a given user"""
+        if self.status != 'published' or self.is_deleted:
+            return False
+        if self.scope == 'campus_wide':
+            return True
+        if self.scope == 'all_college':
+            return getattr(user, 'role', None) == 'college_student'
+        if self.scope == 'basic_ed_only':
+            return getattr(user, 'role', None) == 'basic_ed_student'
+        if self.scope == 'department':
+            return getattr(user, 'department', None) == self.target_department
+        if self.scope == 'specific_users':
+            # Check by user ID or username
+            user_id = str(getattr(user, 'id', ''))
+            username = getattr(user, 'username', '') or getattr(user, 'email', '')
+            targets = [str(t).lower() for t in (self.target_users or [])]
+            return user_id.lower() in targets or username.lower() in targets
+        return False
 
     # Timestamps
     created_at        = models.DateTimeField(auto_now_add=True)

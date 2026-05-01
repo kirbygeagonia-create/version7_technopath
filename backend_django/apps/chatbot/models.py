@@ -34,3 +34,40 @@ class AIChatLog(models.Model):
 
     class Meta:
         db_table = 'ai_chat_logs'
+
+
+class FAQSuggestion(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+    
+    suggested_question = models.TextField()
+    suggested_answer = models.TextField()
+    category = models.CharField(max_length=50, choices=FAQEntry.CATEGORIES, default='general')
+    keywords = models.TextField(default='', blank=True)
+    
+    # Analysis metadata
+    source_queries = models.JSONField(default=list, help_text='Original queries that triggered this suggestion')
+    query_count = models.IntegerField(default=1, help_text='Number of times similar queries were asked')
+    confidence_score = models.FloatField(default=0.0, help_text='AI confidence score (0-1)')
+    
+    # Status tracking
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    reviewed_by = models.ForeignKey('users.AdminUser', on_delete=models.SET_NULL, null=True, blank=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    review_note = models.TextField(blank=True, null=True)
+    
+    # Converted FAQ (if approved)
+    faq_entry = models.ForeignKey(FAQEntry, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'faq_suggestions'
+        ordering = ['-query_count', '-created_at']
+
+    def __str__(self):
+        return f"{self.suggested_question[:60]}... ({self.status})"

@@ -48,6 +48,7 @@ html, body {
   flex-direction: column;
   position: fixed;
   left: 0;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
   top: 0;
   z-index: 100;
   transition: background-color var(--duration-normal) var(--ease-out),
@@ -298,6 +299,7 @@ html, body {
   padding: 0;
   background: var(--color-surface);
   display: block;
+  scroll-behavior: smooth;
   transition: background-color var(--duration-normal) var(--ease-out);
 }
 
@@ -415,6 +417,50 @@ html, body {
   align-items: center;
   justify-content: center;
   padding: 0 4px;
+}
+
+/* Desktop side nav badge */
+.nav-badge.desktop-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 9px;
+  min-width: 14px;
+  height: 14px;
+}
+
+/* Alternative badge position for side nav */
+.nav-badge-alt {
+  margin-left: auto;
+  background: var(--color-danger, #F44336);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+/* Notification dot for bell icon (subtle indicator) */
+.nav-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: var(--color-danger, #F44336);
+  border-radius: 50%;
+  border: 2px solid var(--color-bg);
+}
+
+/* Make material-icons wrapper relative for badge positioning */
+.app-nav-item .material-icons,
+.app-side-nav-item .material-icons {
+  position: relative;
 }
 
 /* ── Responsive ───────────────────────────────────────────── */

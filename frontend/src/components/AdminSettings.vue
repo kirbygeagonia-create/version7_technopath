@@ -301,20 +301,109 @@ function selectLanguage(lang) {
   showLanguageDialog.value = false
 }
 
-function saveProfile() {
-  showEditProfile.value = false
-  // TODO: Save profile to backend
-  showToast('Profile updated!', 'success')
+async function saveProfile() {
+  try {
+    // Update auth store user data
+    if (authStore.user) {
+      authStore.user.username = editProfile.username
+      authStore.user.email = editProfile.email
+      // Save to localStorage for persistence
+      localStorage.setItem('tp_user_profile', JSON.stringify({
+        username: editProfile.username,
+        email: editProfile.email,
+        updatedAt: new Date().toISOString()
+      }))
+    }
+    showEditProfile.value = false
+    showToast('Profile updated successfully!', 'success')
+  } catch (error) {
+    showToast('Failed to update profile', 'error')
+    console.error('Profile update error:', error)
+  }
 }
 
 function backupData() {
-  showToast('Backup feature - Downloading database backup...', 'info')
-  // TODO: Implement actual backup
+  try {
+    // Collect all localStorage data
+    const backup = {
+      version: '1.0',
+      timestamp: new Date().toISOString(),
+      data: {}
+    }
+    
+    // Backup all localStorage items
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      try {
+        const value = localStorage.getItem(key)
+        backup.data[key] = value
+      } catch (e) {
+        console.warn(`Failed to backup key: ${key}`, e)
+      }
+    }
+    
+    // Create and download backup file
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `technopath_backup_${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    
+    showToast('Backup downloaded successfully!', 'success')
+  } catch (error) {
+    showToast('Backup failed', 'error')
+    console.error('Backup error:', error)
+  }
 }
 
 function restoreData() {
-  showToast('Restore feature - Select backup file to import...', 'info')
-  // TODO: Implement actual restore
+  // Create hidden file input
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = '.json'
+  input.style.display = 'none'
+  
+  input.onchange = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    
+    try {
+      const text = await file.text()
+      const backup = JSON.parse(text)
+      
+      // Validate backup format
+      if (!backup.data || typeof backup.data !== 'object') {
+        throw new Error('Invalid backup format')
+      }
+      
+      // Confirm restore
+      if (!confirm(`Restore backup from ${backup.timestamp || 'unknown date'}? This will overwrite current data.`)) {
+        return
+      }
+      
+      // Restore localStorage data
+      Object.entries(backup.data).forEach(([key, value]) => {
+        try {
+          localStorage.setItem(key, value)
+        } catch (e) {
+          console.warn(`Failed to restore key: ${key}`, e)
+        }
+      })
+      
+      showToast('Data restored successfully! Please refresh the page.', 'success')
+    } catch (error) {
+      showToast('Restore failed: ' + error.message, 'error')
+      console.error('Restore error:', error)
+    }
+  }
+  
+  document.body.appendChild(input)
+  input.click()
+  document.body.removeChild(input)
 }
 
 function clearCache() {

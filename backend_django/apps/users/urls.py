@@ -1,9 +1,10 @@
 from django.urls import path
 from .views import (LoginView, LogoutView, MeView,
                     AdminListCreateView, AdminDetailView, AuditLogView,
-                    PublicDirectoryView)
+                    PublicDirectoryView, UserListView)
 
 urlpatterns = [
+    path('',                 UserListView.as_view()),  # GET /api/users/
     path('login/',           LoginView.as_view()),
     path('logout/',          LogoutView.as_view()),
     path('me/',              MeView.as_view()),

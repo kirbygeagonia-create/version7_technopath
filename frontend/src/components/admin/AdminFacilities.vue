@@ -2,14 +2,10 @@
   <div class="adminfacilities-section">
     <!-- Header -->
     <div class="section-header">
-      <div>
+      <div class="header-title">
         <h1>Facilities Management</h1>
         <p class="subtitle">Manage campus buildings and facilities</p>
       </div>
-      <button class="btn-primary" @click="showCreateModal = true">
-        <span class="material-icons">add_business</span>
-        Add Facility
-      </button>
     </div>
 
     <!-- Stats -->
@@ -48,6 +44,12 @@
         <option value="service">Service Facility</option>
       </select>
     </div>
+
+    <!-- Add Facility Button -->
+    <button class="btn-primary btn-add-inline" @click="showCreateModal = true">
+      <span class="material-icons">add_business</span>
+      Add Facility
+    </button>
 
     <!-- Facilities Grid -->
     <div class="facilities-grid">
@@ -106,6 +108,10 @@
             <label>Facility Name</label>
             <input v-model="form.name" type="text" placeholder="Enter facility name" />
           </div>
+          <div class="form-group">
+            <label>Room</label>
+            <input v-model="form.room" type="text" placeholder="e.g., CL6, Room 101" />
+          </div>
           <div class="form-row">
             <div class="form-group">
               <label>Code</label>
@@ -143,6 +149,15 @@
           <button class="btn-primary" @click="saveFacility">
             {{ showEditModal ? 'Save Changes' : 'Create Facility' }}
           </button>
+          <button 
+            v-if="showEditModal || showCreateModal" 
+            class="btn-announce" 
+            @click="announceFacilityChange"
+            title="Announce this change to users"
+          >
+            <span class="material-icons">campaign</span>
+            Announce
+          </button>
         </div>
       </div>
     </div>
@@ -173,6 +188,7 @@ import api from '../../services/api.js'
 import { showToast } from '../../services/toast.js'
 
 const facilities = ref([])
+const rooms = ref([])
 const searchQuery = ref('')
 const filterType = ref('')
 const showCreateModal = ref(false)
@@ -180,13 +196,23 @@ const showEditModal = ref(false)
 const showDeleteModal = ref(false)
 const facilityToDelete = ref(null)
 
+// Room Management
+const selectedFacility = ref('')
+const newRoomName = ref('')
+const newRoomFloor = ref('')
+
+// Announcement
+const announcementText = ref('')
+
 const form = ref({
   id: null,
   name: '',
+  room: '',
   code: '',
   facility_type: 'academic',
   description: '',
   total_floors: 1,
+  room_count: 0
 })
 
 const filteredFacilities = computed(() => {
@@ -200,6 +226,107 @@ const filteredFacilities = computed(() => {
     return matchesSearch && matchesType
   })
 })
+
+// Rooms filtered by selected facility for management
+const facilityRooms = computed(() => {
+  if (!selectedFacility.value) return []
+  const id = parseInt(selectedFacility.value)
+  return rooms.value.filter(r => r.facility === id || r.facility_id === id)
+})
+
+// Available floors for selected facility
+const availableFloors = computed(() => {
+  if (!selectedFacility.value) return []
+  return [1, 2, 3, 4]
+})
+
+// Handle facility selection - reset room inputs
+function onFacilitySelect() {
+  newRoomName.value = ''
+  newRoomFloor.value = ''
+}
+
+// Add a room to facility
+async function addRoom() {
+  if (!selectedFacility.value || !newRoomName.value.trim()) return
+  
+  try {
+    const roomData = {
+      name: newRoomName.value.trim(),
+      facility: parseInt(selectedFacility.value),
+      floor: parseInt(newRoomFloor.value) || 1,
+      is_active: true
+    }
+    
+    await api.post('/rooms/', roomData)
+    showToast(`Room "${roomData.name}" added successfully`, 'success')
+    
+    // Reload rooms
+    const roomsRes = await api.get('/rooms/')
+    rooms.value = roomsRes.data || []
+    
+    // Reset inputs
+    newRoomName.value = ''
+    newRoomFloor.value = ''
+  } catch (error) {
+    console.error('Failed to add room:', error)
+    showToast('Failed to add room', 'error')
+  }
+}
+
+// Edit a room
+async function editRoom(room) {
+  const newName = prompt('Enter new room name:', room.name)
+  if (!newName || newName === room.name) return
+  
+  try {
+    await api.patch(`/rooms/${room.id}/`, { name: newName })
+    showToast(`Room updated to "${newName}"`, 'success')
+    
+    // Reload rooms
+    const roomsRes = await api.get('/rooms/')
+    rooms.value = roomsRes.data || []
+  } catch (error) {
+    console.error('Failed to update room:', error)
+    showToast('Failed to update room', 'error')
+  }
+}
+
+// Delete a room
+async function deleteRoom(room) {
+  if (!confirm(`Are you sure you want to delete room "${room.name}"?`)) return
+  
+  try {
+    await api.delete(`/rooms/${room.id}/`)
+    showToast(`Room "${room.name}" deleted`, 'success')
+    
+    // Reload rooms
+    const roomsRes = await api.get('/rooms/')
+    rooms.value = roomsRes.data || []
+  } catch (error) {
+    console.error('Failed to delete room:', error)
+    showToast('Failed to delete room', 'error')
+  }
+}
+
+// Post announcement
+function postAnnouncement() {
+  if (!announcementText.value.trim()) return
+  
+  const message = announcementText.value.trim()
+  
+  // Emit announcement event
+  window.dispatchEvent(new CustomEvent('facility-announcement', { 
+    detail: { 
+      type: 'announcement',
+      message: message,
+      timestamp: new Date().toISOString()
+    }
+  }))
+  
+  showToast(`Announcement posted: ${message}`, 'success')
+  announcementText.value = ''
+}
 
 function formatType(type) {
   const labels = {
@@ -221,7 +348,7 @@ function editFacility(facility) {
 function closeModal() {
   showCreateModal.value = false
   showEditModal.value = false
-  form.value = { id: null, name: '', code: '', facility_type: 'academic', description: '', total_floors: 1 }
+  form.value = { id: null, name: '', room: '', code: '', facility_type: 'academic', description: '', total_floors: 1, room_count: 0 }
 }
 
 function confirmDelete(facility) {
@@ -233,10 +360,32 @@ function viewRooms(facility) {
   window.dispatchEvent(new CustomEvent('admin-navigate', { detail: 'rooms' }))
 }
 
+// Announce facility changes
+function announceFacilityChange() {
+  const action = showCreateModal.value ? 'added' : 'updated'
+  const facilityName = form.value.name || 'Unknown Facility'
+  const message = `Facility "${facilityName}" has been ${action}.`
+  
+  // Emit announcement event
+  window.dispatchEvent(new CustomEvent('facility-announcement', { 
+    detail: { 
+      type: action,
+      facility: form.value,
+      message: message
+    }
+  }))
+  
+  showToast(message, 'success')
+}
+
 async function loadFacilities() {
   try {
-    const response = await api.get('/facilities/')
-    facilities.value = response.data
+    const [facilitiesRes, roomsRes] = await Promise.all([
+      api.get('/facilities/'),
+      api.get('/rooms/')
+    ])
+    facilities.value = facilitiesRes.data
+    rooms.value = roomsRes.data || []
   } catch (e) {
     console.error('Failed to load facilities:', e)
     // Mock data
@@ -283,10 +432,11 @@ onMounted(loadFacilities)
 .adminfacilities-section { padding: 0; font-family: var(--font-primary); max-width: 1400px; }
 
 .section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 24px;
+}
+
+.header-title {
+  flex: 1;
 }
 
 .section-header h1 {
@@ -296,10 +446,21 @@ onMounted(loadFacilities)
   margin: 0 0 4px 0;
 }
 
+.btn-add-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  margin-bottom: 24px;
+  font-size: var(--text-base);
+  font-weight: 600;
+  width: auto;
+}
+
 .subtitle {
   font-size: var(--text-base);
   color: var(--color-text-secondary);
-  margin: 0;
+  margin: 0 0 8px 0;
 }
 
 .btn-primary {
@@ -398,6 +559,132 @@ onMounted(loadFacilities)
   color: var(--color-text-primary);
   min-width: 160px;
   cursor: pointer;
+}
+
+/* Room Management Section */
+.room-management-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.room-management-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 12px;
+}
+
+.room-management-section h3 .material-icons {
+  color: var(--color-primary);
+}
+
+.room-management-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.room-management-row .admin-input {
+  flex: 1;
+  min-width: 150px;
+  padding: 10px 14px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.room-management-row .admin-input:disabled {
+  background: var(--color-surface);
+  color: var(--color-text-hint);
+  cursor: not-allowed;
+}
+
+.rooms-list {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.room-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.room-name {
+  flex: 1;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.room-floor {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.no-rooms {
+  margin-top: 16px;
+  padding: 16px;
+  text-align: center;
+  color: var(--color-text-hint);
+  background: var(--color-bg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+/* Announcement Section */
+.announcement-section {
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.announcement-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 12px;
+}
+
+.announcement-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.announcement-row .announcement-input {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
 }
 
 .facilities-grid {
@@ -539,6 +826,27 @@ onMounted(loadFacilities)
 
 .btn-icon .material-icons {
   font-size: 18px;
+}
+
+.btn-announce {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: var(--color-success);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-announce:hover {
+  background: var(--color-success-dark);
+  transform: translateY(-1px);
 }
 
 .empty-state {

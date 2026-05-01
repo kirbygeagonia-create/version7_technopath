@@ -223,4 +223,68 @@ class Command(BaseCommand):
             )
         self.stdout.write(self.style.SUCCESS(f'Created {len(markers_data)} map markers'))
         
+        # Create FAQ Entries for chatbot
+        faq_data = [
+            {
+                'question': 'Where is the MST Building?',
+                'answer': 'The MST Building is located on the right side of the campus. It houses the College of Engineering and Computer Studies.',
+                'category': 'location',
+                'keywords': 'mst, engineering, computer, building, where'
+            },
+            {
+                'question': 'Where is the JST Building?',
+                'answer': 'The JST Building is located in the center of the campus. It is home to the College of Arts and Sciences.',
+                'category': 'location',
+                'keywords': 'jst, arts, sciences, building, where'
+            },
+            {
+                'question': 'Where is the RST Building?',
+                'answer': 'The RST Building is located on the left side of the campus. It contains classrooms and administrative offices.',
+                'category': 'location',
+                'keywords': 'rst, building, classrooms, where, admin'
+            },
+            {
+                'question': 'Where are the computer labs?',
+                'answer': 'Computer labs CL1, CL2, CL3, and CL4 are located in the MST Building. They are available for student use during school hours.',
+                'category': 'facilities',
+                'keywords': 'computer lab, cl1, cl2, cl3, cl4, lab, mst'
+            },
+            {
+                'question': 'Where is the library?',
+                'answer': 'The library is located in the main building near the entrance. It is open from 8 AM to 8 PM on weekdays.',
+                'category': 'facilities',
+                'keywords': 'library, books, study, hours, where'
+            },
+            {
+                'question': 'Where is the Registrar office?',
+                'answer': 'The Registrar office is located in the administrative building on the ground floor. Office hours are 8 AM to 5 PM.',
+                'category': 'administration',
+                'keywords': 'registrar, enrollment, records, office, admin'
+            },
+            {
+                'question': 'What are the campus hours?',
+                'answer': 'The campus is open from 7:00 AM to 9:00 PM on weekdays, and 8:00 AM to 5:00 PM on weekends.',
+                'category': 'general',
+                'keywords': 'hours, open, time, schedule, campus'
+            },
+            {
+                'question': 'How do I contact security?',
+                'answer': 'Campus security can be reached at the security office near the main gate or by calling the emergency hotline.',
+                'category': 'safety',
+                'keywords': 'security, safety, guard, emergency, contact'
+            },
+        ]
+        
+        for faq in faq_data:
+            FAQEntry.objects.get_or_create(
+                question=faq['question'],
+                defaults={
+                    'answer': faq['answer'],
+                    'category': faq['category'],
+                    'keywords': faq['keywords'],
+                    'is_deleted': False
+                }
+            )
+        self.stdout.write(self.style.SUCCESS(f'Created {len(faq_data)} FAQ entries'))
+        
         self.stdout.write(self.style.SUCCESS('Default data seeding completed!'))

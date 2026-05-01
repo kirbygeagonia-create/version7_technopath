@@ -23,85 +23,101 @@
 
         <!-- ── Map management group ─────────────── -->
         <div v-if="!isMobile && (auth.canManageFacilities || auth.canManageAllRooms || auth.canManageNavigation || auth.canManageFAQ)"
-             class="tp-nav-group-label">MAP MANAGEMENT</div>
+             class="tp-nav-group-label clickable" @click="toggleSection('map')">
+          <span class="tp-group-icon"><span class="material-icons">map</span></span>
+          <span>MAP MANAGEMENT</span>
+          <span class="material-icons tp-collapse-icon">{{ collapsedSections.map ? 'expand_more' : 'expand_less' }}</span>
+        </div>
 
-        <button v-if="!isMobile && auth.canManageFacilities"
-                :class="navCls('facilities')" @click="go('facilities')">
-          <span class="material-icons tp-nav-icon">business</span>
-          <span>Facilities</span>
-        </button>
+        <div v-show="!collapsedSections.map" class="tp-nav-group-items">
+          <button v-if="!isMobile && auth.canManageFacilities"
+                  :class="navCls('facilities')" @click="go('facilities')">
+            <span class="material-icons tp-nav-icon">business</span>
+            <span>Buildings</span>
+          </button>
 
-        <button v-if="!isMobile && (auth.canManageAllRooms || auth.canManageOwnRooms)"
-                :class="navCls('rooms')" @click="go('rooms')">
-          <span class="material-icons tp-nav-icon">meeting_room</span>
-          <span>Rooms</span>
-          <span v-if="!auth.canManageAllRooms" class="tp-nav-scope">own dept</span>
-        </button>
+          <button v-if="!isMobile && auth.canManageNavigation"
+                  :class="navCls('paths')" @click="go('paths')">
+            <span class="material-icons tp-nav-icon">route</span>
+            <span>SVG Paths</span>
+          </button>
 
-        <button v-if="!isMobile && auth.canManageNavigation"
-                :class="navCls('navigation')" @click="go('navigation')">
-          <span class="material-icons tp-nav-icon">map</span>
-          <span>Navigation Graph</span>
-        </button>
-
-        <button v-if="!isMobile && auth.canManageFAQ"
-                :class="navCls('faq')" @click="go('faq')">
-          <span class="material-icons tp-nav-icon">smart_toy</span>
-          <span>FAQ / Chatbot</span>
-        </button>
+          <button v-if="!isMobile && auth.canManageFAQ"
+                  :class="navCls('faq')" @click="go('faq')">
+            <span class="material-icons tp-nav-icon">smart_toy</span>
+            <span>FAQ / Chatbot</span>
+          </button>
+        </div>
 
         <!-- ── Communications group ──────────────── -->
-        <div class="tp-nav-group-label">COMMUNICATIONS</div>
+        <div class="tp-nav-group-label clickable" @click="toggleSection('communications')">
+          <span class="tp-group-icon"><span class="material-icons">chat</span></span>
+          <span>COMMUNICATIONS</span>
+          <span class="material-icons tp-collapse-icon">{{ collapsedSections.communications ? 'expand_more' : 'expand_less' }}</span>
+        </div>
 
-        <button v-if="auth.canPostAnnouncement"
-                :class="navCls('announcements')" @click="go('announcements')">
-          <span class="material-icons tp-nav-icon">campaign</span>
-          <span>Announcements</span>
-          <span v-if="myPendingCount > 0" class="tp-nav-badge">{{ myPendingCount }}</span>
-        </button>
+        <div v-show="!collapsedSections.communications" class="tp-nav-group-items">
+          <button v-if="auth.canPostAnnouncement"
+                  :class="navCls('announcements')" @click="go('announcements')">
+            <span class="material-icons tp-nav-icon">campaign</span>
+            <span>Announcements</span>
+            <span v-if="myPendingCount > 0" class="tp-nav-badge">{{ myPendingCount }}</span>
+          </button>
 
-        <button v-if="auth.canApproveAnnouncements"
-                :class="navCls('pending')" @click="go('pending')">
-          <span class="material-icons tp-nav-icon">pending_actions</span>
-          <span>Pending Approvals</span>
-          <span v-if="pendingCount > 0" class="tp-nav-badge tp-badge-urgent">{{ pendingCount }}</span>
-        </button>
+          <button v-if="auth.canApproveAnnouncements"
+                  :class="navCls('pending')" @click="go('pending')">
+            <span class="material-icons tp-nav-icon">pending_actions</span>
+            <span>Pending Approvals</span>
+            <span v-if="pendingCount > 0" class="tp-nav-badge tp-badge-urgent">{{ pendingCount }}</span>
+          </button>
 
-        <button v-if="auth.canSendCampusNotification"
-                :class="navCls('notifications')" @click="go('notifications')">
-          <span class="material-icons tp-nav-icon">notifications_active</span>
-          <span>Send Notification</span>
-        </button>
+          <button v-if="auth.canSendCampusNotification"
+                  :class="navCls('notifications')" @click="go('notifications')">
+            <span class="material-icons tp-nav-icon">notifications_active</span>
+            <span>Send Notification</span>
+          </button>
+        </div>
 
         <!-- ── Administration group ──────────────── -->
         <div v-if="!isMobile && (auth.canManageAdminAccounts || auth.canViewAllFeedback || auth.canViewAuditLog || auth.canViewDeptFeedback || auth.canViewDeptAuditLog)"
-             class="tp-nav-group-label">ADMINISTRATION</div>
+             class="tp-nav-group-label clickable" @click="toggleSection('administration')">
+          <span class="tp-group-icon"><span class="material-icons">admin_panel_settings</span></span>
+          <span>ADMINISTRATION</span>
+          <span class="material-icons tp-collapse-icon">{{ collapsedSections.administration ? 'expand_more' : 'expand_less' }}</span>
+        </div>
 
-        <button v-if="!isMobile && auth.canManageAdminAccounts"
-                :class="navCls('admins')" @click="go('admins')">
-          <span class="material-icons tp-nav-icon">admin_panel_settings</span>
-          <span>Admin Accounts</span>
-        </button>
+        <div v-show="!collapsedSections.administration" class="tp-nav-group-items">
+          <button v-if="!isMobile && auth.canManageAdminAccounts"
+                  :class="navCls('admins')" @click="go('admins')">
+            <span class="material-icons tp-nav-icon">admin_panel_settings</span>
+            <span>Admin Accounts</span>
+          </button>
 
-        <button v-if="!isMobile && (auth.canViewAllFeedback || auth.canViewDeptFeedback)"
-                :class="navCls('feedback')" @click="go('feedback')">
-          <span class="material-icons tp-nav-icon">star</span>
-          <span>Feedback & Ratings</span>
-        </button>
+          <button v-if="!isMobile && (auth.canViewAllFeedback || auth.canViewDeptFeedback)"
+                  :class="navCls('feedback')" @click="go('feedback')">
+            <span class="material-icons tp-nav-icon">star</span>
+            <span>Feedback & Ratings</span>
+          </button>
 
-        <button v-if="!isMobile && (auth.canViewAuditLog || auth.canViewDeptAuditLog)"
-                :class="navCls('auditlog')" @click="go('auditlog')">
-          <span class="material-icons tp-nav-icon">assignment</span>
-          <span>Audit Log</span>
-        </button>
+          <button v-if="!isMobile && (auth.canViewAuditLog || auth.canViewDeptAuditLog)"
+                  :class="navCls('auditlog')" @click="go('auditlog')">
+            <span class="material-icons tp-nav-icon">assignment</span>
+            <span>Audit Log</span>
+          </button>
+        </div>
 
         <!-- ── System group ──────────────── -->
-        <div v-if="!isMobile" class="tp-nav-group-label">SYSTEM</div>
+        <div v-if="!isMobile" class="tp-nav-group-label">
+          <span class="tp-group-icon"><span class="material-icons">dns</span></span>
+          <span>SYSTEM</span>
+        </div>
 
-        <button v-if="!isMobile" class="tp-sidebar-nav-item" @click="goToFrontend">
-          <span class="material-icons tp-nav-icon">open_in_new</span>
-          <span>View Site</span>
-        </button>
+        <div class="tp-nav-group-items">
+          <button v-if="!isMobile" class="tp-sidebar-nav-item" @click="goToFrontend">
+            <span class="material-icons tp-nav-icon">open_in_new</span>
+            <span>View Site</span>
+          </button>
+        </div>
 
       </nav>
 
@@ -138,7 +154,7 @@
       <AdminRooms            v-else-if="section === 'rooms'       && (auth.canManageAllRooms || auth.canManageOwnRooms)"
                              :own-only="!auth.canManageAllRooms"
                              :dept="auth.department" />
-      <AdminNavGraph         v-else-if="section === 'navigation'  && auth.canManageNavigation" />
+      <AdminPathManager      v-else-if="section === 'paths'       && auth.canManageNavigation" />
       <AdminFAQ              v-else-if="section === 'faq'         && auth.canManageFAQ" />
       <AdminAnnouncements    v-else-if="section === 'announcements' && auth.canPostAnnouncement"
                              @my-pending="myPendingCount = $event" />
@@ -183,7 +199,7 @@ import api from '../services/api.js'
 import AdminDashboard        from '../components/admin/AdminDashboard.vue'
 import AdminFacilities       from '../components/admin/AdminFacilities.vue'
 import AdminRooms            from '../components/admin/AdminRooms.vue'
-import AdminNavGraph         from '../components/admin/AdminNavGraph.vue'
+import AdminPathManager      from '../components/admin/AdminPathManager.vue'
 import AdminFAQ              from '../components/admin/AdminFAQ.vue'
 import AdminAnnouncements    from '../components/admin/AdminAnnouncements.vue'
 import AdminPendingApprovals from '../components/admin/AdminPendingApprovals.vue'
@@ -200,6 +216,27 @@ const myPendingCount= ref(0)
 const showLogoutConfirm = ref(false)
 
 const isMobile = ref(window.innerWidth < 1024)
+
+// Collapsible navigation sections (all collapsed by default)
+const collapsedSections = ref({
+  map: true,
+  communications: true,
+  administration: true,
+  system: true
+})
+
+function toggleSection(sectionName) {
+  // Check if section is currently expanded (false = expanded)
+  const isExpanded = !collapsedSections.value[sectionName]
+  // Close all sections first (accordion behavior)
+  Object.keys(collapsedSections.value).forEach(key => {
+    collapsedSections.value[key] = true
+  })
+  // If it wasn't expanded, expand it (toggle). If already expanded, keep closed.
+  if (!isExpanded) {
+    collapsedSections.value[sectionName] = false
+  }
+}
 
 onMounted(() => {
   window.addEventListener('resize', () => {
@@ -265,6 +302,12 @@ onMounted(() => {
   if (!auth.isLoggedIn) { router.push('/admin/login'); return }
   loadPendingCount()
   
+  // Handle query parameters for direct section navigation
+  const routeSection = router.currentRoute.value.query.section
+  if (routeSection && ['dashboard', 'facilities', 'rooms', 'navigation', 'paths', 'faq', 'announcements', 'pending', 'notifications', 'admins', 'feedback', 'auditlog'].includes(routeSection)) {
+    section.value = routeSection
+  }
+  
   // Listen for navigation events from Quick Actions in AdminDashboard
   window.addEventListener('admin-navigate', handleAdminNavigate)
 })
@@ -307,20 +350,20 @@ function handleAdminNavigate(e) {
 .tp-mobile-card h2 { font-size: var(--text-xl); font-weight: 700; font-family: var(--font-primary); margin-bottom: 12px; }
 .tp-mobile-card p { font-size: var(--text-base); font-family: var(--font-primary); color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 8px; }
 
-/* Admin shell */
+/* Admin shell - Desktop Only */
 .tp-admin-shell { 
   display: flex; 
   height: 100vh; 
   overflow: hidden; 
-  background: var(--color-surface); 
-  font-family: var(--font-primary); 
+  background: var(--color-surface-2);
+  min-width: 1024px;
 }
 
-/* Sidebar */
+/* Sidebar - Fixed width for desktop */
 .tp-sidebar {
-  width: 260px;
-  min-width: 260px;
-  max-width: 260px;
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
   background: var(--color-bg);
   border-right: 1px solid var(--color-border);
   display: flex;
@@ -351,7 +394,13 @@ function handleAdminNavigate(e) {
 .tp-brand-name { font-size: var(--text-base); font-weight: 700; font-family: var(--font-primary); color: var(--color-text-primary); line-height: 1.2; }
 .tp-brand-sub  { font-size: var(--text-xs); font-family: var(--font-primary); color: var(--color-text-hint); font-weight: 500; }
 
-.tp-sidebar-nav { flex: 1; padding: 8px 0; display: flex; flex-direction: column; }
+.tp-sidebar-nav { 
+  flex: 1; 
+  padding: 8px 0; 
+  display: flex; 
+  flex-direction: column;
+  overflow-y: auto;
+}
 
 .tp-nav-group-label {
   font-size: 10px;
@@ -360,8 +409,48 @@ function handleAdminNavigate(e) {
   color: var(--color-text-hint);
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  padding: 16px 18px 6px;
+  padding: 16px 12px 6px 18px;
   margin-top: 4px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.tp-nav-group-label.clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.tp-nav-group-label.clickable:hover {
+  color: var(--color-text-secondary);
+}
+
+.tp-collapse-icon {
+  font-size: 16px !important;
+  width: auto !important;
+  color: var(--color-text-hint) !important;
+  transition: transform 0.2s ease;
+}
+
+.tp-group-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+}
+
+.tp-group-icon .material-icons {
+  font-size: 16px !important;
+  color: var(--color-text-hint) !important;
+}
+
+.tp-nav-group-items {
+  display: flex;
+  flex-direction: column;
 }
 
 .tp-sidebar-nav-item {
@@ -386,7 +475,6 @@ function handleAdminNavigate(e) {
 .tp-sidebar-nav-item:hover { 
   background: var(--color-surface); 
   color: var(--color-text-primary);
-  transform: translateX(2px);
 }
 .tp-sidebar-nav-item.active {
   background: linear-gradient(90deg, var(--color-primary-light) 0%, rgba(255,152,0,0.05) 100%);
@@ -441,6 +529,8 @@ function handleAdminNavigate(e) {
   flex-direction: column;
   gap: 12px;
   background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-surface) 100%);
+  margin-top: auto;
+  flex-shrink: 0;
 }
 .tp-footer-avatar {
   display: flex;
@@ -491,8 +581,13 @@ function handleAdminNavigate(e) {
   font-size: 18px;
 }
 
-/* Main content */
-.tp-admin-main { flex: 1; overflow-y: auto; padding: 28px 32px; }
+/* Main content - Liquid layout */
+.tp-admin-main { 
+  flex: 1; 
+  overflow-y: auto; 
+  padding: 24px 32px; 
+  min-width: 744px;
+}
 
 .tp-access-denied {
   display: flex;
@@ -603,76 +698,15 @@ function handleAdminNavigate(e) {
   }
 }
 
-/* Mobile Responsive Admin Shell */
-@media (max-width: 1023px) {
-  .tp-admin-shell.mobile-layout {
-    flex-direction: column;
+/* Desktop Responsive adjustments */
+@media (max-width: 1200px) {
+  .tp-sidebar {
+    width: 240px;
+    min-width: 240px;
+    max-width: 240px;
   }
-  .mobile-layout .tp-sidebar {
-    width: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
-    height: auto;
-    flex-shrink: 0;
-  }
-  .mobile-layout .tp-sidebar-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    padding: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-  .mobile-layout .tp-nav-group-label {
-    display: none;
-  }
-  .mobile-layout .tp-sidebar-nav-item {
-    width: auto;
-    border-radius: var(--radius-full);
-    border-left: none;
-    padding: 8px 16px;
-    margin: 4px;
-    background: var(--color-surface-2);
-    min-height: auto;
-  }
-  .mobile-layout .tp-sidebar-nav-item span:not(.tp-nav-icon) {
-    font-size: var(--text-sm);
-  }
-  .mobile-layout .tp-sidebar-nav-item.active {
-    background: var(--color-primary);
-    color: white;
-  }
-  .mobile-layout .tp-sidebar-nav-item.active .tp-nav-icon {
-    color: white;
-  }
-  .mobile-layout .tp-sidebar-footer {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 18px;
-  }
-  .mobile-layout .tp-footer-avatar {
-    width: 32px;
-    height: 32px;
-    margin-bottom: 0;
-  }
-  .mobile-layout .tp-footer-avatar .material-icons {
-    font-size: 20px;
-  }
-  .mobile-layout .tp-footer-info {
-    flex: 1;
-    margin-left: 12px;
-  }
-  .mobile-layout .tp-logout-btn {
-    width: auto;
-    margin-top: 0;
-    padding: 6px 12px;
-    min-height: auto;
-  }
-  .mobile-layout .tp-admin-main {
-    padding: 20px 16px;
+  .tp-admin-main {
+    padding: 20px 24px;
   }
 }
 </style>

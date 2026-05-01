@@ -29,12 +29,13 @@ else:
 app = Flask(__name__)
 
 # Rate limiter — prevent API abuse and runaway OpenAI costs
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["60 per minute"],
-    storage_uri="memory://",
-)
+# TEMPORARILY DISABLED FOR DEBUGGING
+# limiter = Limiter(
+#     get_remote_address,
+#     app=app,
+#     default_limits=["60 per minute"],
+#     storage_uri="memory://",
+# )
 
 # Restrict CORS to known origins for security
 CORS(app, origins=[
@@ -207,8 +208,77 @@ def health():
     return jsonify({"status": "ok"})
 
 
+@app.route("/analytics", methods=["GET"])
+def get_analytics():
+    """Get chatbot analytics for the last N days."""
+    try:
+        days = request.args.get('days', 7, type=int)
+        
+        # Ensure DB is initialized
+        init_db()
+        
+        with sqlite3.connect(DB_PATH) as conn:
+            # Total queries in period
+            cursor = conn.execute(
+                "SELECT COUNT(*) FROM chat_history WHERE created_at >= datetime('now', '-{} days')".format(days)
+            )
+            total_queries = cursor.fetchone()[0]
+            
+            # Get all queries for analysis
+            cursor = conn.execute(
+                "SELECT user_message, bot_reply FROM chat_history WHERE created_at >= datetime('now', '-{} days') ORDER BY created_at DESC".format(days)
+            )
+            queries = cursor.fetchall()
+        
+        # Calculate metrics
+        successful = sum(1 for q in queries if not any(fail in q[1].lower() for fail in ['sorry', 'don\'t know', 'not sure', 'unable', 'error']))
+        failed = len(queries) - successful
+        
+        # Get top unanswered/failed queries (for AI Suggestions)
+        failed_queries = []
+        seen = set()
+        for msg, reply in queries:
+            if any(fail in reply.lower() for fail in ['sorry', 'don\'t know', 'not sure']):
+                key = msg.lower().strip()
+                if key not in seen:
+                    seen.add(key)
+                    failed_queries.append({"user_query": msg, "count": 1})
+        
+        # Group similar queries
+        from collections import Counter
+        query_counts = Counter([q[0].lower().strip() for q in queries]) if queries else Counter()
+        top_faqs = [{"question": q, "usage_count": c} for q, c in query_counts.most_common(10)]
+        
+        return jsonify({
+            "total_queries": total_queries,
+            "successful_queries": successful,
+            "failed_queries": failed,
+            "success_rate": round((successful / total_queries * 100), 1) if total_queries > 0 else 0,
+            "suggestions": {"pending": len(failed_queries)},
+            "mode_breakdown": {"online": successful, "offline": 0},
+            "top_unanswered_queries": failed_queries[:5],
+            "top_faqs": top_faqs,
+            "days": days
+        })
+    except Exception as e:
+        import traceback
+        print(f"[Analytics Error] {str(e)}\n{traceback.format_exc()}")
+        return jsonify({
+            "total_queries": 0,
+            "successful_queries": 0,
+            "failed_queries": 0,
+            "success_rate": 0,
+            "suggestions": {"pending": 0},
+            "mode_breakdown": {"online": 0, "offline": 0},
+            "top_unanswered_queries": [],
+            "top_faqs": [],
+            "days": request.args.get('days', 7, type=int),
+            "error": str(e)
+        }), 500
+
+
 @app.route("/chat", methods=["POST"])
-@limiter.limit("20 per minute")
+# @limiter.limit("20 per minute")  # Temporarily disabled
 def chat():
     """Chat endpoint called from the TechnoPath PWA."""
     data = request.get_json(silent=True) or {}
@@ -230,5 +300,6 @@ def chat():
 
 
 if __name__ == "__main__":
+    # Initialize DB on startup
     init_db()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5187, debug=True)

@@ -1,5 +1,6 @@
 import json
 from django.utils import timezone
+from django.db import models
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status as http_status
@@ -264,4 +265,37 @@ class PublicDirectoryView(APIView):
             'office': user.office_location or None,
         } for user in users]
         
+        return Response(data)
+
+
+class UserListView(APIView):
+    """List all admin users for admin dashboard with optional search."""
+    permission_classes = [IsAnyAdmin]
+
+    def get(self, request):
+        users = AdminUser.objects.all().order_by('-created_at')
+        
+        # Search by username or display_name
+        search = request.query_params.get('search', '').strip().lower()
+        if search:
+            users = users.filter(
+                models.Q(username__icontains=search) | 
+                models.Q(display_name__icontains=search)
+            )
+        
+        # Limit results for performance
+        limit = min(int(request.query_params.get('limit', 50)), 100)
+        users = users[:limit]
+        
+        data = [{
+            'id': user.id,
+            'username': user.username,
+            'display_name': user.display_name,
+            'email': user.email,
+            'role': user.role,
+            'department': user.department,
+            'is_active': user.is_active,
+            'is_superuser': user.is_superuser,
+            'created_at': user.created_at.isoformat() if user.created_at else None,
+        } for user in users]
         return Response(data)

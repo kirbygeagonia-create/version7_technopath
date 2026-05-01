@@ -6,27 +6,60 @@
         <h1>FAQ / Chatbot Management</h1>
         <p class="subtitle">Manage chatbot knowledge base and FAQ entries</p>
       </div>
-      <button class="btn-primary" @click="showCreateModal = true">
+      <button v-if="activeTab === 'manual'" class="btn-primary" @click="showCreateModal = true">
         <span class="material-icons">add</span>
         Add FAQ
       </button>
+      <button v-else class="btn-primary" @click="runAnalysis" :disabled="isAnalyzing">
+        <span class="material-icons">auto_fix_high</span>
+        {{ isAnalyzing ? 'Analyzing...' : 'Run AI Analysis' }}
+      </button>
     </div>
 
-    <!-- Stats -->
-    <div class="stats-row">
-      <div class="stat-box">
-        <span class="stat-number">{{ faqs.length }}</span>
-        <span class="stat-label">Total FAQs</span>
-      </div>
-      <div class="stat-box">
-        <span class="stat-number">{{ categories.length }}</span>
-        <span class="stat-label">Categories</span>
-      </div>
-      <div class="stat-box">
-        <span class="stat-number">{{ faqs.filter(f => f.is_active).length }}</span>
-        <span class="stat-label">Active</span>
-      </div>
+    <!-- Main Tabs -->
+    <div class="main-tabs">
+      <button 
+        :class="['tab-btn', { active: activeTab === 'manual' }]"
+        @click="activeTab = 'manual'"
+      >
+        <span class="material-icons">list</span>
+        Manual FAQs
+        <span class="tab-badge">{{ faqs.length }}</span>
+      </button>
+      <button 
+        :class="['tab-btn', { active: activeTab === 'ai' }]"
+        @click="activeTab = 'ai'"
+      >
+        <span class="material-icons">psychology</span>
+        AI Suggestions
+        <span class="tab-badge warning">{{ suggestionCounts.pending }}</span>
+      </button>
+      <button 
+        :class="['tab-btn', { active: activeTab === 'analytics' }]"
+        @click="activeTab = 'analytics'"
+      >
+        <span class="material-icons">analytics</span>
+        Analytics
+      </button>
     </div>
+
+    <!-- Manual FAQs Tab -->
+    <div v-if="activeTab === 'manual'">
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-number">{{ faqs.length }}</span>
+          <span class="stat-label">Total FAQs</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-number">{{ categories.length }}</span>
+          <span class="stat-label">Categories</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-number">{{ faqs.filter(f => f.is_active).length }}</span>
+          <span class="stat-label">Active</span>
+        </div>
+      </div>
 
     <!-- Category Filter -->
     <div class="category-filter">
@@ -86,6 +119,223 @@
       <span class="material-icons">help_outline</span>
       <p>No FAQs found</p>
     </div>
+    </div><!-- End Manual FAQs Tab -->
+
+    <!-- AI Suggestions Tab -->
+    <div v-else-if="activeTab === 'ai'" class="ai-suggestions-tab">
+      <!-- Analysis Controls -->
+      <div class="analysis-controls">
+        <div class="control-group">
+          <label>Analysis Period (days)</label>
+          <input type="number" v-model.number="analyzeDays" min="1" max="90" class="admin-input" />
+        </div>
+        <div class="control-group">
+          <label>Min Query Count</label>
+          <input type="number" v-model.number="minQueryCount" min="1" max="10" class="admin-input" />
+        </div>
+        <div class="control-group">
+          <label>Similarity Threshold</label>
+          <input type="number" v-model.number="similarityThreshold" min="0.1" max="1.0" step="0.1" class="admin-input" />
+        </div>
+      </div>
+
+      <div v-if="analysisResult" class="analysis-result" :class="analysisResult.type">
+        <span class="material-icons">{{ analysisResult.type === 'success' ? 'check_circle' : 'info' }}</span>
+        {{ analysisResult.message }}
+      </div>
+
+      <!-- Suggestion Status Tabs -->
+      <div class="suggestion-tabs">
+        <button 
+          :class="['suggestion-tab', { active: suggestionTab === 'pending' }]"
+          @click="suggestionTab = 'pending'"
+        >
+          Pending ({{ suggestionCounts.pending }})
+        </button>
+        <button 
+          :class="['suggestion-tab', { active: suggestionTab === 'approved' }]"
+          @click="suggestionTab = 'approved'"
+        >
+          Approved ({{ suggestionCounts.approved }})
+        </button>
+        <button 
+          :class="['suggestion-tab', { active: suggestionTab === 'rejected' }]"
+          @click="suggestionTab = 'rejected'"
+        >
+          Rejected ({{ suggestionCounts.rejected }})
+        </button>
+      </div>
+
+      <!-- Suggestions List -->
+      <div v-if="loadingSuggestions" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading suggestions...</p>
+      </div>
+
+      <div v-else-if="filteredSuggestions.length === 0" class="empty-state">
+        <span class="material-icons">inbox</span>
+        <p>No {{ suggestionTab }} suggestions found</p>
+        <p v-if="suggestionTab === 'pending'" class="hint">
+          Click "Run AI Analysis" to generate new FAQ suggestions from chat logs
+        </p>
+      </div>
+
+      <div v-else class="suggestions-list">
+        <div 
+          v-for="suggestion in filteredSuggestions" 
+          :key="suggestion.id"
+          class="suggestion-card"
+          :class="{ expanded: expandedSuggestion === suggestion.id }"
+        >
+          <div class="suggestion-header" @click="toggleExpand(suggestion.id)">
+            <div class="suggestion-info">
+              <span class="category-badge" :class="suggestion.category">{{ suggestion.category }}</span>
+              <h4>{{ suggestion.suggested_question }}</h4>
+              <div class="suggestion-meta">
+                <span><span class="material-icons">repeat</span> {{ suggestion.query_count }} similar queries</span>
+                <span><span class="material-icons">psychology</span> {{ Math.round(suggestion.confidence_score * 100) }}% confidence</span>
+                <span><span class="material-icons">calendar_today</span> {{ formatDate(suggestion.created_at) }}</span>
+              </div>
+            </div>
+            <div v-if="suggestion.status === 'pending'" class="suggestion-actions">
+              <button class="btn-icon success" @click.stop="approveSuggestion(suggestion)" title="Approve">
+                <span class="material-icons">check</span>
+              </button>
+              <button class="btn-icon btn-danger" @click.stop="showRejectDialog(suggestion)" title="Reject">
+                <span class="material-icons">close</span>
+              </button>
+            </div>
+            <span v-else class="status-badge" :class="suggestion.status">{{ suggestion.status }}</span>
+          </div>
+
+          <div v-if="expandedSuggestion === suggestion.id" class="suggestion-details">
+            <div class="detail-section">
+              <label>Suggested Answer:</label>
+              <textarea 
+                v-if="suggestion.status === 'pending'"
+                v-model="suggestion.editAnswer"
+                class="admin-textarea"
+                rows="4"
+              ></textarea>
+              <p v-else class="answer-text">{{ suggestion.suggested_answer }}</p>
+            </div>
+            <div class="detail-row">
+              <div class="detail-section">
+                <label>Keywords:</label>
+                <input v-if="suggestion.status === 'pending'" v-model="suggestion.editKeywords" type="text" class="admin-input" />
+                <span v-else>{{ suggestion.keywords }}</span>
+              </div>
+              <div class="detail-section">
+                <label>Category:</label>
+                <select v-if="suggestion.status === 'pending'" v-model="suggestion.editCategory" class="admin-select">
+                  <option value="location">Location</option>
+                  <option value="schedule">Schedule</option>
+                  <option value="academic">Academic</option>
+                  <option value="services">Services</option>
+                  <option value="general">General</option>
+                </select>
+                <span v-else>{{ suggestion.category }}</span>
+              </div>
+            </div>
+            <div class="detail-section" v-if="suggestion.source_queries?.length">
+              <label>Sample Queries:</label>
+              <ul class="source-queries">
+                <li v-for="(query, idx) in suggestion.source_queries.slice(0, 5)" :key="idx">"{{ query }}"</li>
+              </ul>
+            </div>
+            <div v-if="suggestion.status === 'pending'" class="detail-actions">
+              <button class="btn-secondary" @click="saveSuggestionEdits(suggestion)">Save Changes</button>
+              <button class="btn-primary" @click="approveSuggestion(suggestion)">Approve & Create FAQ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- End AI Suggestions Tab -->
+
+    <!-- Analytics Tab -->
+    <div v-else-if="activeTab === 'analytics'" class="analytics-tab">
+      <div class="analytics-header">
+        <div class="analytics-filters">
+          <select v-model="analyticsDays" @change="loadAnalytics" class="admin-select">
+            <option value="7">Last 7 days</option>
+            <option value="14">Last 14 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
+          <button class="btn-secondary" @click="loadAnalytics">
+            <span class="material-icons">refresh</span>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <div v-if="analytics" class="analytics-content">
+        <!-- Key Metrics -->
+        <div class="analytics-grid">
+          <div class="metric-card">
+            <div class="metric-value">{{ analytics.total_queries }}</div>
+            <div class="metric-label">Total Queries</div>
+          </div>
+          <div class="metric-card success">
+            <div class="metric-value">{{ analytics.successful_queries }}</div>
+            <div class="metric-label">Successful</div>
+            <div class="metric-sub">{{ analytics.success_rate }}% rate</div>
+          </div>
+          <div class="metric-card danger">
+            <div class="metric-value">{{ analytics.failed_queries }}</div>
+            <div class="metric-label">Failed/Unanswered</div>
+          </div>
+          <div class="metric-card warning">
+            <div class="metric-value">{{ analytics.suggestions?.pending || 0 }}</div>
+            <div class="metric-label">Pending Suggestions</div>
+          </div>
+        </div>
+
+        <!-- Mode Breakdown -->
+        <div class="analytics-section">
+          <h4>Query Mode Breakdown</h4>
+          <div class="mode-breakdown">
+            <div class="mode-item">
+              <span class="mode-label">Online AI:</span>
+              <span class="mode-value">{{ analytics.mode_breakdown?.online || 0 }}</span>
+            </div>
+            <div class="mode-item">
+              <span class="mode-label">Offline FAQ:</span>
+              <span class="mode-value">{{ analytics.mode_breakdown?.offline || 0 }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Unanswered Queries -->
+        <div class="analytics-section" v-if="analytics.top_unanswered_queries?.length">
+          <h4>Top Unanswered Queries</h4>
+          <div class="unanswered-list">
+            <div v-for="(query, idx) in analytics.top_unanswered_queries" :key="idx" class="unanswered-item">
+              <span class="query-rank">#{{ idx + 1 }}</span>
+              <span class="query-text">{{ query.user_query }}</span>
+              <span class="query-count">{{ query.count }} times</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top FAQs -->
+        <div class="analytics-section" v-if="analytics.top_faqs?.length">
+          <h4>Most Used FAQs</h4>
+          <div class="top-faqs-list">
+            <div v-for="(faq, idx) in analytics.top_faqs" :key="idx" class="top-faq-item">
+              <span class="faq-rank">#{{ idx + 1 }}</span>
+              <span class="faq-question-text">{{ faq.question }}</span>
+              <span class="faq-usage">{{ faq.usage_count }} uses</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-else class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading analytics...</p>
+      </div>
+    </div><!-- End Analytics Tab -->
 
     <!-- Create/Edit Modal -->
     <div v-if="showCreateModal || showEditModal" class="modal-overlay" @click.self="closeModal">
@@ -146,14 +396,44 @@
         </div>
       </div>
     </div>
+
+    <!-- Reject Suggestion Dialog -->
+    <div v-if="showRejectDialog" class="modal-overlay" @click.self="showRejectDialog = false">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <span class="material-icons modal-icon">help_outline</span>
+          <h2>Reject Suggestion</h2>
+        </div>
+        <div class="modal-body">
+          <p>Add an optional note explaining why this suggestion is being rejected:</p>
+          <textarea 
+            v-model="rejectNote" 
+            placeholder="Review note (optional)..."
+            rows="3"
+          ></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" @click="showRejectDialog = false">Cancel</button>
+          <button class="btn-danger" @click="confirmReject">
+            <span class="material-icons">close</span>
+            Reject Suggestion
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import api from '../../services/api.js'
 import { showToast } from '../../services/toast.js'
 
+// Tab state
+const activeTab = ref('manual')
+const suggestionTab = ref('pending')
+
+// FAQ data
 const faqs = ref([])
 const searchQuery = ref('')
 const selectedCategory = ref('')
@@ -163,6 +443,20 @@ const showDeleteModal = ref(false)
 const faqToDelete = ref(null)
 const newCategory = ref('')
 
+// FAQ Maker AI state
+const suggestions = ref([])
+const analytics = ref(null)
+const analyticsDays = ref(7)
+const loadingSuggestions = ref(false)
+const isAnalyzing = ref(false)
+const expandedSuggestion = ref(null)
+const analysisResult = ref(null)
+
+// Analysis controls
+const analyzeDays = ref(7)
+const minQueryCount = ref(2)
+const similarityThreshold = ref(0.7)
+
 const form = ref({
   id: null,
   category: '',
@@ -170,6 +464,11 @@ const form = ref({
   answer: '',
   is_active: true
 })
+
+// Reject dialog
+const showRejectDialog = ref(false)
+const rejectSuggestion = ref(null)
+const rejectNote = ref('')
 
 const categories = computed(() => {
   const cats = [...new Set(faqs.value.map(f => f.category))]
@@ -184,6 +483,17 @@ const filteredFaqs = computed(() => {
       faq.answer.toLowerCase().includes(searchQuery.value.toLowerCase())
     return matchesCategory && matchesSearch
   })
+})
+
+const filteredSuggestions = computed(() => {
+  return suggestions.value.filter(s => s.status === suggestionTab.value)
+})
+
+const suggestionCounts = computed(() => {
+  const pending = suggestions.value.filter(s => s.status === 'pending').length
+  const approved = suggestions.value.filter(s => s.status === 'approved').length
+  const rejected = suggestions.value.filter(s => s.status === 'rejected').length
+  return { pending, approved, rejected }
 })
 
 function formatDate(date) {
@@ -265,7 +575,166 @@ async function deleteFaq() {
   }
 }
 
-onMounted(loadFaqs)
+onMounted(() => {
+  loadFaqs()
+  loadSuggestions()
+  loadAnalytics()
+})
+
+// FAQ Maker AI Methods
+async function loadSuggestions() {
+  loadingSuggestions.value = true
+  try {
+    const res = await api.get(`/chatbot/faq-suggestions/?status=${suggestionTab.value}`)
+    suggestions.value = res.data.map(s => ({
+      ...s,
+      editAnswer: s.suggested_answer,
+      editKeywords: s.keywords,
+      editCategory: s.category
+    }))
+  } catch (error) {
+    console.error('Error loading suggestions:', error)
+  } finally {
+    loadingSuggestions.value = false
+  }
+}
+
+async function loadAnalytics() {
+  try {
+    // Call Flask chatbot via proxy for analytics
+    const res = await fetch(`/chatbot-api/analytics?days=${analyticsDays.value}`)
+    if (!res.ok) throw new Error('Failed to fetch analytics')
+    analytics.value = await res.json()
+  } catch (error) {
+    console.error('Error loading analytics from chatbot:', error)
+    // Fallback: try Django backend
+    try {
+      const res = await api.get(`/chatbot/analytics/?days=${analyticsDays.value}`)
+      analytics.value = res.data
+    } catch (fallbackError) {
+      console.error('Fallback also failed:', fallbackError)
+    }
+  }
+}
+
+async function runAnalysis() {
+  isAnalyzing.value = true
+  analysisResult.value = null
+  
+  try {
+    const res = await api.post('/chatbot/faq-maker/analyze/', {
+      days: analyzeDays.value,
+      min_query_count: minQueryCount.value,
+      similarity_threshold: similarityThreshold.value
+    })
+    
+    analysisResult.value = {
+      type: res.data.suggestions_created > 0 ? 'success' : 'info',
+      message: res.data.message
+    }
+    
+    await Promise.all([
+      loadSuggestions(),
+      loadAnalytics()
+    ])
+  } catch (error) {
+    analysisResult.value = {
+      type: 'error',
+      message: error.response?.data?.error || 'Analysis failed. Please try again.'
+    }
+  } finally {
+    isAnalyzing.value = false
+  }
+}
+
+function toggleExpand(id) {
+  expandedSuggestion.value = expandedSuggestion.value === id ? null : id
+}
+
+async function saveSuggestionEdits(suggestion) {
+  try {
+    await api.put(`/chatbot/faq-suggestions/${suggestion.id}/`, {
+      suggested_answer: suggestion.editAnswer,
+      keywords: suggestion.editKeywords,
+      category: suggestion.editCategory
+    })
+    suggestion.suggested_answer = suggestion.editAnswer
+    suggestion.keywords = suggestion.editKeywords
+    suggestion.category = suggestion.editCategory
+    showToast('Changes saved', 'success')
+  } catch (error) {
+    console.error('Error saving edits:', error)
+    showToast('Failed to save changes', 'error')
+  }
+}
+
+async function approveSuggestion(suggestion) {
+  try {
+    // Save any pending edits first
+    if (suggestion.editAnswer !== suggestion.suggested_answer ||
+        suggestion.editKeywords !== suggestion.keywords ||
+        suggestion.editCategory !== suggestion.category) {
+      await saveSuggestionEdits(suggestion)
+    }
+    
+    await api.post(`/chatbot/faq-suggestions/${suggestion.id}/approve/`, {
+      action: 'approve'
+    })
+    
+    suggestions.value = suggestions.value.filter(s => s.id !== suggestion.id)
+    await Promise.all([loadFaqs(), loadAnalytics()])
+    showToast('FAQ created successfully!', 'success')
+  } catch (error) {
+    console.error('Error approving suggestion:', error)
+    showToast('Failed to approve suggestion', 'error')
+  }
+}
+
+function showRejectDialogFn(suggestion) {
+  rejectSuggestion.value = suggestion
+  rejectNote.value = ''
+  showRejectDialog.value = true
+}
+
+async function confirmReject() {
+  if (!rejectSuggestion.value) return
+  
+  try {
+    await api.post(`/chatbot/faq-suggestions/${rejectSuggestion.value.id}/approve/`, {
+      action: 'reject',
+      review_note: rejectNote.value
+    })
+    
+    suggestions.value = suggestions.value.filter(s => s.id !== rejectSuggestion.value.id)
+    showRejectDialog.value = false
+    rejectSuggestion.value = null
+    await loadAnalytics()
+    showToast('Suggestion rejected', 'success')
+  } catch (error) {
+    console.error('Error rejecting suggestion:', error)
+    showToast('Failed to reject suggestion', 'error')
+  }
+}
+
+// Watch for tab changes
+watch(suggestionTab, () => {
+  loadSuggestions()
+})
+
+watch(activeTab, (newTab) => {
+  if (newTab === 'ai') {
+    loadSuggestions()
+  } else if (newTab === 'analytics') {
+    loadAnalytics()
+  }
+})
+
+// Load data on mount
+onMounted(() => {
+  loadFaqs()
+  loadSuggestions()
+  loadAnalytics()
+})
 </script>
 
 <style scoped>
@@ -684,5 +1153,515 @@ onMounted(loadFaqs)
   font-size: var(--text-base);
   color: var(--color-text-secondary);
   margin-top: 8px;
+}
+
+/* Main Tabs */
+.main-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: 12px;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.tab-btn.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.tab-badge.warning {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* AI Suggestions Tab */
+.ai-suggestions-tab {
+  animation: fadeIn 0.3s ease;
+}
+
+.analysis-controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.control-group label {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.control-group input {
+  width: 100px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+}
+
+.analysis-result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+}
+
+.analysis-result.success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.analysis-result.info {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+.analysis-result.error {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+/* Suggestion Tabs */
+.suggestion-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.suggestion-tab {
+  padding: 8px 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.suggestion-tab:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.suggestion-tab.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+/* Suggestions List */
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.suggestion-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.suggestion-card:hover {
+  border-color: var(--color-primary);
+}
+
+.suggestion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px;
+  cursor: pointer;
+  background: var(--color-surface);
+}
+
+.suggestion-info {
+  flex: 1;
+}
+
+.suggestion-info h4 {
+  margin: 8px 0;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.suggestion-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.suggestion-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.suggestion-meta .material-icons {
+  font-size: 14px;
+}
+
+.suggestion-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.suggestion-details {
+  padding: 16px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.detail-section {
+  margin-bottom: 16px;
+}
+
+.detail-section label {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
+.answer-text {
+  padding: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  white-space: pre-wrap;
+  font-size: var(--text-sm);
+}
+
+.source-queries {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.source-queries li {
+  padding: 8px 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  margin-bottom: 4px;
+  font-style: italic;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.detail-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.btn-icon.success {
+  color: var(--color-success);
+}
+
+.btn-icon.success:hover {
+  background: var(--color-success-bg);
+  border-color: var(--color-success);
+}
+
+/* Analytics Tab */
+.analytics-tab {
+  animation: fadeIn 0.3s ease;
+}
+
+.analytics-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.analytics-filters {
+  display: flex;
+  gap: 8px;
+}
+
+.analytics-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.metric-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  text-align: center;
+  border-left: 4px solid var(--color-border);
+}
+
+.metric-card.success {
+  border-left-color: var(--color-success);
+}
+
+.metric-card.danger {
+  border-left-color: var(--color-danger);
+}
+
+.metric-card.warning {
+  border-left-color: var(--color-warning);
+}
+
+.metric-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.metric-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+.metric-sub {
+  font-size: var(--text-xs);
+  color: var(--color-success);
+  margin-top: 4px;
+}
+
+.analytics-section {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.analytics-section h4 {
+  margin: 0 0 12px 0;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.mode-breakdown {
+  display: flex;
+  gap: 24px;
+}
+
+.mode-item {
+  display: flex;
+  gap: 8px;
+  font-size: var(--text-sm);
+}
+
+.mode-label {
+  color: var(--color-text-secondary);
+}
+
+.mode-value {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.unanswered-list, .top-faqs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.unanswered-item, .top-faq-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+}
+
+.query-rank, .faq-rank {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.query-text, .faq-question-text {
+  flex: 1;
+  font-size: var(--text-sm);
+}
+
+.query-count, .faq-usage {
+  font-size: var(--text-xs);
+  color: var(--color-text-hint);
+}
+
+/* Loading & Empty States */
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-text-hint);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--color-surface-2);
+  border-top: 4px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.empty-state .hint {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-top: 8px;
+}
+
+/* Category Badge */
+.category-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.category-badge.location { background: #e3f2fd; color: #1976d2; }
+.category-badge.schedule { background: #f3e5f5; color: #7b1fa2; }
+.category-badge.academic { background: #e8f5e9; color: #388e3c; }
+.category-badge.services { background: #fff3e0; color: #f57c00; }
+.category-badge.general { background: #f5f5f5; color: #616161; }
+
+/* Reject Dialog */
+.reject-dialog textarea {
+  width: 100%;
+  margin-top: 12px;
+}
+
+/* Form Elements */
+.admin-input, .admin-select, .admin-textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.admin-input:focus, .admin-select:focus, .admin-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.admin-textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .analysis-controls {
+    flex-direction: column;
+  }
+  
+  .control-group input {
+    width: 100%;
+  }
+  
+  .detail-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .suggestion-header {
+    flex-direction: column;
+  }
+  
+  .suggestion-actions {
+    margin-top: 12px;
+  }
+  
+  .analytics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>

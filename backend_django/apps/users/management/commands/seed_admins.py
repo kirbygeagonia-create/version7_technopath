@@ -5,7 +5,7 @@ DEFAULT_ADMINS = [
     # ── Super Admin ───────────────────────────────────────────
     {
         'username':       'safety_admin',
-        'password':       'TechnoPath@Safety2024!',
+        'password':       '123',
         'role':           'super_admin',
         'department':     'safety_security',
         'display_name':   'Safety and Security Office',
@@ -15,7 +15,7 @@ DEFAULT_ADMINS = [
     # ── Dean ─────────────────────────────────────────────────
     {
         'username':       'dean_seait',
-        'password':       'TechnoPath@Dean2024!',
+        'password':       '123',
         'role':           'dean',
         'department':     'office_of_the_dean',
         'display_name':   'Office of the Dean',
@@ -24,7 +24,7 @@ DEFAULT_ADMINS = [
     # ── College Deans ─────────────────────────────────────────
     {
         'username':       'dean_agriculture',
-        'password':       'TechnoPath@AgriDean2024!',
+        'password':       '123',
         'role':           'dean',
         'department':     'college_agriculture',
         'display_name':   'Dean — College of Agriculture and Fisheries',
@@ -32,7 +32,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'dean_criminology',
-        'password':       'TechnoPath@CrimDean2024!',
+        'password':       '123',
         'role':           'dean',
         'department':     'college_criminology',
         'display_name':   'Dean — College of Criminal Justice Education',
@@ -40,7 +40,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'dean_business',
-        'password':       'TechnoPath@BusDean2024!',
+        'password':       '123',
         'role':           'dean',
         'department':     'college_business',
         'display_name':   'Dean — College of Business and Good Governance',
@@ -48,7 +48,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'dean_ict',
-        'password':       'TechnoPath@ICTDean2024!',
+        'password':       '123',
         'role':           'dean',
         'department':     'college_ict',
         'display_name':   'Dean — College of Information and Communication Technology',
@@ -56,7 +56,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'dean_civil_eng',
-        'password':       'TechnoPath@CivEngDean2024!',
+        'password':       '123',
         'role':           'dean',
         'department':     'dept_civil_engineering',
         'display_name':   'Dean — Department of Civil Engineering',
@@ -64,7 +64,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'dean_teacher_ed',
-        'password':       'TechnoPath@TeachEdDean2024!',
+        'password':       '123',
         'role':           'dean',
         'department':     'college_teacher_education',
         'display_name':   'Dean — College of Teacher Education',
@@ -72,7 +72,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'dean_tesda',
-        'password':       'TechnoPath@TESDADean2024!',
+        'password':       '123',
         'role':           'dean',
         'department':     'tesda',
         'display_name':   'Dean — TESDA',
@@ -80,7 +80,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'dean_gen_ed',
-        'password':       'TechnoPath@GenEdDean2024!',
+        'password':       '123',
         'role':           'dean',
         'department':     'general_education',
         'display_name':   'Dean — General Education Department',
@@ -89,7 +89,7 @@ DEFAULT_ADMINS = [
     # ── Basic Education Dean ──────────────────────────────────
     {
         'username':       'dean_basic_ed',
-        'password':       'TechnoPath@BasicEdDean2024!',
+        'password':       '123',
         'role':           'dean',
         'department':     'basic_education',
         'display_name':   'Dean — Basic Education (Elem / JHS / SHS)',
@@ -98,7 +98,7 @@ DEFAULT_ADMINS = [
     # ── College Program Heads ─────────────────────────────────
     {
         'username':       'head_agriculture',
-        'password':       'TechnoPath@Agri2024!',
+        'password':       '123',
         'role':           'program_head',
         'department':     'college_agriculture',
         'display_name':   'Program Head — College of Agriculture and Fisheries',
@@ -106,7 +106,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'head_criminology',
-        'password':       'TechnoPath@Crim2024!',
+        'password':       '123',
         'role':           'program_head',
         'department':     'college_criminology',
         'display_name':   'Program Head — College of Criminal Justice Education',
@@ -114,7 +114,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'head_business',
-        'password':       'TechnoPath@Bus2024!',
+        'password':       '123',
         'role':           'program_head',
         'department':     'college_business',
         'display_name':   'Program Head — College of Business and Good Governance',
@@ -122,7 +122,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'head_ict',
-        'password':       'TechnoPath@ICT2024!',
+        'password':       '123',
         'role':           'program_head',
         'department':     'college_ict',
         'display_name':   'Program Head — College of Information and Communication Technology',
@@ -130,7 +130,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'head_civil_eng',
-        'password':       'TechnoPath@CivEng2024!',
+        'password':       '123',
         'role':           'program_head',
         'department':     'dept_civil_engineering',
         'display_name':   'Program Head — Department of Civil Engineering',
@@ -138,7 +138,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'head_teacher_ed',
-        'password':       'TechnoPath@TeachEd2024!',
+        'password':       '123',
         'role':           'program_head',
         'department':     'college_teacher_education',
         'display_name':   'Program Head — College of Teacher Education',
@@ -146,7 +146,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'head_tesda',
-        'password':       'TechnoPath@TESDA2024!',
+        'password':       '123',
         'role':           'program_head',
         'department':     'tesda',
         'display_name':   'TESDA Coordinator — SEAIT',
@@ -154,7 +154,7 @@ DEFAULT_ADMINS = [
     },
     {
         'username':       'head_gen_ed',
-        'password':       'TechnoPath@GenEd2024!',
+        'password':       '123',
         'role':           'program_head',
         'department':     'general_education',
         'display_name':   'Program Head — General Education Department',
@@ -163,7 +163,7 @@ DEFAULT_ADMINS = [
     # ── Basic Education Head ──────────────────────────────────
     {
         'username':       'head_basic_ed',
-        'password':       'TechnoPath@BasicEd2024!',
+        'password':       '123',
         'role':           'basic_ed_head',
         'department':     'basic_education',
         'display_name':   'Department Head — Basic Education (Elem / JHS / SHS)',

@@ -6,13 +6,21 @@
         <p class="subtitle">Manage navigation nodes and connections</p>
       </div>
       <div class="header-actions">
+        <button class="btn-secondary" @click="showMapGallery = true">
+          <span class="material-icons">map</span>
+          Map Gallery
+        </button>
+        <button class="btn-secondary" @click="showImportModal = true">
+          <span class="material-icons">upload</span>
+          Import Map
+        </button>
         <button class="btn-secondary" @click="resetView">
           <span class="material-icons">refresh</span>
           Reset
         </button>
-        <button class="btn-primary" @click="showAddNodeModal = true">
+        <button class="btn-primary" @click="editorMode = 'add'">
           <span class="material-icons">add_location</span>
-          Add Node
+          Add Node (Click Map)
         </button>
       </div>
     </div>
@@ -34,6 +42,22 @@
       <div class="stat-box">
         <span class="stat-number">{{ nodes.filter(n => n.type === 'junction').length }}</span>
         <span class="stat-label">Junctions</span>
+      </div>
+    </div>
+
+    <!-- How to Create Paths -->
+    <div class="help-section">
+      <div class="help-title">
+        <span class="material-icons">help_outline</span>
+        How to Create Navigation Paths
+      </div>
+      <div class="help-content">
+        <ol>
+          <li><strong>Add Nodes:</strong> Click "Add Node" button → Enter name (e.g., "gate", "ground_cr") and X,Y coordinates → Save</li>
+          <li><strong>Connect Nodes:</strong> Click the "Connect Nodes" (timeline) icon → Click first node → Click second node → Enter distance → Connection created!</li>
+          <li><strong>Test:</strong> Go to Navigate page, select start and end points, click "Find Route"</li>
+        </ol>
+        <p class="help-note"><strong>Note:</strong> SVG ID is optional - only needed if linking to an SVG element. Name is required for route finding.</p>
       </div>
     </div>
 
@@ -59,20 +83,57 @@
         <button class="btn-icon" :class="{ active: editorMode === 'connect' }" @click="editorMode = 'connect'" title="Connect Nodes">
           <span class="material-icons">timeline</span>
         </button>
+        <div class="toolbar-divider"></div>
+        <div class="zoom-controls">
+          <button class="btn-icon" @click="canvasZoomOut" title="Zoom Out">
+            <span class="material-icons">zoom_out</span>
+          </button>
+          <span class="zoom-level">{{ Math.round(canvasScale * 100) }}%</span>
+          <button class="btn-icon" @click="canvasZoomIn" title="Zoom In">
+            <span class="material-icons">zoom_in</span>
+          </button>
+          <button class="btn-icon" @click="canvasReset" title="Reset View">
+            <span class="material-icons">center_focus_strong</span>
+          </button>
+        </div>
+        <div class="toolbar-divider"></div>
+        <div class="map-selector">
+          <span class="material-icons">map</span>
+          <select v-model="selectedMap" @change="onMapChange">
+            <option value="">No Map</option>
+            <option v-for="map in availableMaps" :key="map.filename" :value="map.url">
+              {{ map.filename }}
+            </option>
+          </select>
+        </div>
         <div class="toolbar-info">{{ editorMode === 'select' ? 'Click to select, drag to move' : editorMode === 'add' ? 'Click canvas to add node' : 'Click two nodes to connect' }}</div>
       </div>
-      <canvas
-        ref="graphCanvas"
-        class="graph-canvas"
+      <div class="canvas-wrapper" ref="canvasWrapper"
         @mousedown="onCanvasMouseDown"
         @mousemove="onCanvasMouseMove"
         @mouseup="onCanvasMouseUp"
         @wheel="onCanvasWheel"
-      ></canvas>
-      <div class="graph-legend">
-        <div class="legend-item"><span class="legend-dot entrance"></span>Entrance</div>
-        <div class="legend-item"><span class="legend-dot room"></span>Room</div>
-        <div class="legend-item"><span class="legend-dot junction"></span>Junction</div>
+      >
+        <div class="canvas-transform" :style="canvasTransformStyle">
+          <img 
+            v-if="selectedMap" 
+            :src="getFullMapUrl(selectedMap)" 
+            class="canvas-background"
+            @load="onMapLoaded"
+            @error="onMapError"
+            draggable="false"
+          />
+          <canvas
+            ref="graphCanvas"
+            class="graph-canvas"
+            :class="{ 'with-background': selectedMap }"
+          ></canvas>
+        </div>
+        <div class="graph-legend">
+          <div class="legend-item"><span class="legend-dot entrance"></span>Entrance</div>
+          <div class="legend-item"><span class="legend-dot room"></span>Room</div>
+          <div class="legend-item"><span class="legend-dot junction"></span>Junction</div>
+        </div>
       </div>
     </div>
 
@@ -181,19 +242,300 @@
         </div>
       </div>
     </div>
+
+    <!-- Import Map Modal -->
+    <div v-if="showImportModal" class="modal-overlay" @click.self="closeImportModal">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h2>Import Navigation Map</h2>
+          <button class="btn-close" @click="closeImportModal">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="import-tabs">
+            <button 
+              :class="['tab-btn', { active: importTab === 'json' }]" 
+              @click="importTab = 'json'"
+            >
+              JSON Graph
+            </button>
+            <button 
+              :class="['tab-btn', { active: importTab === 'svg' }]" 
+              @click="importTab = 'svg'"
+            >
+              SVG Map
+            </button>
+          </div>
+
+          <!-- JSON Import Tab -->
+          <div v-if="importTab === 'json'" class="import-section">
+            <p class="import-desc">Import navigation nodes and edges from JSON file.</p>
+            <div class="file-input-wrapper">
+              <input 
+                type="file" 
+                ref="jsonFileInput"
+                accept=".json" 
+                @change="handleJsonFileSelect"
+                class="file-input"
+              />
+              <div class="file-drop-zone" @click="$refs.jsonFileInput.click()">
+                <span class="material-icons">upload_file</span>
+                <p>{{ jsonFile ? jsonFile.name : 'Click to select JSON file' }}</p>
+                <small>Supported: nodes/edges JSON format</small>
+              </div>
+            </div>
+            <div v-if="jsonPreview" class="json-preview">
+              <h4>Preview:</h4>
+              <pre>{{ jsonPreview }}</pre>
+            </div>
+          </div>
+
+          <!-- SVG Import Tab -->
+          <div v-if="importTab === 'svg'" class="import-section">
+            <p class="import-desc">Upload a new SVG campus map file.</p>
+            <div class="file-input-wrapper">
+              <input 
+                type="file" 
+                ref="svgFileInput"
+                accept=".svg" 
+                @change="handleSvgFileSelect"
+                class="file-input"
+              />
+              <div class="file-drop-zone" @click="$refs.svgFileInput.click()">
+                <span class="material-icons">image</span>
+                <p>{{ svgFile ? svgFile.name : 'Click to select SVG file' }}</p>
+                <small>Upload new campus map</small>
+              </div>
+            </div>
+            <div v-if="svgPreview" class="svg-preview">
+              <img :src="svgPreview" alt="SVG Preview" />
+            </div>
+          </div>
+
+          <div v-if="importError" class="import-error">
+            <span class="material-icons">error</span>
+            {{ importError }}
+          </div>
+          <div v-if="importSuccess" class="import-success">
+            <span class="material-icons">check_circle</span>
+            {{ importSuccess }}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" @click="closeImportModal">Cancel</button>
+          <button 
+            class="btn-primary" 
+            @click="submitImport"
+            :disabled="!canImport || isImporting"
+          >
+            <span v-if="isImporting" class="material-icons spinning">sync</span>
+            <span v-else class="material-icons">upload</span>
+            {{ isImporting ? 'Importing...' : 'Import' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Gallery Modal -->
+    <div v-if="showMapGallery" class="modal-overlay" @click.self="closeMapGallery">
+      <div class="modal-dialog map-gallery-dialog">
+        <div class="modal-header">
+          <h2>Map Gallery</h2>
+          <button class="btn-close" @click="closeMapGallery">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="gallery-desc">
+            View and manage uploaded SVG campus maps. 
+            <strong>{{ maps.length }}</strong> map(s) available.
+          </p>
+          
+          <div v-if="loadingMaps" class="loading-maps">
+            <span class="material-icons spinning">sync</span>
+            Loading maps...
+          </div>
+          
+          <div v-else-if="maps.length === 0" class="no-maps">
+            <span class="material-icons">map</span>
+            <p>No maps uploaded yet.</p>
+            <button class="btn-secondary" @click="switchToImport">
+              <span class="material-icons">upload</span>
+              Import Your First Map
+            </button>
+          </div>
+          
+          <div v-else class="maps-grid">
+            <div 
+              v-for="map in maps" 
+              :key="map.filename"
+              class="map-card"
+              :class="{ active: map.is_active }"
+            >
+              <div class="map-preview">
+                <img 
+                  :src="getFullMapUrl(map.url)" 
+                  :alt="map.filename"
+                  @error="$event.target.src = '/assets/SEAITMAP.svg'"
+                />
+                <div v-if="map.is_active" class="active-badge">
+                  <span class="material-icons">check_circle</span>
+                  Active
+                </div>
+              </div>
+              <div class="map-info">
+                <h4>{{ map.filename }}</h4>
+                <p class="map-meta">
+                  {{ formatFileSize(map.size) }} • {{ formatDate(map.uploaded_at) }}
+                </p>
+                <div class="map-actions">
+                  <button 
+                    class="btn-icon" 
+                    @click="viewMap(map)"
+                    title="View Full Size"
+                  >
+                    <span class="material-icons">open_in_new</span>
+                  </button>
+                  <button 
+                    class="btn-icon btn-danger" 
+                    @click="deleteMap(map)"
+                    title="Delete Map"
+                  >
+                    <span class="material-icons">delete</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" @click="closeMapGallery">Close</button>
+          <button class="btn-primary" @click="switchToImport">
+            <span class="material-icons">upload</span>
+            Import New Map
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Size Map Viewer -->
+    <div v-if="viewingMap" class="modal-overlay map-viewer-overlay" @click.self="closeMapViewer">
+      <div class="map-viewer">
+        <div class="map-viewer-header">
+          <h3>{{ viewingMap.filename }}</h3>
+          <button class="btn-close" @click="closeMapViewer">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        <div class="map-viewer-content">
+          <img :src="getFullMapUrl(viewingMap.url)" :alt="viewingMap.filename" />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import api from '../../services/api.js'
 import { showToast } from '../../services/toast.js'
+import { useLocations } from '../../composables/useLocations.js'
 
 const nodes = ref([])
+const { locations, loadLocations } = useLocations()
 const edges = ref([])
 const buildings = ref([])
 const showAddNodeModal = ref(false)
 const showEditNodeModal = ref(false)
+const showImportModal = ref(false)
+
+// Import state
+const importTab = ref('json')
+const jsonFile = ref(null)
+const jsonPreview = ref('')
+const svgFile = ref(null)
+const svgPreview = ref('')
+const importError = ref('')
+const importSuccess = ref('')
+const isImporting = ref(false)
+const jsonFileInput = ref(null)
+const svgFileInput = ref(null)
+
+const canImport = computed(() => {
+  return importTab.value === 'json' ? jsonFile.value !== null : svgFile.value !== null
+})
+
+// Map Gallery state
+const showMapGallery = ref(false)
+const maps = ref([])
+const loadingMaps = ref(false)
+const viewingMap = ref(null)
+
+// Map selector for canvas background
+const selectedMap = ref('/SEAITMAP.svg')
+const availableMaps = ref([{ filename: 'SEAITMAP.svg', url: '/SEAITMAP.svg', is_active: true }])
+const canvasWrapper = ref(null)
+
+// Canvas zoom/pan state
+const canvasScale = ref(1)
+const canvasOffset = ref({ x: 0, y: 0 })
+const isPanning = ref(false)
+const panStart = ref({ x: 0, y: 0 })
+
+const canvasTransformStyle = computed(() => ({
+  transform: `translate(${canvasOffset.value.x}px, ${canvasOffset.value.y}px) scale(${canvasScale.value})`,
+  transformOrigin: '0 0'
+}))
+
+// Watch for gallery opening to load maps
+watch(showMapGallery, (isOpen) => {
+  if (isOpen) {
+    loadMaps()
+  }
+})
+
+// Load available maps for selector
+async function loadAvailableMaps() {
+  try {
+    const response = await api.get('/navigation/maps/')
+    availableMaps.value = response.data.maps || []
+    // Auto-select first map if none selected and maps available
+    if (!selectedMap.value && availableMaps.value.length > 0) {
+      selectedMap.value = availableMaps.value[0].url
+    }
+    // Fallback to SEAITMAP.svg if no maps loaded
+    if (availableMaps.value.length === 0) {
+      availableMaps.value = [{ filename: 'SEAITMAP.svg', url: '/SEAITMAP.svg', is_active: true }]
+      if (!selectedMap.value) {
+        selectedMap.value = '/SEAITMAP.svg'
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load maps for selector:', error)
+    // Fallback to SEAITMAP.svg on error
+    availableMaps.value = [{ filename: 'SEAITMAP.svg', url: '/SEAITMAP.svg', is_active: true }]
+    if (!selectedMap.value) {
+      selectedMap.value = '/SEAITMAP.svg'
+    }
+  }
+}
+
+function onMapChange() {
+  // Redraw canvas when map changes
+  drawCanvas()
+  showToast(selectedMap.value ? 'Map loaded on canvas' : 'Map background removed', 'info')
+}
+
+function onMapLoaded() {
+  console.log('Map loaded successfully')
+  drawCanvas()
+}
+
+function onMapError() {
+  showToast('Failed to load map image', 'error')
+  selectedMap.value = ''
+}
 
 const nodeForm = ref({
   id: null,
@@ -231,6 +573,164 @@ function closeModal() {
   nodeForm.value = { id: null, map_svg_id: '', name: '', node_type: 'room', facility: null, floor: 1, x: 0.5, y: 0.5 }
 }
 
+// Import Map Functions
+function closeImportModal() {
+  showImportModal.value = false
+  resetImportState()
+}
+
+function resetImportState() {
+  importTab.value = 'json'
+  jsonFile.value = null
+  jsonPreview.value = ''
+  svgFile.value = null
+  svgPreview.value = ''
+  importError.value = ''
+  importSuccess.value = ''
+  isImporting.value = false
+  if (jsonFileInput.value) jsonFileInput.value.value = ''
+  if (svgFileInput.value) svgFileInput.value.value = ''
+}
+
+function handleJsonFileSelect(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  
+  jsonFile.value = file
+  importError.value = ''
+  
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    try {
+      const content = JSON.parse(e.target.result)
+      jsonPreview.value = JSON.stringify(content, null, 2).substring(0, 500) + '...'
+    } catch (err) {
+      importError.value = 'Invalid JSON file: ' + err.message
+      jsonPreview.value = ''
+    }
+  }
+  reader.readAsText(file)
+}
+
+function handleSvgFileSelect(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  
+  svgFile.value = file
+  importError.value = ''
+  
+  // Create preview URL
+  svgPreview.value = URL.createObjectURL(file)
+}
+
+async function submitImport() {
+  if (importTab.value === 'json' && !jsonFile.value) {
+    importError.value = 'Please select a JSON file'
+    return
+  }
+  if (importTab.value === 'svg' && !svgFile.value) {
+    importError.value = 'Please select an SVG file'
+    return
+  }
+  
+  isImporting.value = true
+  importError.value = ''
+  importSuccess.value = ''
+  
+  try {
+    const formData = new FormData()
+    const file = importTab.value === 'json' ? jsonFile.value : svgFile.value
+    formData.append('file', file)
+    
+    const response = await api.post('/navigation/import/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    
+    importSuccess.value = response.data.message || 'Import successful!'
+    showToast(importSuccess.value, 'success')
+    
+    // Refresh data after successful import
+    await loadData()
+    
+    // Close modal after a short delay
+    setTimeout(() => {
+      closeImportModal()
+    }, 1500)
+  } catch (error) {
+    importError.value = error.response?.data?.error || 'Import failed. Please try again.'
+    showToast(importError.value, 'error')
+  } finally {
+    isImporting.value = false
+  }
+}
+
+// Map Gallery Functions
+function closeMapGallery() {
+  showMapGallery.value = false
+  viewingMap.value = null
+}
+
+function switchToImport() {
+  closeMapGallery()
+  showImportModal.value = true
+}
+
+async function loadMaps() {
+  loadingMaps.value = true
+  try {
+    const response = await api.get('/navigation/maps/')
+    maps.value = response.data.maps || []
+  } catch (error) {
+    console.error('Failed to load maps:', error)
+    showToast('Failed to load maps', 'error')
+    maps.value = []
+  } finally {
+    loadingMaps.value = false
+  }
+}
+
+function getFullMapUrl(url) {
+  // Prepend API base URL if relative
+  if (url.startsWith('/')) {
+    return `${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}${url}`
+  }
+  return url
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B'
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+}
+
+function formatDate(timestamp) {
+  return new Date(timestamp * 1000).toLocaleDateString()
+}
+
+function viewMap(map) {
+  viewingMap.value = map
+}
+
+function closeMapViewer() {
+  viewingMap.value = null
+}
+
+async function deleteMap(map) {
+  if (!confirm(`Delete map "${map.filename}"? This cannot be undone.`)) {
+    return
+  }
+  
+  try {
+    await api.delete(`/navigation/maps/${encodeURIComponent(map.filename)}/`)
+    showToast(`Map ${map.filename} deleted`, 'success')
+    await loadMaps() // Refresh the list
+  } catch (error) {
+    showToast('Failed to delete map', 'error')
+  }
+}
+
 function resetView() {
   loadData()
 }
@@ -245,12 +745,26 @@ async function loadData() {
     nodes.value = nodesRes.data
     edges.value = edgesRes.data
     buildings.value = buildingsRes.data
+    
+    // Sync to shared locations composable (for NavigateView access)
+    locations.value = nodesRes.data.map(n => ({
+      id: n.id,
+      name: n.name,
+      type: n.node_type || 'location',
+      x: n.x_position || n.x || 0,
+      y: n.y_position || n.y || 0,
+      floor: n.floor || 1,
+      map_svg_id: n.map_svg_id,
+      is_deleted: n.is_deleted || false
+    }))
   } catch (e) {
     // Show empty state — no fake mock data that misleads admins
     console.warn('[AdminNavGraph] Could not load navigation data:', e.message)
     nodes.value     = []
     edges.value     = []
     buildings.value = []
+    // Fall back to shared locations if available
+    await loadLocations()
   }
 }
 
@@ -296,24 +810,34 @@ async function deleteNode(node) {
 }
 
 async function createEdge(fromNodeId, toNodeId) {
+  // Ask for distance between nodes
+  const distanceInput = prompt('Enter distance between these points (in meters):', '10')
+  if (!distanceInput) return // User cancelled
+
+  const distance = parseInt(distanceInput, 10)
+  if (isNaN(distance) || distance <= 0) {
+    showToast('Please enter a valid distance', 'error')
+    return
+  }
+
   try {
     await api.post('/navigation/edges/', {
       from_node: fromNodeId,
       to_node: toNodeId,
-      distance: 10,
+      distance: distance,
       is_bidirectional: true
     })
+    showToast('Connection created successfully', 'success')
     loadData() // Refresh edges from backend
   } catch (e) {
     console.error('Failed to create edge:', e)
+    showToast('Failed to create connection', 'error')
   }
 }
 
 // Canvas Node Editor
 const graphCanvas = ref(null)
 const editorMode = ref('select') // 'select', 'add', 'connect'
-const canvasScale = ref(1)
-const canvasOffset = ref({ x: 0, y: 0 })
 const isDragging = ref(false)
 const dragNode = ref(null)
 const dragStart = ref({ x: 0, y: 0 })
@@ -473,47 +997,71 @@ function drawArrow(ctx, fromX, fromY, toX, toY) {
   ctx.stroke()
 }
 
-function nodeToCanvas(node) {
-  const x = (node.x * CANVAS_WIDTH + canvasOffset.value.x) * canvasScale.value
-  const y = (node.y * CANVAS_HEIGHT + canvasOffset.value.y) * canvasScale.value
+// Convert screen coordinates to canvas coordinates (accounting for zoom/pan)
+function screenToCanvas(screenX, screenY) {
+  const wrapper = canvasWrapper.value
+  if (!wrapper) return { x: screenX, y: screenY }
+  const rect = wrapper.getBoundingClientRect()
+  // Adjust for offset and scale
+  const x = (screenX - rect.left - canvasOffset.value.x) / canvasScale.value
+  const y = (screenY - rect.top - canvasOffset.value.y) / canvasScale.value
   return { x, y }
 }
 
-function canvasToNode(x, y) {
-  const nodeX = (x / canvasScale.value - canvasOffset.value.x) / CANVAS_WIDTH
-  const nodeY = (y / canvasScale.value - canvasOffset.value.y) / CANVAS_HEIGHT
+function nodeToCanvas(node) {
+  // Node coordinates (0-1) to canvas coordinates
+  const x = node.x * CANVAS_WIDTH * canvasScale.value + canvasOffset.value.x
+  const y = node.y * CANVAS_HEIGHT * canvasScale.value + canvasOffset.value.y
+  return { x, y }
+}
+
+function canvasToNode(canvasX, canvasY) {
+  // Canvas coordinates to node coordinates (0-1)
+  const nodeX = (canvasX - canvasOffset.value.x) / canvasScale.value / CANVAS_WIDTH
+  const nodeY = (canvasY - canvasOffset.value.y) / canvasScale.value / CANVAS_HEIGHT
   return { x: Math.max(0, Math.min(1, nodeX)), y: Math.max(0, Math.min(1, nodeY)) }
 }
 
-function getNodeAtPosition(x, y) {
+function getNodeAtPosition(screenX, screenY) {
+  const canvasPos = screenToCanvas(screenX, screenY)
   return nodes.value.find(node => {
-    const pos = nodeToCanvas(node)
-    const dx = x - pos.x
-    const dy = y - pos.y
-    return Math.sqrt(dx * dx + dy * dy) <= NODE_RADIUS
+    const nodeCanvasPos = nodeToCanvas(node)
+    // Adjust for scale when checking distance
+    const radius = NODE_RADIUS / canvasScale.value
+    const dx = canvasPos.x - nodeCanvasPos.x / canvasScale.value
+    const dy = canvasPos.y - nodeCanvasPos.y / canvasScale.value
+    return Math.sqrt(dx * dx + dy * dy) <= radius
   })
 }
 
 function onCanvasMouseDown(e) {
-  const canvas = graphCanvas.value
-  const rect = canvas.getBoundingClientRect()
-  const x = e.clientX - rect.left
-  const y = e.clientY - rect.top
+  // Middle mouse button or space+drag for panning
+  if (e.button === 1 || (e.button === 0 && e.shiftKey)) {
+    isPanning.value = true
+    panStart.value = { x: e.clientX - canvasOffset.value.x, y: e.clientY - canvasOffset.value.y }
+    e.preventDefault()
+    return
+  }
   
-  const clickedNode = getNodeAtPosition(x, y)
+  const clickedNode = getNodeAtPosition(e.clientX, e.clientY)
   
   if (editorMode.value === 'select') {
     if (clickedNode) {
       isDragging.value = true
       dragNode.value = clickedNode
       selectedNode.value = clickedNode
-      dragStart.value = { x, y }
     } else {
       selectedNode.value = null
+      // Start panning if clicking empty space with left button
+      if (e.button === 0) {
+        isPanning.value = true
+        panStart.value = { x: e.clientX - canvasOffset.value.x, y: e.clientY - canvasOffset.value.y }
+      }
     }
   } else if (editorMode.value === 'add') {
-    if (!clickedNode) {
-      const coords = canvasToNode(x, y)
+    if (!clickedNode && !isPanning.value) {
+      const pos = screenToCanvas(e.clientX, e.clientY)
+      const coords = canvasToNode(pos.x, pos.y)
       nodeForm.value.x = coords.x
       nodeForm.value.y = coords.y
       showAddNodeModal.value = true
@@ -523,9 +1071,7 @@ function onCanvasMouseDown(e) {
       if (!connectStartNode.value) {
         connectStartNode.value = clickedNode
         isDragging.value = true
-        dragStart.value = { x, y }
       } else if (connectStartNode.value.id !== clickedNode.id) {
-        // Create connection and persist to backend
         createEdge(connectStartNode.value.id, clickedNode.id)
         connectStartNode.value = null
         isDragging.value = false
@@ -541,27 +1087,37 @@ function onCanvasMouseDown(e) {
 }
 
 function onCanvasMouseMove(e) {
+  if (isPanning.value) {
+    canvasOffset.value = {
+      x: e.clientX - panStart.value.x,
+      y: e.clientY - panStart.value.y
+    }
+    drawCanvas()
+    return
+  }
+  
   if (!isDragging.value) return
   
-  const canvas = graphCanvas.value
-  const rect = canvas.getBoundingClientRect()
-  const x = e.clientX - rect.left
-  const y = e.clientY - rect.top
-  
   if (editorMode.value === 'select' && dragNode.value) {
-    const coords = canvasToNode(x, y)
+    const pos = screenToCanvas(e.clientX, e.clientY)
+    const coords = canvasToNode(pos.x, pos.y)
     dragNode.value.x = coords.x
     dragNode.value.y = coords.y
     drawCanvas()
   } else if (editorMode.value === 'connect') {
-    dragStart.value = { x, y }
+    const pos = screenToCanvas(e.clientX, e.clientY)
+    dragStart.value = { x: pos.x, y: pos.y }
     drawCanvas()
   }
 }
 
-function onCanvasMouseUp() {
+function onCanvasMouseUp(e) {
+  if (isPanning.value) {
+    isPanning.value = false
+    return
+  }
+  
   if (editorMode.value === 'select' && dragNode.value) {
-    // Save position to backend
     saveNodePosition(dragNode.value)
   }
   
@@ -582,18 +1138,60 @@ async function saveNodePosition(node) {
 
 function onCanvasWheel(e) {
   e.preventDefault()
+  const wrapper = canvasWrapper.value
+  if (!wrapper) return
+  
+  const rect = wrapper.getBoundingClientRect()
+  const mouseX = e.clientX - rect.left
+  const mouseY = e.clientY - rect.top
+  
+  // Zoom towards mouse pointer
+  const oldScale = canvasScale.value
   const delta = e.deltaY > 0 ? 0.9 : 1.1
-  canvasScale.value = Math.max(0.5, Math.min(3, canvasScale.value * delta))
+  const newScale = Math.max(0.3, Math.min(5, oldScale * delta))
+  
+  // Adjust offset to zoom towards mouse
+  const scaleRatio = newScale / oldScale
+  canvasOffset.value = {
+    x: mouseX - (mouseX - canvasOffset.value.x) * scaleRatio,
+    y: mouseY - (mouseY - canvasOffset.value.y) * scaleRatio
+  }
+  canvasScale.value = newScale
+  
   drawCanvas()
 }
 
 function canvasZoomIn() {
-  canvasScale.value = Math.min(3, canvasScale.value * 1.2)
+  const newScale = Math.min(5, canvasScale.value * 1.2)
+  const wrapper = canvasWrapper.value
+  if (wrapper) {
+    const rect = wrapper.getBoundingClientRect()
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+    const scaleRatio = newScale / canvasScale.value
+    canvasOffset.value = {
+      x: centerX - (centerX - canvasOffset.value.x) * scaleRatio,
+      y: centerY - (centerY - canvasOffset.value.y) * scaleRatio
+    }
+  }
+  canvasScale.value = newScale
   drawCanvas()
 }
 
 function canvasZoomOut() {
-  canvasScale.value = Math.max(0.5, canvasScale.value / 1.2)
+  const newScale = Math.max(0.3, canvasScale.value / 1.2)
+  const wrapper = canvasWrapper.value
+  if (wrapper) {
+    const rect = wrapper.getBoundingClientRect()
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+    const scaleRatio = newScale / canvasScale.value
+    canvasOffset.value = {
+      x: centerX - (centerX - canvasOffset.value.x) * scaleRatio,
+      y: centerY - (centerY - canvasOffset.value.y) * scaleRatio
+    }
+  }
+  canvasScale.value = newScale
   drawCanvas()
 }
 
@@ -605,6 +1203,7 @@ function canvasReset() {
 
 onMounted(() => {
   loadData()
+  loadAvailableMaps()
   initCanvas()
   window.addEventListener('resize', initCanvas)
 })
@@ -697,6 +1296,47 @@ onMounted(() => {
   color: var(--color-text-secondary);
 }
 
+/* Help Section */
+.help-section {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-radius: var(--radius-lg);
+  border: 1px solid #bbdefb;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.help-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  margin-bottom: 12px;
+}
+
+.help-content ol {
+  margin: 0;
+  padding-left: 20px;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.help-content li {
+  margin-bottom: 8px;
+}
+
+.help-note {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 152, 0, 0.1);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
 .graph-container {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
@@ -717,6 +1357,7 @@ onMounted(() => {
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .graph-toolbar .btn-icon {
@@ -997,5 +1638,408 @@ onMounted(() => {
   border-top: 1px solid var(--color-border);
   background: var(--color-surface);
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* Import Modal Styles */
+.import-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 12px;
+}
+
+.tab-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: var(--color-surface);
+}
+
+.tab-btn.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.import-desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: 16px;
+}
+
+.file-input-wrapper {
+  position: relative;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-drop-zone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--color-bg);
+}
+
+.file-drop-zone:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.file-drop-zone .material-icons {
+  font-size: 48px;
+  color: var(--color-text-hint);
+  margin-bottom: 12px;
+}
+
+.file-drop-zone p {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  margin: 0 0 4px 0;
+}
+
+.file-drop-zone small {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.json-preview, .svg-preview {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.json-preview h4, .svg-preview h4 {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin: 0 0 8px 0;
+}
+
+.json-preview pre {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--color-bg);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  max-height: 200px;
+  overflow: auto;
+  margin: 0;
+}
+
+.svg-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: var(--radius-sm);
+}
+
+.import-error, .import-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  margin-top: 16px;
+  font-size: var(--text-sm);
+}
+
+.import-error {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.import-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.import-error .material-icons,
+.import-success .material-icons {
+  font-size: 20px;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Map Gallery Styles */
+.map-gallery-dialog {
+  max-width: 900px;
+  width: 90vw;
+}
+
+.gallery-desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+}
+
+.loading-maps, .no-maps {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-text-secondary);
+}
+
+.loading-maps .material-icons,
+.no-maps .material-icons {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.no-maps p {
+  margin-bottom: 20px;
+}
+
+.maps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.map-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.map-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.map-card.active {
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 2px var(--color-success-bg);
+}
+
+.map-preview {
+  position: relative;
+  height: 150px;
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.map-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.active-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--color-success);
+  color: white;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.active-badge .material-icons {
+  font-size: 14px;
+}
+
+.map-info {
+  padding: 12px;
+}
+
+.map-info h4 {
+  font-size: var(--text-sm);
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.map-meta {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin: 0 0 12px 0;
+}
+
+.map-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Map Viewer Overlay */
+.map-viewer-overlay {
+  z-index: 1100;
+}
+
+.map-viewer {
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  width: 95vw;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.map-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.map-viewer-header h3 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.map-viewer-content {
+  flex: 1;
+  overflow: auto;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+}
+
+.map-viewer-content img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Map Selector in Toolbar */
+.map-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.map-selector .material-icons {
+  font-size: 18px;
+  color: var(--color-text-secondary);
+}
+
+.map-selector select {
+  border: none;
+  background: transparent;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  outline: none;
+  min-width: 150px;
+  max-width: 200px;
+}
+
+/* Zoom Controls */
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.zoom-level {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  min-width: 40px;
+  text-align: center;
+}
+
+/* Canvas with Background and Transform */
+.canvas-wrapper {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: var(--color-bg);
+  cursor: grab;
+}
+
+.canvas-wrapper:active {
+  cursor: grabbing;
+}
+
+.canvas-transform {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+
+.canvas-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.graph-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+}
+
+.graph-canvas.with-background {
+  background: transparent;
+}
+
+.graph-legend {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 </style>

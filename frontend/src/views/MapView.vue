@@ -1,15 +1,6 @@
 <template>
   <div class="mapview">
-    <!-- Top bar -->
-    <header class="mapview-header">
-      <button class="mapview-back-btn" @click="$router.back()">
-        <span class="material-icons">arrow_back</span>
-      </button>
-      <h1 class="mapview-title">Explore Campus</h1>
-      <button class="mapview-action-btn" @click="showLabels = !showLabels" :title="showLabels ? 'Hide Labels' : 'Show Labels'">
-        <span class="material-icons">{{ showLabels ? 'label' : 'label_off' }}</span>
-      </button>
-    </header>
+    <!-- Header removed per user request -->
 
     <!-- Map container with pan/zoom -->
     <div class="mapview-canvas" ref="canvasRef"
@@ -25,33 +16,14 @@
       <div class="mapview-transform" :style="transformStyle">
         <!-- SVG Map -->
         <img 
-          src="../assets/SEAIT_Map.svg" 
+          src="../assets/SEAITMAP.svg" 
           class="mapview-svg" 
-          alt="SEAIT Campus Map" 
+          alt="Campus Map" 
           draggable="false"
           @load="onMapLoad"
         />
 
-        <!-- Markers overlay -->
-        <div 
-          v-for="marker in visibleMarkers" 
-          :key="marker.id"
-          class="mapview-marker"
-          :class="{ 
-            'mapview-marker-selected': selectedMarker?.id === marker.id,
-            'mapview-marker-facility': marker.marker_type === 'facility',
-            'mapview-marker-room': marker.marker_type === 'room'
-          }"
-          :style="getMarkerPosition(marker)"
-          @click.stop="selectMarker(marker)"
-        >
-          <div class="mapview-marker-pin">
-            <span class="material-icons">
-              {{ getMarkerIcon(marker) }}
-            </span>
-          </div>
-          <span v-if="showLabels" class="mapview-marker-label">{{ marker.name }}</span>
-        </div>
+        <!-- Markers overlay - REMOVED per user request -->
       </div>
     </div>
 
@@ -258,41 +230,9 @@ async function loadBuildingRooms(marker) {
   try {
     const res = await offlineData.getRooms(marker.id)
     buildingRooms.value = res.data
-    
-    // If offline and no rooms, use mock data (DEV only)
-    if (res.data.length === 0 && !isOnline() && import.meta.env.DEV) {
-      useMockRooms(marker)
-    }
   } catch {
-    if (import.meta.env.DEV) useMockRooms(marker)
-    else buildingRooms.value = []
+    buildingRooms.value = []
   }
-}
-
-function useMockRooms(marker) {
-  const mockRooms = {
-    'MST Building': [
-      { id: 1, name: 'MST 101', room_type: 'Classroom', floor: 1, is_office: false },
-      { id: 2, name: 'MST 201', room_type: 'Classroom', floor: 2, is_office: false },
-      { id: 3, name: 'CL1', room_type: 'Computer Lab', floor: 3, is_office: false },
-      { id: 4, name: 'CL2', room_type: 'Computer Lab', floor: 3, is_office: false },
-      { id: 5, name: 'CL5', room_type: 'Computer Lab', floor: 3, is_office: false },
-      { id: 6, name: 'CL6', room_type: 'Computer Lab', floor: 3, is_office: false },
-      { id: 7, name: 'MST 401', room_type: 'Classroom', floor: 4, is_office: false },
-    ],
-    'JST Building': [
-      { id: 8, name: 'JST101', room_type: 'Lecture Room', floor: 1, is_office: false },
-      { id: 9, name: 'JST201', room_type: 'Laboratory', floor: 2, is_office: false },
-    ],
-    'RST Building': [
-      { id: 10, name: 'Registrar', room_type: 'Office', floor: 1, is_office: true },
-      { id: 11, name: 'Accounting', room_type: 'Office', floor: 1, is_office: true },
-      { id: 12, name: 'Guidance', room_type: 'Office', floor: 2, is_office: true },
-      { id: 13, name: 'Safety & Security', room_type: 'Office', floor: 2, is_office: true },
-      { id: 14, name: 'IT Office', room_type: 'Office', floor: 3, is_office: true },
-    ],
-  }
-  buildingRooms.value = mockRooms[marker.name] || []
 }
 
 async function loadData() {
@@ -324,12 +264,13 @@ async function loadData() {
 }
 
 function getDirections() {
-  if (!selectedMarker.value) return
-  router.push({ path: '/navigate', query: { to: selectedMarker.value.name } })
+  // Navigation disabled
+  alert('Navigation is currently disabled.')
 }
 
 function navigateToRoom(room) {
-  router.push({ path: '/navigate', query: { to: room.name } })
+  // Navigation disabled
+  alert('Navigation is currently disabled.')
 }
 
 function addFavorite() {

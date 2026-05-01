@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenRefreshView
 from django.http import JsonResponse
+from apps.chatbot import views as chatbot_views
 
 
 def api_root(request):
@@ -41,6 +42,8 @@ urlpatterns = [
     path('api/rooms/',         include('apps.rooms.urls')),
     path('api/navigation/',    include('apps.navigation.urls')),
     path('api/chatbot/',       include('apps.chatbot.urls')),
+    path('api/faq/',            chatbot_views.FAQListView.as_view(), name='faq-list'),
+    path('api/faq/<int:pk>/',   chatbot_views.FAQDetailView.as_view(), name='faq-detail'),
     path('api/notifications/', include('apps.notifications.urls')),
     path('api/feedback/',      include('apps.feedback.urls')),
     path('api/core/',          include('apps.core.urls')),

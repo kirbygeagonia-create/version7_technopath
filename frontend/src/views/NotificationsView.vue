@@ -32,20 +32,28 @@
           v-for="notif in notifications"
           :key="notif.id"
           :class="['notifications-card', notif.type, { 'notifications-unread': !notif.is_read }]"
-          @click="markAsRead(notif)"
         >
-          <div class="notifications-card-header">
-            <span
-              v-if="notif.source_label"
-              :class="['source-chip', 'chip-' + (notif.source_color || 'orange')]"
-            >
-              {{ notif.source_label }}
-            </span>
-            <span class="notifications-badge" :class="notif.type">{{ notif.type }}</span>
-            <span class="notifications-time">{{ formatTime(notif.created_at) }}</span>
+          <div class="notifications-card-content" @click="markAsRead(notif)">
+            <div class="notifications-card-header">
+              <span
+                v-if="notif.source_label"
+                :class="['source-chip', 'chip-' + (notif.source_color || 'orange')]"
+              >
+                {{ notif.source_label }}
+              </span>
+              <span class="notifications-badge" :class="notif.type">{{ notif.type }}</span>
+              <span class="notifications-time">{{ formatTime(notif.created_at) }}</span>
+            </div>
+            <h3>{{ notif.title }}</h3>
+            <p>{{ notif.message }}</p>
           </div>
-          <h3>{{ notif.title }}</h3>
-          <p>{{ notif.message }}</p>
+          <button 
+            class="notifications-delete-btn" 
+            @click.stop="deleteNotification(notif)"
+            title="Delete notification"
+          >
+            <span class="material-icons">delete</span>
+          </button>
         </div>
       </div>
     </div>
@@ -140,6 +148,35 @@ async function markAllAsRead() {
   }
 }
 
+async function deleteNotification(notif) {
+  // Show confirmation dialog
+  const confirmed = confirm(`Delete this notification?\n\n"${notif.title}"`)
+  if (!confirmed) return
+  
+  try {
+    // Remove from local array
+    notifications.value = notifications.value.filter(n => n.id !== notif.id)
+    
+    // Delete from local DB
+    await db.notifications.delete(notif.id)
+    
+    // Try to delete from server if online
+    if (isOnline()) {
+      try {
+        await api.delete(`/notifications/${notif.id}/`)
+        showToast('Notification deleted', 'success')
+      } catch {
+        showToast('Deleted locally, will sync when online', 'info')
+      }
+    } else {
+      showToast('Deleted locally, will sync when online', 'info')
+    }
+  } catch (err) {
+    console.error('[Notifications] Failed to delete:', err)
+    showToast('Failed to delete notification', 'error')
+  }
+}
+
 async function storePendingRead(id) {
   try {
     const meta    = await db.sync_meta.get('pending_reads')
@@ -155,4 +192,32 @@ async function storePendingRead(id) {
 <!-- FIX: All styles in external file — no more inline <style> block -->
 <style>
 @import '../assets/notifications.css';
+
+/* Delete button - ensure visibility */
+.notifications-delete-btn {
+  background: var(--color-surface-2, #2a2a2a);
+  border: 1px solid var(--color-border, #444);
+  padding: 8px;
+  cursor: pointer;
+  color: var(--color-text-secondary, #888);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  min-width: 36px;
+  min-height: 36px;
+  margin-left: 12px;
+}
+
+.notifications-delete-btn:hover {
+  background: #F44336;
+  color: white;
+  border-color: #F44336;
+}
+
+.notifications-delete-btn .material-icons {
+  font-size: 20px;
+}
 </style>
