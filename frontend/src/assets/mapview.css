@@ -579,3 +579,63 @@ body.dark-mode .mapview-marker-label {
     width: 1200px;
   }
 }
+
+/* ── Course Filter ─────────────────────────────────────────────── */
+.mapview-course-filters {
+  position: absolute;
+  bottom: calc(var(--detail-panel-height, 0px) + 72px);
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: linear-gradient(to right, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.9) 100%);
+  backdrop-filter: blur(4px);
+  z-index: 20;
+}
+.mapview-course-filters::-webkit-scrollbar { display: none; }
+
+.mapview-course-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.mapview-course-chip {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--color-border-secondary);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--color-text-secondary);
+}
+.mapview-course-chip.active {
+  font-weight: 600;
+}
+.mapview-course-chip:hover {
+  opacity: 0.85;
+}
+
+/* Dimmed markers when course filter is active */
+.mapview-marker.mapview-marker-dimmed {
+  opacity: 0.18;
+  pointer-events: none;
+  filter: grayscale(1);
+}
+
+/* Course-highlighted marker pin color */
+.mapview-marker:not(.mapview-marker-dimmed) .mapview-marker-pin {
+  background: var(--marker-color, #1976D2);
+}

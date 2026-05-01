@@ -1,0 +1,3548 @@
+[
+  {
+    "type": "paragraph",
+    "index": 1,
+    "text": "RFID-Based Attendance Tracking System with Web Interface and Excel Integration (AttendEX)"
+  },
+  {
+    "type": "paragraph",
+    "index": 4,
+    "text": "__________________________________________________"
+  },
+  {
+    "type": "paragraph",
+    "index": 8,
+    "text": "The Project Study Presented to"
+  },
+  {
+    "type": "paragraph",
+    "index": 9,
+    "text": "The Faculty of South East Asian Institute of Technology"
+  },
+  {
+    "type": "paragraph",
+    "index": 10,
+    "text": "College of Information and Communication Technology"
+  },
+  {
+    "type": "paragraph",
+    "index": 13,
+    "text": "__________________________________________________"
+  },
+  {
+    "type": "paragraph",
+    "index": 17,
+    "text": "In Partial Fulfillment"
+  },
+  {
+    "type": "paragraph",
+    "index": 18,
+    "text": "of the Requirement for the subject"
+  },
+  {
+    "type": "paragraph",
+    "index": 19,
+    "text": "IT 412: Capstone Project and Research 2"
+  },
+  {
+    "type": "paragraph",
+    "index": 22,
+    "text": "__________________________________________________"
+  },
+  {
+    "type": "paragraph",
+    "index": 26,
+    "text": "By:"
+  },
+  {
+    "type": "paragraph",
+    "index": 28,
+    "text": "Celis, Summer Dyan"
+  },
+  {
+    "type": "paragraph",
+    "index": 29,
+    "text": "Elloren, Christine Joy P."
+  },
+  {
+    "type": "paragraph",
+    "index": 30,
+    "text": "Lictawa, Mitch Azaira G."
+  },
+  {
+    "type": "paragraph",
+    "index": 32,
+    "text": "May 2024"
+  },
+  {
+    "type": "paragraph",
+    "index": 35,
+    "text": "Abstract"
+  },
+  {
+    "type": "paragraph",
+    "index": 36,
+    "text": "\u201cRFID-Based Attendance Tracking and Evaluation System with Web Interface and Excel Integration:\u201d moderating system for recording and communicating between the moderator and officers, it is a crucial solution for concerns of SEAIT Supreme Student Council attendance record and performance management. With the help of the Agile approach, researchers will build up the RFID-Based Attendance Tracking System emphasizing on the capabilities including easy point of use, quick attendance record and to the moderator SMS notification functions. Extensive trials have proved the correctness, transparency, and sturdiness of the system with the users giving very positive feedback for the product and scoring it highly on the effectiveness of safety and security attributes. The system was successfully implemented by utilizing both RFID and SMS technology in the process, which resulted in efficient monitoring and management of attendance and logs of the officers, which provided supreme student council security and efficient information management."
+  },
+  {
+    "type": "paragraph",
+    "index": 42,
+    "text": "Keywords: RFID-Based Attendance Tracking System, SMS notification, Agile approach, Managing and Recording Solutions"
+  },
+  {
+    "type": "paragraph",
+    "index": 44,
+    "text": "ACKNOWLEDGEMENT"
+  },
+  {
+    "type": "paragraph",
+    "index": 45,
+    "text": "This study would not have been made possible without the help and guidance of a number of people to whom this acknowledgement is owed. The researchers would like to extend their deepest gratitude to the people who encouraged us to persevere and who contributed much through an extensive amount of effort, patience and knowledge that set an essential role in the accomplishment of the study."
+  },
+  {
+    "type": "paragraph",
+    "index": 46,
+    "text": "To our subject adviser and dean, Mr. Reginald S. Prudente, MIT we express our sincere gratitude for her patience, motivation, enthusiasm, and immense knowledge and for the effort in correcting and for the advice's our study."
+  },
+  {
+    "type": "paragraph",
+    "index": 47,
+    "text": "To our Research Adviser, Mr. Hernie B. Deduro, LPT, and Mr. Kenmark Tuan Celis for their assistance, constant support, and advice in the completion of this endeavor. Thank you for sharing your knowledge and offering us technical advice as well as constructive comments and suggestions that aided us in our research project. Please accept our heartfelt gratitude for your patience and understanding."
+  },
+  {
+    "type": "paragraph",
+    "index": 48,
+    "text": "To the school staffs and the faculty of CICT department for prompt inspirations, timely suggestions, warm accommodation, enthusiasm, great knowledge, and dedication for becoming an instrument in providing us the opportunity to enhance our knowledge as students and as researchers that enabled us to complete this research."
+  },
+  {
+    "type": "paragraph",
+    "index": 50,
+    "text": "To our parents and guardians, Felicisma B. Celis, Gina P. Elloren, Joselito P. Elloren, Corazon G. Lictawa, Michael F. Lictawa Sr. for their unconditional love and persistent effort in supporting the researchers spiritually, emotionally, and more especially, morally and financially."
+  },
+  {
+    "type": "paragraph",
+    "index": 51,
+    "text": "To our classmates and friends, who gave us the encouragement, we appreciate the laughter, support and generosity that you continually show that provides to us the inspiration in pursuing this study."
+  },
+  {
+    "type": "paragraph",
+    "index": 52,
+    "text": "To the panel of examiners of this thesis, Ms. Melissa Zolina, LPT., Ms. Mary Joy M. Fernandez, MIT, LPT., Ms. Queenie Mae C. Agramon, MIT, LPT. For giving us advice, suggestions, positive thoughts and positive feedback in order to make this project a very successful one."
+  },
+  {
+    "type": "paragraph",
+    "index": 53,
+    "text": "To the SEAIT Supreme Student Council Officers and committees, for their willing cooperation, and support during the project development."
+  },
+  {
+    "type": "paragraph",
+    "index": 54,
+    "text": "And above all, we would like to give back all the praises and thanksgiving to our Almighty God for the guidance, strength and protection He gives us every day. His mercy and love has made us endure all the obstacles and hardships. Thank you for being our source of wisdom, strength and love."
+  },
+  {
+    "type": "paragraph",
+    "index": 55,
+    "text": "To God be the glory!"
+  },
+  {
+    "type": "paragraph",
+    "index": 57,
+    "text": "DEDICATION"
+  },
+  {
+    "type": "paragraph",
+    "index": 58,
+    "text": "The researchers would like to dedicate this study to the SEAIT Supreme Student Council Officers and committees, for letting them conduct research in relation to their profession; to does who have given us strength to overcome pressure while doing their project; to their beloved guardian and parents Felicisma B. Celis, Gina P. Elloren, Joselito P. Elloren, Corazon G. Lictawa, Michael F. Lictawa Sr., To our dean Mr. Reginald S. Prudente, MIT, to our panels Ms. Melissa Zolina, LPT., Ms. Mary Joy M. Fernandez, MIT, LPT., Ms. Queenie Mae C. Agramon, MIT, LPT.  And especially to our project adviser during Capstone Project and Research 1, Mr. Hernie B. Deduro, LPT, and to our Capstone Project and Research 2,  Mr. Kenmark Tuan Celis for without them they wouldn\u2019t be in this endeavor; and to the school - South East Asian Institute of Technology, Inc."
+  },
+  {
+    "type": "paragraph",
+    "index": 64,
+    "text": "LIST OF Tables"
+  },
+  {
+    "type": "paragraph",
+    "index": 65,
+    "text": "No. \t\t\t\t\tTitle\t\t\t\t\tPage"
+  },
+  {
+    "type": "paragraph",
+    "index": 66,
+    "text": "3.1\t\t\t         \t Data Dictionary\t \t\t\t71"
+  },
+  {
+    "type": "paragraph",
+    "index": 67,
+    "text": "3.6\t\t\t\tIntegration Testing \t\t\t\t82"
+  },
+  {
+    "type": "paragraph",
+    "index": 68,
+    "text": "3.7\t\t\t           Interpretative Scale\t\t\t\t85"
+  },
+  {
+    "type": "paragraph",
+    "index": 69,
+    "text": "3.8\t\t   Evaluation Result for System Functionality\t          85"
+  },
+  {
+    "type": "paragraph",
+    "index": 70,
+    "text": "3.9\t\t   Evaluation Result for System Accuracy\t          86"
+  },
+  {
+    "type": "paragraph",
+    "index": 71,
+    "text": "3.10\t\t   Evaluation Result for System Acceptability\t          87"
+  },
+  {
+    "type": "paragraph",
+    "index": 72,
+    "text": "3.11\t\t   Overall Evaluation Result of the System \t          87"
+  },
+  {
+    "type": "paragraph",
+    "index": 92,
+    "text": "LIST OF FIGURES"
+  },
+  {
+    "type": "paragraph",
+    "index": 93,
+    "text": "No. \t\t\t\t\tTitle\t\t\t\t\tPage"
+  },
+  {
+    "type": "paragraph",
+    "index": 94,
+    "text": "1.1\t\t\t         \t Flow of the Study\t \t\t\t9"
+  },
+  {
+    "type": "paragraph",
+    "index": 95,
+    "text": "3.1\t\tSoftware Development Life Cycle (SDLC)\t\t24"
+  },
+  {
+    "type": "paragraph",
+    "index": 96,
+    "text": "3.2\t\t\t      Business Model Canvas\t\t\t38"
+  },
+  {
+    "type": "paragraph",
+    "index": 97,
+    "text": "3.3\t\t\t      Gantt Chart\t\t\t                      39"
+  },
+  {
+    "type": "paragraph",
+    "index": 98,
+    "text": "3.4\t\t        Functional Decomposition Diagram\t\t\t40"
+  },
+  {
+    "type": "paragraph",
+    "index": 99,
+    "text": "3.5\t\t     \t          Software Use Case Diagram\t\t41"
+  },
+  {
+    "type": "paragraph",
+    "index": 100,
+    "text": "3.6\t\t     \t         Hardware Use Case Diagram\t\t42"
+  },
+  {
+    "type": "paragraph",
+    "index": 101,
+    "text": "3.7\t\t     \t         \t Class Diagram\t\t\t\t47"
+  },
+  {
+    "type": "paragraph",
+    "index": 102,
+    "text": "3.8\t\t     \t         Sequence Diagram\t\t\t\t48"
+  },
+  {
+    "type": "paragraph",
+    "index": 103,
+    "text": "3.10\t\t     \t           Activity Diagram\t\t\t\t50"
+  },
+  {
+    "type": "paragraph",
+    "index": 104,
+    "text": "3.15\t\t     \t          User Interface Designs\t\t\t 55"
+  },
+  {
+    "type": "paragraph",
+    "index": 105,
+    "text": "3.24\t\t     \t     \t     Storyboard\t\t\t\t61"
+  },
+  {
+    "type": "paragraph",
+    "index": 106,
+    "text": "3.39\t\t     \t           Database Design\t\t\t\t69"
+  },
+  {
+    "type": "paragraph",
+    "index": 107,
+    "text": "3.40\t\t     \t     Entity Relationship Diagram\t\t\t 70"
+  },
+  {
+    "type": "paragraph",
+    "index": 108,
+    "text": "3.41\t\t     \t        Software Network Model\t\t\t  76"
+  },
+  {
+    "type": "paragraph",
+    "index": 109,
+    "text": "3.42\t\t     \t        Hardware Network Model\t\t\t  77"
+  },
+  {
+    "type": "paragraph",
+    "index": 110,
+    "text": "3.43 \t     \t                      Network Topology\t\t\t             77"
+  },
+  {
+    "type": "paragraph",
+    "index": 111,
+    "text": "3.44\t\t     \t           Integration Testing\t\t\t\t  81"
+  },
+  {
+    "type": "paragraph",
+    "index": 112,
+    "text": "3.45\t\t     \t         Deployment Diagram\t\t\t \t  88"
+  },
+  {
+    "type": "paragraph",
+    "index": 113,
+    "text": "3.46\t\t       Implementation Budget/Cost Specification\t    \t  89"
+  },
+  {
+    "type": "paragraph",
+    "index": 114,
+    "text": "3.47\t\t     \t           Technology Stacks\t\t\t   \t   90"
+  },
+  {
+    "type": "paragraph",
+    "index": 115,
+    "text": "3.48\t\t\tRisk Management Plan/ Framework\t\t    92"
+  },
+  {
+    "type": "paragraph",
+    "index": 120,
+    "text": "CHAPTER I"
+  },
+  {
+    "type": "paragraph",
+    "index": 121,
+    "text": "Rationale of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 122,
+    "text": "The AttendEX system is an RFID-Based Attendance Tracking and Evaluation System with a Web Interface and Excel Integration is a software developed for timely and daily monitoring logbook information of the officers and committee in South East Asian Institute of Technology, Inc. (SEAIT). It will be a great advantage to the student officers, committee and school, for the reason that it will be providing a quicker and smarter way to monitor the regular attendance. It is designed to simplify attendance management for administrators and users, providing a more efficient and user-friendly solution. In educational institutions and various organizations, attendance tracking is a critical process. In our modern era, where digital tools and systems have the potential to revolutionize everyday processes, it is essential to optimize attendance management. The AttendEX system aims to achieve that objective. It has a variety of features that greatly improve the administrator's capacity to handle attendance easily. From the moment of registration, the system associates each user with an RFID card or tag, ensuring a smooth and efficient start. It enhances attendance accuracy, reducing the likelihood of errors. Moreover, the system exports attendance data into Excel, serving as a secondary database for the system. The AttendEX system provides SMS alerts to the administrator, ensuring timely awareness of attendance. Every time attendance is recorded, it automatically sends a notification through an SMS alert to the administrator. Additionally, it includes a peer assessment feedback feature, promoting interaction and feedback. Furthermore, it offers report generation and visualization capabilities, allowing administrators to analyze data and make informed decisions with ease."
+  },
+  {
+    "type": "paragraph",
+    "index": 123,
+    "text": "The current process of the Supreme Student Council (SSC) is the official student governing body at the South East Asian Institute of Technology. The attendance of the officers and committee uses pen and paper when recording all the data of the student officers. Upon their arrival, and departure required to record their names, date, and time in a logbook to monitor attendance. Based on the statement of Mitch Azaira G. Lictawa, SSC Business Manager. The process of the officers and committee during events and daily duties is using the logbook that has 150 pages with a regular size of 7\u201dx11\u201d which is not appropriate considering that they needs more spaces for column of collection of data. According to the statement of the officers they are the ones who that will draw lines so that the information will be written in their perspective data column. After receiving the data all day, they will have to check and return the collected data and information to the moderator, Mr. Clar Don L. Evangelio, MEqEng.. This process extends to student organizations such as Silakbo, Peer Facilitators, ROTC, and other clubs willing to contribute, each of which must manually document their attendance, affiliation, date, and time in the logbook."
+  },
+  {
+    "type": "paragraph",
+    "index": 124,
+    "text": "The problem encountered of manual attendance tracking system used by the Supreme Student Council (SSC) at the South East Asian Institute of Technology faces several significant challenges. (1) One prominent issue is the manual recording of names and times for both time-in and time-out, resulting in redundant data entries. This not only consumes valuable time but also creates opportunities for errors and erasures, making the logbook cluttered and unreliable. (2) Additionally, manual attendance methods often suffer from inaccuracies, especially during events, and lack precise timestamp information. When attendance records are manually transferred to Excel, it worsens these problems, introducing the potential for data entry errors and inconsistent records. (3) Slow communication of attendance information to moderators can lead to delays in decision-making and accountability issues during meetings and events. (4) Furthermore, the difficulty in assessing individual officer contributions hinders teamwork and overall effectiveness. (5) Nevertheless, the process of manually analyzing data for decision-making remains slow and error-prone, impacting the efficiency of meetings and events."
+  },
+  {
+    "type": "paragraph",
+    "index": 125,
+    "text": "The benefits of having system, AttendEx, offers a range of practical features to address the ongoing challenges faced by the Supreme Student Council (SSC) at the South East Asian Institute of Technology. At its core, AttendEx simplifies the registration of officers and committee members through a user-friendly interface, ensuring that important details like names and unique student IDs are captured with ease. This system relies on RFID technology, associating each officer and committee member with RFID cards or tags to make attendance tracking effortless. Improved attendance accuracy and efficiency come from automatically recording attendance during duties, activities, and events, including significant occasions like Intramural, College Week, and Foundation Day. AttendEx captures attendance accurately, providing detailed date and time information for thorough tracking. To simplify data management, the system smoothly integrates attendance data with Excel, acting as a secondary database. Introducing SMS alerts customized for the moderator ensures that they receive real-time information, aiding swift decision-making and accountability during SSC meetings and events. Moreover, AttendEx includes a Peer Assessment Feedback feature, empowering SSC officers to evaluate their peers' contributions and performance, fostering a culture of teamwork and collaboration within the SSC. These peer assessments are accessible to the moderator for team assessment and continuous improvement. To top it all, AttendEx automatically creates reports and visualizations, making it simple for the moderator to analyze data and make informed decisions. To top it all, AttendEx is set to modernize attendance management within the SSC, making processes more efficient, improving accuracy, and creating a more cohesive and effective student governing body."
+  },
+  {
+    "type": "paragraph",
+    "index": 126,
+    "text": "Conclusion, The system needs to be implemented to lessen the workload of the moderator, to monitor the attendance of the officers legitimately, and to prevent some Supreme Student Council from tampering with the lack of personnel during the events and activities.This will show the easiest way of performing their tasks that will create a whole new set of learning and performance processes in favor to the school, student body."
+  },
+  {
+    "type": "paragraph",
+    "index": 127,
+    "text": "Objectives of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 128,
+    "text": "General Objectives"
+  },
+  {
+    "type": "paragraph",
+    "index": 129,
+    "text": "The researcher aims to study and develop a  RFID-Based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX) for the Supreme Student Council (SSC) in South East Asian Institute of Technology, Inc."
+  },
+  {
+    "type": "paragraph",
+    "index": 130,
+    "text": "Specific Objectives"
+  },
+  {
+    "type": "paragraph",
+    "index": 131,
+    "text": "To be able to develop a system that will simplify officer and committee registration, with an RFID card or tag that will provide an easy-to-use interface for capturing essential details, including names and unique student IDs."
+  },
+  {
+    "type": "paragraph",
+    "index": 132,
+    "text": "To be able to develop a system that automatically records attendance by scanning RFID cards during duties, activities or events which are College Week, Foundation Day and other activities and events."
+  },
+  {
+    "type": "paragraph",
+    "index": 133,
+    "text": "To be able to develop a system that will send SMS alerts specifically to the moderator regarding the attendance of officers and committees during duties, events, or activities."
+  },
+  {
+    "type": "paragraph",
+    "index": 134,
+    "text": "To be able to develop a system that includes a Peer Evaluation Assessment Feedback, allowing SSC officers to provide evaluations and feedback on their peers' contributions and performance visible to the moderator for team assessment and improvement."
+  },
+  {
+    "type": "paragraph",
+    "index": 135,
+    "text": "To be able to develop a system that will automatically generates attendance reports and evaluation visualizations, making it easy for the moderator to analyze data and make informed decisions."
+  },
+  {
+    "type": "paragraph",
+    "index": 156,
+    "text": "Scope and Limitations of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 157,
+    "text": "Scope of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 158,
+    "text": "The study will focus on the development and implementation of RFID-Based Attendance Tracking and Evaluation System with Web Interface and Excel Integration. This study will be conducted and implemented at the Supreme Student Council Office of the South East Asian Institute of Technology."
+  },
+  {
+    "type": "paragraph",
+    "index": 159,
+    "text": "The scope of the study is centered on RFID-Based Attendance with Web Interface and Excel Integration where the following are possible:"
+  },
+  {
+    "type": "paragraph",
+    "index": 160,
+    "text": "Register officers, and committees."
+  },
+  {
+    "type": "paragraph",
+    "index": 161,
+    "text": "Explanation"
+  },
+  {
+    "type": "paragraph",
+    "index": 162,
+    "text": "RFID scanning attendance"
+  },
+  {
+    "type": "paragraph",
+    "index": 163,
+    "text": "Explanation"
+  },
+  {
+    "type": "paragraph",
+    "index": 164,
+    "text": "SMS alerts message and monitor attendance tracking."
+  },
+  {
+    "type": "paragraph",
+    "index": 165,
+    "text": "Explanation"
+  },
+  {
+    "type": "paragraph",
+    "index": 166,
+    "text": "Peer assessment feedback of officer\u2019s evaluation form."
+  },
+  {
+    "type": "paragraph",
+    "index": 167,
+    "text": "Explanation"
+  },
+  {
+    "type": "paragraph",
+    "index": 168,
+    "text": "Generate attendance reports in excel and analysis visualizations."
+  },
+  {
+    "type": "paragraph",
+    "index": 169,
+    "text": "Explanation"
+  },
+  {
+    "type": "paragraph",
+    "index": 171,
+    "text": "Limitation of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 172,
+    "text": "The system is solely implemented within the SSC Office at South East Asian Institute of Technology, and its use is limited to the officers and committees of the Supreme Student Council. The system is incapable on identifying the awardees, producing any layout certificates, calculate the budgetary plan for events, and produce picture of the officers."
+  },
+  {
+    "type": "paragraph",
+    "index": 173,
+    "text": "Significance of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 174,
+    "text": "Our study is significant to the following group:"
+  },
+  {
+    "type": "paragraph",
+    "index": 175,
+    "text": "Organization"
+  },
+  {
+    "type": "paragraph",
+    "index": 176,
+    "text": "To provide a system that will accurately and reliably handle the attendance of SSC officers and committees at the South East Asian Institute of Technology, Inc."
+  },
+  {
+    "type": "paragraph",
+    "index": 177,
+    "text": "SSC Moderators"
+  },
+  {
+    "type": "paragraph",
+    "index": 178,
+    "text": "The study's findings are crucial for SSC moderator, as they simplify attendance management, save time, and provide accurate data."
+  },
+  {
+    "type": "paragraph",
+    "index": 179,
+    "text": "Researchers"
+  },
+  {
+    "type": "paragraph",
+    "index": 180,
+    "text": "The researcher gains a comprehensive understanding of the challenges faced by SSC moderators/officers/committees in tracking attendance and how technology can address them."
+  },
+  {
+    "type": "paragraph",
+    "index": 181,
+    "text": "Future Researchers"
+  },
+  {
+    "type": "paragraph",
+    "index": 182,
+    "text": "Future researchers can build upon the findings of this study; expanding the knowledge base and making further advancements in RFID-Based Attendance Tracking System with Web Interface and Excel Integration."
+  },
+  {
+    "type": "paragraph",
+    "index": 184,
+    "text": "Flow of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 185,
+    "text": "Figure 1.1:"
+  },
+  {
+    "type": "paragraph",
+    "index": 186,
+    "text": "Flow of the study of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 187,
+    "text": "INPUT\t\t\tPROCESS\t\t\t\tOUTPUT"
+  },
+  {
+    "type": "paragraph",
+    "index": 203,
+    "text": "Definition of terms"
+  },
+  {
+    "type": "paragraph",
+    "index": 204,
+    "text": "The definition of terms of RFID-Based Attendance Tracking and Evaluation System with Web Interface and Excel Integration are statements expressing the essential nature of the study\u00a0that enables a common understanding of key terms within the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 205,
+    "text": "AttendEX - is a cutting-edge attendance management system that combines innovation and efficiency to revolutionize the way attendance is handled. The 'E' in 'AttendEx' represents seamless Excel integration, allowing for effortless data management and analysis. The 'X' signifies the system's commitment to harnessing the power of technology to provide an innovative and user-friendly solution."
+  },
+  {
+    "type": "paragraph",
+    "index": 206,
+    "text": "Attendance Tracking - is a method used to monitor officers duty schedule and performance."
+  },
+  {
+    "type": "paragraph",
+    "index": 207,
+    "text": "Committees - are group of individuals, typically appointed or elected with a specific task or purpose within an organization, including Peer Facilitator, Silakbo, and etc."
+  },
+  {
+    "type": "paragraph",
+    "index": 208,
+    "text": "Excel Integration - the process of integrating attendance data of officers into a Microsoft Excel spreadsheet. This integration allows for easy manipulation, analysis, and visualization of attendance data."
+  },
+  {
+    "type": "paragraph",
+    "index": 209,
+    "text": "Moderator - is an individual appointed or selected to oversee and facilitate discussions, meetings, or activities within a group, organization, or event."
+  },
+  {
+    "type": "paragraph",
+    "index": 210,
+    "text": "Peer Evaluation - is a process in which officers within an organization evaluate each other's performance. This method is used to assess the strengths and weaknesses of each officer, identify areas for improvement, and provide feedback to help them grow professionally."
+  },
+  {
+    "type": "paragraph",
+    "index": 211,
+    "text": "RFID-Based Attendance Tracking and Evaluation with Web Interface and Excel Integration - a system that will manage attendance data and records attendance by scanning RFID card or tag and can export attendance data in Excel."
+  },
+  {
+    "type": "paragraph",
+    "index": 212,
+    "text": "RFID - Radio-Frequency Identification (RFID) is a technology that uses wireless communication to identify and track objects, people, or animals. It consists of RFID tags or labels, and RFID readers or scanners that capture this data."
+  },
+  {
+    "type": "paragraph",
+    "index": 213,
+    "text": "SSC - Supreme Student Council (SSC) refers to the official student governing body at South East Asian Institute of Technology."
+  },
+  {
+    "type": "paragraph",
+    "index": 214,
+    "text": "SMS - refers to a notification system that sends a text message to a designated recipient which id the SSC Moderator when an officer has arrived at or left a designated location."
+  },
+  {
+    "type": "paragraph",
+    "index": 215,
+    "text": "CHAPTER II"
+  },
+  {
+    "type": "paragraph",
+    "index": 216,
+    "text": "Review of Related Literature and Studies"
+  },
+  {
+    "type": "paragraph",
+    "index": 217,
+    "text": "This chapter includes ideas, finished thesis, generalization or conclusion, methodologies and others. Those that were included in this chapter helps in familiarizing information that are relevant and similar to the present study."
+  },
+  {
+    "type": "paragraph",
+    "index": 220,
+    "text": "Review of Related Literature"
+  },
+  {
+    "type": "paragraph",
+    "index": 221,
+    "text": "Foreign Literature"
+  },
+  {
+    "type": "paragraph",
+    "index": 222,
+    "text": "A New Model of the Student Attendance Monitoring System Using RFID Technology"
+  },
+  {
+    "type": "paragraph",
+    "index": 223,
+    "text": "According to Ula et al., (2021), today, the development of information technology has been widely applied to make work easier, faster and more streamlined. The timekeeping system still in place is of the paper-based, manual timekeeping precession type and is inefficient in terms of time, compiling data on the existence and accuracy or authenticity of the data presented. Leaving a signature as proof of the employee's presence is still commonly done. This research aims to provide a new model for promoting attendance, a timekeeping system using RFID technology. RFID will use sensors to read data. The use of RFID is intended to make it easier for teachers and students to track course participation. On RFID tags, radio frequencies are attached to the reader; the system will automatically send student data to the database. So, students can do it quickly and data can also be unified quickly and completely. In addition, students and lecturers are also motivated to arrive early because the system can store and display live data."
+  },
+  {
+    "type": "paragraph",
+    "index": 224,
+    "text": "Attendance System Design And Implementation Based On Radio Frequency Identification (RFID) And Arduino"
+  },
+  {
+    "type": "paragraph",
+    "index": 225,
+    "text": "According to Alrikabi et al., (2018), In the modern era, there is an increasing need for safety systems to be integrated into automatic identification technology programs. The objective of this article is to design and implement an access control system to create one of the most popular automatic identifications using a radio frequency identification (RFID) tool controlled by Arduino technology. RFID applications are very efficient and fast and can identify any physical object such as an automatic attendance recording system. The system has been implemented in this article and includes RFID, Arduino Mega, SD card module, keypad, LED and 7 segments. To control the accompanying students inside the classroom or laboratory takes a lot of time. Therefore, this article is designed to overcome these problems using the design and implementation of a connected RFID-ARDUINO system in a classroom or web-based laboratory timekeeping system. The referral system will help instructors register and get students enrolled without delay. In short, with the proposed system, all the obstacles and errors previously encountered by researchers have been resolved. By placing this low-cost device in every classroom in our department and creating a card for everyone like an RFID card to give each person their card to be used for registration without any hassle."
+  },
+  {
+    "type": "paragraph",
+    "index": 227,
+    "text": "IoT-School Attendance System Using RFID Technology"
+  },
+  {
+    "type": "paragraph",
+    "index": 228,
+    "text": "According to Mrabet & Moussa (2020), today, the world has witnessed tremendous changes that have increased the pace of life. For their part, students expect a simple and engaging learning experience that takes into account this fast pace and helps them solve stereotypical learning problems. The analyzes performed in this article show that recording class attendance reduces teaching-learning time. So, the article is talking about researching an effective way to record school attendance without hindering learning. This article presents and discusses the smart attendance monitoring system in smart classroom as a means to reduce the dropout rate, using connected objects and RFID technology. This system can facilitate the recording of students' attendance via the Internet of things (IoT) at presential while transmitting attendance record to the administration. At the same time, parents can keep track of their children's attendance to classes through a notification they receive via Email or SMS. In addition, the system automatically sends missed lessons to absent students. The implemented system offers a lot of benefits over traditional system. In traditional method of attendance system, the recording of attendance in classrooms is always done at the expense of the learning time. The IoT-Attendance system help teachers allocate more time to students learning rather than spend their time on traditional recording. The IoT-Attendance evaluate shows that the model is effective and has a potential impact to improve student performance and strengthen collaboration between parents and school to monitor student attendance in the classroom. Moreover, when students miss class, missed lessons can be automatically sent to absent students, which increase learning opportunities for all students and get good marks in their exams. The performance of student is also positively affected by the use of the IoT-Attendance system."
+  },
+  {
+    "type": "paragraph",
+    "index": 229,
+    "text": "Local Literature"
+  },
+  {
+    "type": "paragraph",
+    "index": 230,
+    "text": "RFID Based Attendance System"
+  },
+  {
+    "type": "paragraph",
+    "index": 231,
+    "text": "According to Joshi et al., (2021), RFID is an acronym for \u201cradio-frequency identification\u201d RFID technology is an automatic wireless identification system that works by the help of two components: a card and a reader. Using the RFID technology, the conventional system of taking attendance can be completely transformed to be more in line with strides in digitalization. This system will help the authorities manage the attendance system in a more methodical, efficient and time saving manner. The proposed system has been implemented through a prototype that has proved the effectiveness of the concept in easing the logistics of taking attendance as a result of the automation due to the use of the RFID technology. The design of the system is simple, cost effective and agile making it a good candidate for commercial and academic purposes. The successful design and implementation of an automated attendance system based on RFID technology has been successfully presented through the means of this paper. The system developed provides an accurate, simple and cost-effective means to register the attendance in educational institutions and effectively shifts the paradigm towards a digital and contactless environment. Moreover, owing to the compactness and the portability of the system, it makes it all the more conducive to be deployed as and when required."
+  },
+  {
+    "type": "paragraph",
+    "index": 232,
+    "text": "Student Attendance System Using RFID"
+  },
+  {
+    "type": "paragraph",
+    "index": 233,
+    "text": "According to Nivetha et al., (2020), in an educational system, attendance is considered as an important criterion to assess the performance of the student. A student is expected to perform well if he is regular to college. The traditional method of marking the student\u2019s attendance is by calling the student one by one. This method consumes more time. In this technological era, everything is automized. In this paper we propose a system to monitor and record the attendance of the system using RFID and Arduino. Every student will be given unique RFID. When the students scan RFID card in front of RFID card reader, the attendance is automatically marked by reading the RFID tag in the card. It is then stored in Microsoft Excel file. Utilizing RFID technology for marking attendance is extremely well effective and saves the time of both the teacher and the student."
+  },
+  {
+    "type": "paragraph",
+    "index": 234,
+    "text": "Web-Based Attendance Monitoring System"
+  },
+  {
+    "type": "paragraph",
+    "index": 235,
+    "text": "According to Amora et al., (2020), wireless attendance monitoring system is a system developed to track student attendance during school days. This project features student\u2019s ID card tapping in the terminal and displays student profile in the portal. An area for announcements is also added in the portal aside from sending it via SMS. More so, it also features an admin panel, including a dashboard that displays reports in graphical view for easy system monitoring as well as it has full wireless computing technology. The software and technologies used in this project are Raspberry Pi, Database Server, RFID Reader, Arduino NMCU, Python, PHP, MySQL, Bootstrap, and CSS. A wireless web-based attendance monitoring system was developed using the scrum framework of agile methodology. Aside from its wireless feature which is not implemented in existing systems, the system also has prominent features like SMS notification, reports management and announcement management. This could help not only in monitoring the attendance of students but also in generating reports. Hence, this system would likely support academic institutions which would need to monitor students\u2019 attendance daily."
+  },
+  {
+    "type": "paragraph",
+    "index": 236,
+    "text": "Review of Related Studies"
+  },
+  {
+    "type": "paragraph",
+    "index": 237,
+    "text": "Foreign Studies"
+  },
+  {
+    "type": "paragraph",
+    "index": 238,
+    "text": "Smart Attendance Monitoring System using IoT and RFID"
+  },
+  {
+    "type": "paragraph",
+    "index": 239,
+    "text": "According to Bharathy et al., ( 2021), Maintaining track of students' attendance in a school is a difficult endeavor. An ongoing challenge is managing attendance by hand. The project's goal is to create an intelligent attendance system that effectively and automatically tracks students' attendance in a facility. RFID readers and an Arduino Uno microcontroller are used in the development of the entire system. Students' ID cards can be equipped with individual RFID tags. Additionally, Wi-Fi communication modules are used to enable convenient communication contingent on network availability. A student database has to be established. Parents' mobile phones receive alerts regarding their child's attendance status via a GSM module. A GPS module is utilized to determine the student's current location.\u00a0The system will reduce a lot of manual work of teachers and administrators of any institution. The proposed work comprises of two most popular trend in technology research; IoT and RFID."
+  },
+  {
+    "type": "paragraph",
+    "index": 240,
+    "text": "Attendance and Information System using RFID and Web-Based Application for Academic Sector"
+  },
+  {
+    "type": "paragraph",
+    "index": 241,
+    "text": "According to Rjeib et al., (2018), recently, student attendance is considered one of the important factors or issues that reflect the academic results and performance of any university compared to traditional methods that are time-consuming and ineffective. Fruit. Various automatic identification technologies are becoming more popular, such as radio frequency identification (RFID). Extensive research and several applications were carried out to make the most of this technology and raised some concerns. RFID is a wireless technology used for the purpose of identifying and tracking an object through radio waves to transmit data from an electronic tag, called an RFID tag or tag to send data to an RFID reader. The present study focuses on proposing an RFID-based attendance management system \u201cAMS\u201d; at the same time, it is an information service system serving the academic field using RFID technology in addition to programmable logic circuits (such as Arduino) and web applications. The proposed system aims to manage student attendance and also provide a means to track absent students. Support information services include student grades, daily timetables, class hours and class numbers as well as other student-related guidance provided by the department's faculty staff. Based on the results, the proposed information and timekeeping system is fast, reduces recording effort, and consumes no energy. Furthermore, students studying the proposed RFID-based systems are also analyzed and critiqued regarding the system features and key conclusions. Future directions for future researchers are targeted and identified."
+  },
+  {
+    "type": "paragraph",
+    "index": 242,
+    "text": "The Proposed Implementation of RFID based Attendance System"
+  },
+  {
+    "type": "paragraph",
+    "index": 243,
+    "text": "According to Qureshi (2020), recent trends in information and communication technology (ICT) include a number of smartphone applications in various educational and industrial sectors in recent years. This research aims to solve one of the promising problems of the education field: smart attendance using radio frequency identification (RFID) system. The current attendance system at King Abdul-Aziz University (KAU) in Saudi Arabia partly solves the attendance problem. There are a number of problems in the current attendance system such as wastage of time, risk of errors, truancy issues, lack of communication with parents/guardians and inefficiencies due to attendance as well as grades craft name. The proposed RFID-based time attendance system provides robust, secure, and automated time attendance capabilities. The proposed system will use modern technology and support institutions and parents to solve most of the problems of the existing school attendance system. There are several other benefits of RFID-based systems such as web and mobile interfaces, daily absence reporting, automatic SMS alerts to parents/guardians, reduced administrative work, improved School attendance rate, economy and high efficiency. The case study method will be used as the research model. The proposed system was developed and tested at KAU Saudi Arabia. The proposed system will have both web and mobile interfaces. The web interface will need the Internet to access the proposed system, and the mobile interface will use the Android platform for testing scenarios. Users will access the system to generate personalized reports to review student status for a specific course. It is expected that the proposed system will significantly improve the student monitoring mechanism, thereby facilitating parents and teachers to make appropriate decisions."
+  },
+  {
+    "type": "paragraph",
+    "index": 244,
+    "text": "Local Studies"
+  },
+  {
+    "type": "paragraph",
+    "index": 245,
+    "text": "iNotify&Monitor System with Data Analytics using RFID and Mobile Broadband Technology"
+  },
+  {
+    "type": "paragraph",
+    "index": 246,
+    "text": "According to Santander (2018), Effective reporting and monitoring of student attendance is one of the important developments that any higher education institution must have. This research mainly focuses on the design and development of the iNotify&Monitor system with the ability to analyze data using RFID and mobile broadband technology. This is a 3-in-1 software that helps Jose Rizal Memorial State Campus-Katipunan (JRMSU-K) improve its processes by notifying students whenever there are important announcements such as course cancellations, delays, activity schedule. or even alert in an emergency for student safety, monitor student attendance, and review registration and attendance records to make better decisions. The tools used to develop this software are Microsoft Visual Studio C#, PHP and MySQL. Based on the system's evaluation, it was rated as \u201cvery effective.\u201d Subsequently, we strongly encourage the immediate use of this system as it is expected to improve student management at the university. In summary, after extensive analysis and design, the iNotify&Monitor system at the JRMSU-K campus was successfully developed. It was developed not only to improve current methods of reporting and tracking student attendance, but also to minimize or eliminate problems encountered when using current systems. During the design and development of this system, all functional and non-functional requirements specified by the end user are considered and applied. Students, SSG staff and IT professionals trust and believe that this system is very effective. Therefore, it is highly recommended that the system should be immediately implemented in order to instantly notify students on important announcements and conveniently and effectively monitor students' attendance. Even while the study focused on the JRMSU-K Campus in the development of the system, the structure and the processes presented in the study is generic enough for any higher education institution to pattern the development of its respective notification and student attendance monitoring system."
+  },
+  {
+    "type": "paragraph",
+    "index": 251,
+    "text": "In-Classroom Faculty Attendance Monitoring System based on Ultra High Frequency (UHF) Radio Frequency Identification (RFID) with Captured Image Cross-verification Mechanism"
+  },
+  {
+    "type": "paragraph",
+    "index": 252,
+    "text": "According to Calo et al., (2021), teacher attendance at school is monitored based on the Daily Time Record (DTR), which records teachers' daily entry and exit times on and off school premises using a variety of technologies and methods. However, research on teacher supervision is rare. Attendance in the classroom itself. Therefore, this study aims to develop a teacher attendance monitoring system based on ultra-high frequency (UHF) radio frequency identification (RFID) with a mechanism for cross-verification of captured images. Method: The system includes two modules, which are the Teacher's Time Attendance Module and the Time Attendance Monitoring Web Application Module. The teacher presence module includes a UHF-RFID reader and a camera module that communicates with a Raspberry Pi card. Passive labels are integrated into the teacher's identification card so that the UHF-RFID reader can uniquely identify them when they are there within a 2-meter reading distance. Meanwhile, the attendance monitoring web application module is developed using a PHP framework connected to a MySQL database. It aggregates attendance data collected from the Teacher Attendance Module for tracking purposes, which both monitoring staff and teachers can access via a web browser. Result: Based on the evaluation results, the proposed system received positive feedback from end users regarding functionality and usability, and was found to be more beneficial than existing attendance monitoring systems. Novelty: This system provides a non-intrusive way to verify teacher attendance using UHF-RFID technology that has a longer read range than other types of RFID used in previous studies. Additionally, unlike existing solutions, the system checks attendance multiple times, not just at entry and exit, and then calculates the teacher's total attendance time during a class session. More importantly, the system can prevent fraudulent activities through the camera module."
+  },
+  {
+    "type": "paragraph",
+    "index": 253,
+    "text": "IT Center Attendance Monitoring System using RFID"
+  },
+  {
+    "type": "paragraph",
+    "index": 254,
+    "text": "According to Dultiao & Duldulao (2019), the development of the student attendance system at the university's computer center is based on radio frequency identification (RFID) technology. The development of technology to improve the delivery of educational services has become widespread, but some educational institutions do not adopt it and want to live by tradition. The attendance tracking system in some universities and high schools is still done manually. Therefore, this study proposes an attendance monitoring system using RFID to manage student attendance records and ensure easy attendance tracking in the computer center. It is expected that after implementing the system, teachers will benefit from the ability to effectively monitor student attendance; Therefore, the quality of teaching and student learning outcomes can be improved."
+  },
+  {
+    "type": "paragraph",
+    "index": 259,
+    "text": "CHAPTER III"
+  },
+  {
+    "type": "paragraph",
+    "index": 260,
+    "text": "Research Methodology and Design"
+  },
+  {
+    "type": "paragraph",
+    "index": 261,
+    "text": "This chapter presents theories associated in obtaining necessary to be used in this study, software methodology, research design and system development phases which include the strategy, design, development, testing, deployment and maintenance."
+  },
+  {
+    "type": "paragraph",
+    "index": 262,
+    "text": "Environment"
+  },
+  {
+    "type": "paragraph",
+    "index": 263,
+    "text": "The study took place at Supreme Student Council Office at South East Asian Institute of Technology in National Highway, Crossing Rubber, Tupi, 9505, South Cotabato, Philippines."
+  },
+  {
+    "type": "paragraph",
+    "index": 264,
+    "text": "Software Engineering Methodology"
+  },
+  {
+    "type": "paragraph",
+    "index": 265,
+    "text": "The Agile Software Development Life Cycle (SDLC) was used in the software development for the completion of AttendEX System as it is the combination of both iterative and incremental process. The said model comprises six (6) phases, which include;"
+  },
+  {
+    "type": "paragraph",
+    "index": 266,
+    "text": "Figure 3.1:"
+  },
+  {
+    "type": "paragraph",
+    "index": 267,
+    "text": "Agile Model has six phases for AttendEX or RFID-Based Attendance Tracking and Evaluation System with Web Interface and Excel Integration that illustrates the System Development Process."
+  },
+  {
+    "type": "paragraph",
+    "index": 272,
+    "text": "System Development Phases"
+  },
+  {
+    "type": "paragraph",
+    "index": 273,
+    "text": "Strategy"
+  },
+  {
+    "type": "paragraph",
+    "index": 274,
+    "text": "Strategy for S.O.1 (To be able to develop a system that will simplify officer and committee registration, with an RFID card or tag that will provide an easy-to-use interface for capturing essential details, including names and unique student IDs)"
+  },
+  {
+    "type": "paragraph",
+    "index": 275,
+    "text": "To simplify officer and committee registration, the researchers strategized to create an easy-to-use registration system for capturing essential details, including names and unique student IDs."
+  },
+  {
+    "type": "paragraph",
+    "index": 276,
+    "text": "Strategy for S.O.2 (To be able to develop a system that enhances attendance accuracy and efficiency, the system automatically records attendance by scanning RFID cards during duties, activities or events which are College Week, Foundation Day and other activities and events.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 277,
+    "text": "To enhance attendance accuracy and efficiency, the researchers have strategized to associate each officer and committee with an RFID card for the system to scan, ensuring a smooth process."
+  },
+  {
+    "type": "paragraph",
+    "index": 278,
+    "text": "Strategy for S.O.3 (To be able to develop a system that will send SMS alerts specifically to the moderator regarding the attendance of officers and committees during duties, events, or activities.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 279,
+    "text": "To ensure that the moderator stays informed in real-time about the attendance, the researchers have strategized to include an SMS alert feature in the system, which will send notifications to the moderator every time an attendance is recorded."
+  },
+  {
+    "type": "paragraph",
+    "index": 280,
+    "text": "Strategy for S.O.4 (To be able to develop a system that includes a Peer Evaluation Assessment Feedback feature, allowing SSC officers to provide evaluations and feedback on their peers' contributions and performance, promoting teamwork and collaboration within the SSC. The submitted peer assessments are visible to the moderator for team assessment and improvement.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 281,
+    "text": "To allow SSC officers to provide evaluations and feed back on their peer\u2019s contributions and performance. The researchers have strategized to include a Peer Assessment Feedback feature in the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 282,
+    "text": "Strategy for S.O.5 (To be able to develop a system that will automatically generates attendance reports and evaluation visualizations, making it easy for the moderator to analyze data and make informed decisions.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 283,
+    "text": "To assist the moderator in data analysis, the researchers have strategized to incorporate report generation and visualization feature into the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 287,
+    "text": "Design"
+  },
+  {
+    "type": "paragraph",
+    "index": 288,
+    "text": "Design for S.O.1 (To be able to develop a system that will simplify officer and committee registration, with an RFID card or tag that will provide an easy-to-use interface for capturing essential details, including names and unique student IDs.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 289,
+    "text": "In the design phase, the researchers conceptualize an easy-to-use registration system that captures essential details, including names and unique student IDs, to simplify officer and committee registration."
+  },
+  {
+    "type": "paragraph",
+    "index": 290,
+    "text": "Design for S.O.2 (To be able to develop a system that enhances attendance accuracy and efficiency, the system automatically records attendance by scanning RFID cards during duties, activities or events which are College Week, Foundation Day and other activities and events.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 291,
+    "text": "In the design phase, the researchers plan to incorporate RFID card integration to ensure a smooth process for associating each officer and committee with an RFID card or tag, enhancing attendance tracking."
+  },
+  {
+    "type": "paragraph",
+    "index": 292,
+    "text": "Design for S.O.3 (To be able to develop a system that enhances attendance accuracy and efficiency, the system automatically records attendance by scanning RFID cards during duties, activities or events which are College Week, Foundation Day and other activities and events.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 293,
+    "text": "In the design phase, the researchers strategized to design an SMS alert feature in the system. This feature is intended to send real-time notifications to the moderator every time an attendance is recorded, aiding in decision-making and accountability during meetings and events."
+  },
+  {
+    "type": "paragraph",
+    "index": 294,
+    "text": "Design for S.O.4 (To be able to develop a system that includes a Peer Evaluation Assessment Feedback feature, allowing SSC officers to provide evaluations and feedback on their peers' contributions and performance, promoting teamwork and collaboration within the SSC. The submitted peer assessments are visible to the moderator for team assessment and improvement.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 295,
+    "text": "In the design phase, the researchers plan to include a Peer Assessment Feedback feature in the system. This feature will allow SSC officers to provide evaluations and feedback on their peers' contributions and performance, promoting teamwork and collaboration within the SSC."
+  },
+  {
+    "type": "paragraph",
+    "index": 296,
+    "text": "Design for S.O.5 (To be able to develop a system that will automatically generates attendance reports and evaluation visualizations, making it easy for the moderator to analyze data and make informed decisions.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 297,
+    "text": "In the design phase, the researchers aim to design a system that automatically generates reports and visualizations. This design will make it easy for the moderator to analyze data and make informed decisions."
+  },
+  {
+    "type": "paragraph",
+    "index": 299,
+    "text": "Development"
+  },
+  {
+    "type": "paragraph",
+    "index": 300,
+    "text": "Development for S.O.1 (To be able to develop a system that will simplify officer and committee registration, with an RFID card or tag that will provide an easy-to-use interface for capturing essential details, including names and unique student IDs.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 301,
+    "text": "In the development phase, the researchers work on creating an easy-to-use registration system that captures essential details, including names and unique student IDs, to simplify officer and committee registration."
+  },
+  {
+    "type": "paragraph",
+    "index": 302,
+    "text": "Development for S.O.2 (To be able to develop a system that enhances attendance accuracy and efficiency, the system automatically records attendance by scanning RFID cards during duties, activities or events which are College Week, Foundation Day and other activities and events.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 303,
+    "text": "In the development phase, the researchers focus to implementing RFID card integration, ensuring a smooth process for associating each officer and committee with an RFID card or tag, enhancing attendance tracking."
+  },
+  {
+    "type": "paragraph",
+    "index": 304,
+    "text": "Development for S.O.3 (To be able to develop a system that will send SMS alerts specifically to the moderator regarding the attendance of officers and committees during duties, events, or activities.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 305,
+    "text": "In the development phase, the researchers implement an SMS alert feature in the system. This feature is designed to send real-time notifications to the moderator every time an attendance is recorded, aiding in decision-making and accountability during meetings and events."
+  },
+  {
+    "type": "paragraph",
+    "index": 306,
+    "text": "Development for S.O.4 (To be able to develop a system that includes a Peer Evaluation Assessment Feedback feature, allowing SSC officers to provide evaluations and feedback on their peers' contributions and performance, promoting teamwork and collaboration within the SSC. The submitted peer assessments are visible to the moderator for team assessment and improvement.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 307,
+    "text": "In the development phase, the researchers work on including a Peer Assessment Feedback feature in the system. This feature will allow SSC officers to provide evaluations and feedback on their peers' contributions and performance, promoting teamwork and collaboration within the SSC. The submitted peer assessments become visible to the moderator for team assessment and improvement."
+  },
+  {
+    "type": "paragraph",
+    "index": 308,
+    "text": "Development for S.O.5 (To be able to develop a system that will automatically generates attendance reports and evaluation visualizations, making it easy for the moderator to analyze data and make informed decisions.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 309,
+    "text": "In the development phase, the researchers focus on implementing a system that automatically generates reports and visualizations. This development makes it easy for the moderator to analyze data and make informed decisions."
+  },
+  {
+    "type": "paragraph",
+    "index": 310,
+    "text": "Testing"
+  },
+  {
+    "type": "paragraph",
+    "index": 311,
+    "text": "Testing for S.O.1 (To be able to develop a system that will simplify officer and committee registration, with an RFID card or tag that will provide an easy-to-use interface for capturing essential details, including names and unique student IDs.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 312,
+    "text": "In the testing phase, the researchers evaluate the registration system's functionality, ensuring it simplifies officer and committee registration. They check if it effectively captures essential details, including names and unique student IDs."
+  },
+  {
+    "type": "paragraph",
+    "index": 313,
+    "text": "Testing for S.O.2 (To be able to develop a system that enhances attendance accuracy and efficiency, the system automatically records attendance by scanning RFID cards during duties, activities or events which are College Week, Foundation Day and other activities and events.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 314,
+    "text": "In the testing phase, the researchers assess the RFID card integration and attendance tracking features. This evaluation ensures that the system effectively enhances attendance tracking and associates each officer and committee with RFID cards or tags."
+  },
+  {
+    "type": "paragraph",
+    "index": 315,
+    "text": "Testing for S.O.3 (To be able to develop a system that will send SMS alerts specifically to the moderator regarding the attendance of officers and committees during duties, events, or activities.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 316,
+    "text": "In the testing phase, the researchers assess the SMS alert feature's performance. They confirm that the feature sends real-time notifications to the moderator every time an attendance is recorded, aiding in decision-making and accountability during meetings and events."
+  },
+  {
+    "type": "paragraph",
+    "index": 317,
+    "text": "Testing for S.O.4 (To be able to develop a system that includes a Peer Evaluation Assessment Feedback feature, allowing SSC officers to provide evaluations and feedback on their peers' contributions and performance, promoting teamwork and collaboration within the SSC. The submitted peer assessments are visible to the moderator for team assessment and improvement.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 318,
+    "text": "In the testing phase, the researchers evaluate the Peer Assessment Feedback feature. They ensure that SSC officers can provide evaluations and feedback on their peers' contributions and performance, promoting teamwork and collaboration. They also check that submitted peer assessments are visible to the moderator for team assessment and improvement."
+  },
+  {
+    "type": "paragraph",
+    "index": 321,
+    "text": "Testing for S.O.5 (To be able to develop a system that will automatically generates attendance reports and evaluation visualizations, making it easy for the moderator to analyze data and make informed decisions.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 322,
+    "text": "In the testing phase, the researchers validate the report generation and visualization features. They confirm that the system automatically generates reports and visualizations, making it easy for the moderator to analyze data and make informed decisions."
+  },
+  {
+    "type": "paragraph",
+    "index": 323,
+    "text": "Deployment"
+  },
+  {
+    "type": "paragraph",
+    "index": 324,
+    "text": "Deployment for S.O.1 (To be able to develop a system that will simplify officer and committee registration, with an RFID card or tag that will provide an easy-to-use interface for capturing essential details, including names and unique student IDs.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 325,
+    "text": "In the deployment phase, the researchers roll out the registration system to the intended users, ensuring that it simplifies officer and committee registration by providing an easy-to-use interface for capturing essential details, including names and unique student IDs."
+  },
+  {
+    "type": "paragraph",
+    "index": 326,
+    "text": "Deployment for S.O.2 (To be able to develop a system that enhances attendance accuracy and efficiency, the system automatically records attendance by scanning RFID cards during duties, activities or events which are College Week, Foundation Day and other activities and events.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 327,
+    "text": "In the deployment phase, the researchers implement the RFID card integration and attendance tracking features, making them available to users. This deployment ensures a smooth process for associating each officer and committee with RFID cards or tags, enhancing attendance tracking."
+  },
+  {
+    "type": "paragraph",
+    "index": 328,
+    "text": "Deployment for S.O.3 (To be able to develop a system that will send SMS alerts specifically to the moderator regarding the attendance of officers and committees during duties, events, or activities. )"
+  },
+  {
+    "type": "paragraph",
+    "index": 329,
+    "text": "In the deployment phase, the SMS alert feature is activated and accessible to users. This deployment ensures that the moderator receives real-time notifications every time an attendance is recorded, aiding in decision-making and accountability during meetings and events."
+  },
+  {
+    "type": "paragraph",
+    "index": 330,
+    "text": "Deployment for S.O.4 (To be able to develop a system that includes a Peer Evaluation Assessment Feedback feature, allowing SSC officers to provide evaluations and feedback on their peers' contributions and performance, promoting teamwork and collaboration within the SSC. The submitted peer assessments are visible to the moderator for team assessment and improvement.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 331,
+    "text": "In the deployment phase, the Peer Assessment Feedback feature is made available to SSC officers. This deployment allows SSC officers to provide evaluations and feedback on their peers' contributions and performance, promoting teamwork and collaboration. It also makes submitted peer assessments visible to the moderator for team assessment and improvement."
+  },
+  {
+    "type": "paragraph",
+    "index": 332,
+    "text": "Deployment for S.O.5 (To be able to develop a system that will automatically generates attendance reports and evaluation visualizations, making it easy for the moderator to analyze data and make informed decisions.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 333,
+    "text": "In the deployment phase, the researchers make the report generation and visualization features accessible to the moderator. This deployment ensures that the system automatically generates reports and visualizations, making it easy for the moderator to analyze data and make informed decisions."
+  },
+  {
+    "type": "paragraph",
+    "index": 334,
+    "text": "Maintenance"
+  },
+  {
+    "type": "paragraph",
+    "index": 335,
+    "text": "Maintenance for S.O.1 (To be able to develop a system that will simplify officer and committee registration, with an RFID card or tag that will provide an easy-to-use interface for capturing essential details, including names and unique student IDs.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 336,
+    "text": "In the maintenance phase, the researchers ensure the ongoing functionality and effectiveness of the registration system. They continue to provide support and updates to maintain its ability to simplify officer and committee registration, including capturing essential details."
+  },
+  {
+    "type": "paragraph",
+    "index": 338,
+    "text": "Maintenance for S.O.2 (To be able to develop a system that enhances attendance accuracy and efficiency, the system automatically records attendance by scanning RFID cards during duties, activities or events which are College Week, Foundation Day and other activities and events.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 339,
+    "text": "In the maintenance phase, the researchers the researchers continue to monitor and support the RFID card integration and attendance tracking features. Regular updates and maintenance are performed to ensure a smooth process for associating each officer and committee with RFID cards or tags, enhancing attendance tracking."
+  },
+  {
+    "type": "paragraph",
+    "index": 340,
+    "text": "Maintenance for S.O.3 (To be able to develop a system that will send SMS alerts specifically to the moderator regarding the attendance of officers and committees during duties, events, or activities.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 341,
+    "text": "In the maintenance phase, the automated attendance recording system is regularly checked and updated. This ongoing maintenance ensures the system continues to enhance attendance accuracy and efficiency by automatically recording attendance during duties, activities, and events using RFID cards."
+  },
+  {
+    "type": "paragraph",
+    "index": 342,
+    "text": "Maintenance for S.O.4 (To be able to develop a system that includes a Peer Evaluation Assessment Feedback feature, allowing SSC officers to provide evaluations and feedback on their peers' contributions and performance, promoting teamwork and collaboration within the SSC. The submitted peer assessments are visible to the moderator for team assessment and improvement.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 343,
+    "text": "In the maintenance phase, the researchers maintain the Peer Assessment Feedback feature. Ongoing support and updates are provided to ensure SSC officers can continue to provide evaluations and feedback on their peers' contributions and performance. The feature's ongoing maintenance promotes teamwork and collaboration within the SSC and maintains visibility of submitted peer assessments for team assessment and improvement."
+  },
+  {
+    "type": "paragraph",
+    "index": 344,
+    "text": "Maintenance for S.O.5 (To be able to develop a system that will automatically generates attendance reports and evaluation visualizations, making it easy for the moderator to analyze data and make informed decisions.)"
+  },
+  {
+    "type": "paragraph",
+    "index": 345,
+    "text": "In the maintenance phase, ongoing support and updates are provided to maintain the system's ability to automatically generate reports and visualizations. This ensures that the moderator can continue to analyze data and make informed decisions with ease."
+  },
+  {
+    "type": "paragraph",
+    "index": 348,
+    "text": "Planning / Conception - Initiation Phase"
+  },
+  {
+    "type": "paragraph",
+    "index": 349,
+    "text": "Business Model Canvas"
+  },
+  {
+    "type": "paragraph",
+    "index": 350,
+    "text": "Figure 3.2:"
+  },
+  {
+    "type": "paragraph",
+    "index": 351,
+    "text": "Business Model Canvas of AttendEX. This is the strategic management and lean startup template for the development AttendEX. This is the overview that lays out both what is the system for and how it will run."
+  },
+  {
+    "type": "table",
+    "index": 353,
+    "data": [
+      [
+        "Key Partners",
+        "Key Activity",
+        "Value\nProposition",
+        "Value\nProposition",
+        "Customer Relationship",
+        "Customer Segment"
+      ],
+      [
+        "Key Partners",
+        "Key Resources",
+        "Value\nProposition",
+        "Value\nProposition",
+        "Channels",
+        "Customer Segment"
+      ],
+      [
+        "Cost Structure",
+        "Cost Structure",
+        "Cost Structure",
+        "Revenue Streams",
+        "Revenue Streams",
+        "Revenue Streams"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 356,
+    "text": "Gantt Chart /Pert Chart"
+  },
+  {
+    "type": "paragraph",
+    "index": 357,
+    "text": "Figure 3.3:"
+  },
+  {
+    "type": "paragraph",
+    "index": 358,
+    "text": "Gantt Chart of AttendEX. This chart illustrates this project\u2019s schedule. It illustrates the task of the researchers and duration of the terminal elements and summary elements of the project AttendEX."
+  },
+  {
+    "type": "table",
+    "index": 374,
+    "data": [
+      [
+        ""
+      ]
+    ]
+  },
+  {
+    "type": "table",
+    "index": 376,
+    "data": [
+      [
+        ""
+      ]
+    ]
+  },
+  {
+    "type": "table",
+    "index": 377,
+    "data": [
+      [
+        ""
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 379,
+    "text": "Functional Decomposition Diagram"
+  },
+  {
+    "type": "paragraph",
+    "index": 380,
+    "text": "Figure 3.4:"
+  },
+  {
+    "type": "paragraph",
+    "index": 381,
+    "text": "Functional Decomposition Diagram of AttendEX. This figure shows that flow of RFID-based Attendance Tracking and Evaluation System with  Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 384,
+    "text": "Analysis - Design Phase"
+  },
+  {
+    "type": "paragraph",
+    "index": 385,
+    "text": "Use Case Diagrams"
+  },
+  {
+    "type": "paragraph",
+    "index": 386,
+    "text": "Figure 3.5:"
+  },
+  {
+    "type": "paragraph",
+    "index": 387,
+    "text": "Use Case Diagrams Software of  RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 395,
+    "text": "Figure 3.6:"
+  },
+  {
+    "type": "paragraph",
+    "index": 396,
+    "text": "Use Case Diagrams Hardware of  RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 412,
+    "text": "Use Case Matrix"
+  },
+  {
+    "type": "table",
+    "index": 413,
+    "data": [
+      [
+        "Use Case Name: \nRFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration",
+        "AttendEX"
+      ],
+      [
+        "Primary Actor: Moderator",
+        "Primary Actor: Moderator"
+      ],
+      [
+        "Description: \nThis use case describes how the moderator or administrator manages the attendance and evaluation records of the officers using the advance RFID.",
+        "Description: \nThis use case describes how the moderator or administrator manages the attendance and evaluation records of the officers using the advance RFID."
+      ],
+      [
+        "Preconditions:\nThe developer must assist the moderator for using this system especially the monitoring the officers attendance.  Administrator must have the username and password of the system.",
+        "Preconditions:\nThe developer must assist the moderator for using this system especially the monitoring the officers attendance.  Administrator must have the username and password of the system."
+      ],
+      [
+        "Dynamic Precondition: \nThe moderator must explore the system for them to memorize all the functions that run without having a problem.",
+        "Dynamic Precondition: \nThe moderator must explore the system for them to memorize all the functions that run without having a problem."
+      ],
+      [
+        "Trigger/ Event: \n- Admin will sign up/register into the system\n- Admin will input name, position, phone number,username and password to have account\n- Admin will login using username and password \n- Admin can update administrator information's \n- Admin view the total record of officers and total record of present for the current date in the dashboard\n- Admin will register or add officers information into the RFID cards \n- Admin can view officers information\n- Admin can update the officers information\n- Admin can delete the officers information\n- The admin will export the of  the records to excel\n- Admin can restore all the information if needed\n- Admin will print all the officers information \n- Admin manage the scanning of attendance for entrance \n- Admin can view officers attendance after scanning RFID cards or tags\n- Admin can search the officers attendance record includes name, position, course and time in\n- Admin manage the scanning of attendance for entrance \n- The admin will have a record or view the officers time out \n- Admin manage the evaluation forms and answer of the officers\n- Admin search the email/ name of the officers who have a evaluation \n- Admin input from date and to date to  analyse/view the record of the officers present and absences \nType:\tExternal\tTemporary",
+        "Trigger/ Event: \n- Admin will sign up/register into the system\n- Admin will input name, position, phone number,username and password to have account\n- Admin will login using username and password \n- Admin can update administrator information's \n- Admin view the total record of officers and total record of present for the current date in the dashboard\n- Admin will register or add officers information into the RFID cards \n- Admin can view officers information\n- Admin can update the officers information\n- Admin can delete the officers information\n- The admin will export the of  the records to excel\n- Admin can restore all the information if needed\n- Admin will print all the officers information \n- Admin manage the scanning of attendance for entrance \n- Admin can view officers attendance after scanning RFID cards or tags\n- Admin can search the officers attendance record includes name, position, course and time in\n- Admin manage the scanning of attendance for entrance \n- The admin will have a record or view the officers time out \n- Admin manage the evaluation forms and answer of the officers\n- Admin search the email/ name of the officers who have a evaluation \n- Admin input from date and to date to  analyse/view the record of the officers present and absences \nType:\tExternal\tTemporary"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 436,
+    "text": "Class Diagram"
+  },
+  {
+    "type": "paragraph",
+    "index": 437,
+    "text": "Figure 3.7:"
+  },
+  {
+    "type": "paragraph",
+    "index": 438,
+    "text": "Class Diagrams of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 449,
+    "text": "Sequence Diagram"
+  },
+  {
+    "type": "paragraph",
+    "index": 450,
+    "text": "Moderator/ Admin Sequence Diagram"
+  },
+  {
+    "type": "paragraph",
+    "index": 451,
+    "text": "Figure 3.8: Moderator Sequence Diagram of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 454,
+    "text": "Officer Sequence Diagram"
+  },
+  {
+    "type": "paragraph",
+    "index": 456,
+    "text": "Figure 3.9: Officer Sequence Diagram of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 469,
+    "text": "Activity Diagram"
+  },
+  {
+    "type": "paragraph",
+    "index": 470,
+    "text": "Moderator Activity"
+  },
+  {
+    "type": "paragraph",
+    "index": 471,
+    "text": "(Manage Officers)"
+  },
+  {
+    "type": "paragraph",
+    "index": 472,
+    "text": "Figure 3.10: Moderator Activity Diagram Officers Module of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 478,
+    "text": "Moderator Activity"
+  },
+  {
+    "type": "paragraph",
+    "index": 479,
+    "text": "(Manage Attendance)"
+  },
+  {
+    "type": "paragraph",
+    "index": 480,
+    "text": "Figure 3.11: Moderator Activity Diagram Attendance  Module of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 488,
+    "text": "Moderator Activity"
+  },
+  {
+    "type": "paragraph",
+    "index": 489,
+    "text": "(Manage Evaluation)"
+  },
+  {
+    "type": "paragraph",
+    "index": 491,
+    "text": "Figure 3.12: Moderator Activity Diagram Evaluation Module of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 498,
+    "text": "Moderator Activity"
+  },
+  {
+    "type": "paragraph",
+    "index": 499,
+    "text": "(Manage Analysis)"
+  },
+  {
+    "type": "paragraph",
+    "index": 500,
+    "text": "Figure 3.13: Moderator Activity Diagram Analysis Module of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX). Moderator Activity Diagram to show the process of managing the officers information, attendance logs, evaluation, analysis."
+  },
+  {
+    "type": "paragraph",
+    "index": 510,
+    "text": "Officer Activity"
+  },
+  {
+    "type": "paragraph",
+    "index": 526,
+    "text": "User Interface Designs"
+  },
+  {
+    "type": "paragraph",
+    "index": 527,
+    "text": "Moderators User Interface"
+  },
+  {
+    "type": "paragraph",
+    "index": 528,
+    "text": "Sign up Interface"
+  },
+  {
+    "type": "paragraph",
+    "index": 529,
+    "text": "Figure 3.15: Moderator Sign up  Interface. This figure displays the first frame shown to the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 530,
+    "text": "Log In Interface"
+  },
+  {
+    "type": "paragraph",
+    "index": 531,
+    "text": "Figure 3.16: Moderator Sign up  Interface. This figure displays the log in frame shown to the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 532,
+    "text": "Dashboard Interface"
+  },
+  {
+    "type": "paragraph",
+    "index": 533,
+    "text": "Figure 3.17: Moderator Dashboard  Interface. This figure displays the dashboard frame shown to the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 534,
+    "text": "Manage Officers Interface"
+  },
+  {
+    "type": "paragraph",
+    "index": 535,
+    "text": "Figure 3.18: Moderator Manage Officers  Interface. This figure displays the officers dat5a frame shown to the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 537,
+    "text": "Manage Attendance Interface"
+  },
+  {
+    "type": "paragraph",
+    "index": 538,
+    "text": "Figure 3.19: Moderator Manage Attendance  Interface. This figure displays the attendance data frame shown to the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 539,
+    "text": "Manage Evaluations Interface"
+  },
+  {
+    "type": "paragraph",
+    "index": 541,
+    "text": "Figure 3.20: Moderator Manage Evaluation Interface. This figure displays the evaluation frame shown to the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 543,
+    "text": "Manage Analysis Interface"
+  },
+  {
+    "type": "paragraph",
+    "index": 545,
+    "text": "Figure 3.21: Moderator Manage Analysis  Interface. This figure displays the analysis/reports frame shown to the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 547,
+    "text": "Officers User Interface"
+  },
+  {
+    "type": "paragraph",
+    "index": 548,
+    "text": "Officers Attendance"
+  },
+  {
+    "type": "paragraph",
+    "index": 550,
+    "text": "Figure 3.22: Officers Attendance Interface. This figure displays the attendance frame shown to the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 566,
+    "text": "Officers Evaluation"
+  },
+  {
+    "type": "paragraph",
+    "index": 568,
+    "text": "Figure 3.23: Officers Evaluation Interface. This figure displays the evaluation frame shown to the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 571,
+    "text": "Storyboard"
+  },
+  {
+    "type": "paragraph",
+    "index": 573,
+    "text": "Admin Login Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 588,
+    "text": "Figure 3.24: This is the login page where administrators access the system. And this is where the officers access the evaluation form and attendance."
+  },
+  {
+    "type": "paragraph",
+    "index": 589,
+    "text": "Admin/Officers Sign Up Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 605,
+    "text": "Figure 3.25: This is the sign up page where administrators access the system. And this is where the officers access the evaluation form and attendance."
+  },
+  {
+    "type": "paragraph",
+    "index": 607,
+    "text": "Officer Attendance Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 620,
+    "text": "Figure 3.26: This is the sign up page where administrators access the system. And this is where the officers access the evaluation form and attendance."
+  },
+  {
+    "type": "paragraph",
+    "index": 621,
+    "text": "Peer Assessment Evaluation Form Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 632,
+    "text": "Figure 3.27: Officers need to input their email address before evaluating."
+  },
+  {
+    "type": "paragraph",
+    "index": 634,
+    "text": "Figure 3.28: SSC officers access this page to provide peer evaluations and feedback."
+  },
+  {
+    "type": "paragraph",
+    "index": 635,
+    "text": "Front Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 637,
+    "text": "Figure 3.29: Administrator\u2019s front page."
+  },
+  {
+    "type": "paragraph",
+    "index": 640,
+    "text": "Admin\u2019s Account Information Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 642,
+    "text": "Figure 3.30: Administrator\u2019s account information where they can update their information."
+  },
+  {
+    "type": "paragraph",
+    "index": 643,
+    "text": "Update Account Information Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 645,
+    "text": "Figure 3.31: Administrator\u2019s update account page."
+  },
+  {
+    "type": "paragraph",
+    "index": 647,
+    "text": "Dashboard Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 649,
+    "text": "Figure 3.32: The dashboard provides an overview of total officers, and total present."
+  },
+  {
+    "type": "paragraph",
+    "index": 650,
+    "text": "Officer\u2019s Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 652,
+    "text": "Figure 3.33: This page contains the list of officers and facilitates the registration of SSC officers."
+  },
+  {
+    "type": "paragraph",
+    "index": 654,
+    "text": "Add Officer\u2019s Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 670,
+    "text": "Figure 3.34: In this page the admin can enter essential details, assign roles, and scan RFID cards."
+  },
+  {
+    "type": "paragraph",
+    "index": 671,
+    "text": "Update Officer\u2019s Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 673,
+    "text": "Figure 3.35: In this page the admin can enter essential details, assign roles, and scan RFID cards."
+  },
+  {
+    "type": "paragraph",
+    "index": 675,
+    "text": "Attendance Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 677,
+    "text": "Figure 3.36: The attendance overview page where both moderator and officers can view attendance records. And this is where the record goes when the officers taps their RFID cards."
+  },
+  {
+    "type": "paragraph",
+    "index": 678,
+    "text": "Evaluation Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 689,
+    "text": "Figure 3.37: This page consolidates all completed peer evaluations submitted by officers."
+  },
+  {
+    "type": "paragraph",
+    "index": 691,
+    "text": "Analysis/ Report\u2019s Page"
+  },
+  {
+    "type": "paragraph",
+    "index": 694,
+    "text": "Figure 3.38: The Analysis and Reports Overview page serves as a comprehensive analytic, providing moderators with valuable insights derived from attendance and evaluation data."
+  },
+  {
+    "type": "paragraph",
+    "index": 698,
+    "text": "Database Design"
+  },
+  {
+    "type": "paragraph",
+    "index": 700,
+    "text": "Figure 3.39: Database Design of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 706,
+    "text": "Entity Relationship Diagram"
+  },
+  {
+    "type": "paragraph",
+    "index": 722,
+    "text": "Figure 3.40: Entity Relationship Diagram of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 723,
+    "text": "Data Dictionary"
+  },
+  {
+    "type": "table",
+    "index": 724,
+    "data": [
+      [
+        "Table Name:",
+        "user_table",
+        "user_table",
+        "user_table",
+        "user_table"
+      ],
+      [
+        "Description:",
+        "Displays the user information.",
+        "Displays the user information.",
+        "Displays the user information.",
+        "Displays the user information."
+      ],
+      [
+        "Attribute Name",
+        "Description",
+        "Data Type",
+        "Default Value",
+        "Null"
+      ],
+      [
+        "user_account_id",
+        "User ID number",
+        "int(11)",
+        "PK",
+        "No"
+      ],
+      [
+        "name",
+        "User\u2019s name",
+        "varchar(100)",
+        "None",
+        "No"
+      ],
+      [
+        "username",
+        "User\u2019s username",
+        "varchar(100)",
+        "None",
+        "No"
+      ],
+      [
+        "password",
+        "User\u2019s password",
+        "varchar(100)",
+        "None",
+        "No"
+      ],
+      [
+        "user_phone_number",
+        "User\u2019s phone number",
+        "varchar (20)",
+        "None",
+        "No"
+      ],
+      [
+        "position",
+        "User\u2019s position",
+        "varchar(100)",
+        "None",
+        "No"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 725,
+    "text": "Table 3.1: Data Dictionary of User Table of the AttendEX System."
+  },
+  {
+    "type": "table",
+    "index": 726,
+    "data": [
+      [
+        "Table Name:",
+        "officers_tbl",
+        "officers_tbl",
+        "officers_tbl",
+        "officers_tbl"
+      ],
+      [
+        "Description:",
+        "Displays the officers information.",
+        "Displays the officers information.",
+        "Displays the officers information.",
+        "Displays the officers information."
+      ],
+      [
+        "Attribute Name",
+        "Description",
+        "Data Type",
+        "Default Value",
+        "Null"
+      ],
+      [
+        "officers_id",
+        "Officer\u2019s ID number",
+        "int(11)",
+        "PK",
+        "No"
+      ],
+      [
+        "off_name",
+        "Officer\u2019s name",
+        "varchar(100)",
+        "None",
+        "No"
+      ],
+      [
+        "off_id_no",
+        "Officer\u2019s student ID number",
+        "varchar(30)",
+        "None",
+        "No"
+      ],
+      [
+        "off_card_id",
+        "Officer\u2019s card ID",
+        "int(20)",
+        "None",
+        "No"
+      ],
+      [
+        "off_position",
+        "Officer\u2019s position",
+        "varchar(100)",
+        "None",
+        "No"
+      ],
+      [
+        "off_course",
+        "Officer\u2019s course",
+        "varchar(100)",
+        "None",
+        "No"
+      ],
+      [
+        "off_duty",
+        "Officer\u2019s scheduled duty",
+        "varchar(100)",
+        "None",
+        "No"
+      ],
+      [
+        "off_birthday",
+        "Officer\u2019s birthday",
+        "Date",
+        "None",
+        "No"
+      ],
+      [
+        "off_email",
+        "Officer\u2019s email address",
+        "varchar(100)",
+        "None",
+        "No"
+      ],
+      [
+        "off_phone",
+        "Officer\u2019s phone number",
+        "varchar(20)",
+        "None",
+        "No"
+      ],
+      [
+        "off_address",
+        "Officer\u2019s Address",
+        "varchar(255)",
+        "None",
+        "No"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 727,
+    "text": "Table 3.2: Data Dictionary of Officers Table of the AttendEX System."
+  },
+  {
+    "type": "table",
+    "index": 728,
+    "data": [
+      [
+        "Table Name:",
+        "attendance_tbl.",
+        "attendance_tbl.",
+        "attendance_tbl.",
+        "attendance_tbl."
+      ],
+      [
+        "Description:",
+        "Displays the attendance information",
+        "Displays the attendance information",
+        "Displays the attendance information",
+        "Displays the attendance information"
+      ],
+      [
+        "Attribute Name",
+        "Description",
+        "Data Type",
+        "Default Value",
+        "Null"
+      ],
+      [
+        "attend_id",
+        "Attendance ID number",
+        "int(11)",
+        "PK",
+        "No"
+      ],
+      [
+        "officers_id",
+        "Officer\u2019s ID number",
+        "int(11)",
+        "FK",
+        "Yes"
+      ],
+      [
+        "date",
+        "Officer\u2019s attendance date",
+        "date",
+        "currrent_timestamp()",
+        "Yes"
+      ],
+      [
+        "time_in",
+        "Officer\u2019s time in",
+        "time",
+        "currrent_timestamp()",
+        "Yes"
+      ],
+      [
+        "time_out",
+        "Officer\u2019s time out",
+        "time",
+        "currrent_timestamp()",
+        "Yes"
+      ],
+      [
+        "status",
+        "Officer\u2019s attendance status",
+        "varchar(10)",
+        "None",
+        "No"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 729,
+    "text": "Table 3.3: Data Dictionary of Attendance Table of the AttendEX System."
+  },
+  {
+    "type": "table",
+    "index": 733,
+    "data": [
+      [
+        "Table Name:",
+        "evaluation_tbl",
+        "evaluation_tbl",
+        "evaluation_tbl",
+        "evaluation_tbl"
+      ],
+      [
+        "Description:",
+        "Displays the evaluation information.",
+        "Displays the evaluation information.",
+        "Displays the evaluation information.",
+        "Displays the evaluation information."
+      ],
+      [
+        "Attribute Name",
+        "Description",
+        "Data Type",
+        "Default Value",
+        "Null"
+      ],
+      [
+        "eval_id",
+        "Evaluation ID number",
+        "int(11)",
+        "PK",
+        "No"
+      ],
+      [
+        "officers_id",
+        "Officer assessed",
+        "int(11)",
+        "FK",
+        "No"
+      ],
+      [
+        "assessors",
+        "Assessor\u2019s name",
+        "varchar(100)",
+        "None",
+        "Yes"
+      ],
+      [
+        "email",
+        "Assessor\u2019s email address",
+        "varchar(100)",
+        "None",
+        "No"
+      ],
+      [
+        "date",
+        "Evaluation\u2019s date",
+        "Datetime",
+        "currrent_timestamp()",
+        "No"
+      ],
+      [
+        "suggestion",
+        "Assessor\u2019s suggestion",
+        "text",
+        "None",
+        "No"
+      ],
+      [
+        "response1",
+        "Assessors rating for first question",
+        "int(5)",
+        "None",
+        "No"
+      ],
+      [
+        "response2",
+        "Assessors rating for second question",
+        "int(5)",
+        "None",
+        "No"
+      ],
+      [
+        "response3",
+        "Assessors rating for third question",
+        "int(5)",
+        "None",
+        "No"
+      ],
+      [
+        "response4",
+        "Assessors rating for fourth question",
+        "int(5)",
+        "None",
+        "No"
+      ],
+      [
+        "response5",
+        "Assessors rating for fifth question",
+        "int(5)",
+        "None",
+        "No"
+      ],
+      [
+        "response6",
+        "Assessors rating for sixth question",
+        "int(5)",
+        "None",
+        "No"
+      ],
+      [
+        "response7",
+        "Assessors rating for seventh question",
+        "int(5)",
+        "None",
+        "No"
+      ],
+      [
+        "response8",
+        "Assessors rating for eight question",
+        "int(5)",
+        "None",
+        "No"
+      ],
+      [
+        "response9",
+        "Assessors rating for ninth question",
+        "int(5)",
+        "None",
+        "No"
+      ],
+      [
+        "response10",
+        "Assessors rating for tenth question",
+        "int(5)",
+        "None",
+        "No"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 734,
+    "text": "Table 3.4: Data Dictionary of Evaluation Table of the AttendEX System."
+  },
+  {
+    "type": "table",
+    "index": 740,
+    "data": [
+      [
+        "Table Name:",
+        "rfid",
+        "rfid",
+        "rfid",
+        "rfid"
+      ],
+      [
+        "Description:",
+        "Displays the rfid cards log.",
+        "Displays the rfid cards log.",
+        "Displays the rfid cards log.",
+        "Displays the rfid cards log."
+      ],
+      [
+        "Attribute Name",
+        "Description",
+        "Data Type",
+        "Default Value",
+        "Null"
+      ],
+      [
+        "id",
+        "RFID ID number",
+        "int(11)",
+        "PK",
+        "No"
+      ],
+      [
+        "cardid",
+        "RFID card id",
+        "int(20)",
+        "None",
+        "No"
+      ],
+      [
+        "logdate",
+        "RFID card log date",
+        "Datetime(30)",
+        "None",
+        "No"
+      ],
+      [
+        "processed",
+        "Indicator for processed card/record",
+        "tinytint(4)",
+        "None",
+        "No"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 741,
+    "text": "Table 3.5: Data Dictionary of Questions Table of the AttendEX System."
+  },
+  {
+    "type": "paragraph",
+    "index": 744,
+    "text": "Network Design"
+  },
+  {
+    "type": "paragraph",
+    "index": 745,
+    "text": "Network design is the integration of different network devices to achieve end-to-end communication between network hosts, and to identify what type of topology is going to be used RFID-Based Attendance with Web Interface and Excel Integration."
+  },
+  {
+    "type": "paragraph",
+    "index": 746,
+    "text": "Network Model"
+  },
+  {
+    "type": "paragraph",
+    "index": 747,
+    "text": "The network model that will be using is star topology model, In a star topology, the messages and each component is directly connected to the central hub that acts as a server and the connecting nodes as a client."
+  },
+  {
+    "type": "paragraph",
+    "index": 748,
+    "text": "Figure 3.41:"
+  },
+  {
+    "type": "paragraph",
+    "index": 749,
+    "text": "Software Network Model of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 760,
+    "text": "Figure 3.42:"
+  },
+  {
+    "type": "paragraph",
+    "index": 761,
+    "text": "Hardware Network Model of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 768,
+    "text": "Network Topology"
+  },
+  {
+    "type": "paragraph",
+    "index": 769,
+    "text": "Star topology, a star network topology is characterized by a central hub or server that serves as the focal point of the network. Devices, such as RFID scanners, GPRS shields, PCs with user interfaces, and Wi-Fi access points, connect directly to the central hub. Data communication is efficiently managed through the hub, ensuring centralized control and reliability. This topology allows for easy scalability and isolates device issues, minimizing network disruptions."
+  },
+  {
+    "type": "paragraph",
+    "index": 770,
+    "text": "Figure 3.43: Star Networking Topology of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 778,
+    "text": "List of Modules"
+  },
+  {
+    "type": "paragraph",
+    "index": 779,
+    "text": "Manage Officers"
+  },
+  {
+    "type": "paragraph",
+    "index": 780,
+    "text": "This module provide the administrator a process of registering SSC officers and committee members the system provide a key feature that is user-friendly interface for capturing essential user details, including names and unique student IDs."
+  },
+  {
+    "type": "paragraph",
+    "index": 781,
+    "text": "Manage Attendance"
+  },
+  {
+    "type": "paragraph",
+    "index": 782,
+    "text": "This module provide the administrator RFID attendance optimizes attendance tracking for SSC officers and committees  the system provide a key feature that are association of RFID cards or tags with SSC officers and committee members, automatic attendance recording through RFID card scanning and provide a SMS alerts sent to the moderator in real-time regarding attendance during duties, events, or activities."
+  },
+  {
+    "type": "paragraph",
+    "index": 783,
+    "text": "Manage Evaluation"
+  },
+  {
+    "type": "paragraph",
+    "index": 784,
+    "text": "This module provide administrator an evaluation for the fosters teamwork and collaboration within the Supreme Student Council, this will provide SSC moderator a visualized evaluations and feedback of the team assessment."
+  },
+  {
+    "type": "paragraph",
+    "index": 785,
+    "text": "Manage Report"
+  },
+  {
+    "type": "paragraph",
+    "index": 786,
+    "text": "This module provide the administrator generated reports and visual data representations for data analysis. The system provide a key feature that will  provide automatic report and visualization generation, facilitating data analysis and decision-making."
+  },
+  {
+    "type": "paragraph",
+    "index": 787,
+    "text": "Attendance"
+  },
+  {
+    "type": "paragraph",
+    "index": 788,
+    "text": "This module provide the officers and committee a fast and accurate attendance by scanning of RFID that will automatically store attendance data time in and out during duties, events, and activities."
+  },
+  {
+    "type": "paragraph",
+    "index": 789,
+    "text": "Evaluation"
+  },
+  {
+    "type": "paragraph",
+    "index": 790,
+    "text": "This module provide the officers an evaluations and feedbacks of their peer which are visible to the moderator for team assessment and improvement."
+  },
+  {
+    "type": "paragraph",
+    "index": 797,
+    "text": "Testing/ Quality Assurance Phase"
+  },
+  {
+    "type": "paragraph",
+    "index": 798,
+    "text": "Unit Testing"
+  },
+  {
+    "type": "paragraph",
+    "index": 799,
+    "text": "During this phase, the project researcher are testing every function and codes entered match each feature of the system, Additionally, they verify that the data in the database and the system are identical. Researchers implement unit testing for RFID-Based Attendance Tracking and Evaluation System with a Web Interface and Excel Integration to make every component operate as intended. This method enhances the system's maintainability and dependability by assisting in the early detection and correction of faults. For such a system, the following is an organized method for carrying out unit tests:"
+  },
+  {
+    "type": "paragraph",
+    "index": 800,
+    "text": "Accessibility: Allow users to assess the main features of the software modules to see if they are functioning properly. Additionally, it enabled them to determine whether it meshes well with the system's interface design."
+  },
+  {
+    "type": "paragraph",
+    "index": 801,
+    "text": "Accuracy: Provide users with the ability to assess the speed and accuracy of data initiated and encoded, as well as forms and outcomes that demonstrate how well all information provided by the software program conforms to the standard format required by the software application. Examine test results to find any issues. Examine and resolve the codebase's underlying problems. To verify the fixes, run the tests again."
+  },
+  {
+    "type": "paragraph",
+    "index": 802,
+    "text": "Functionality: Provide users with the ability to assess how the system applies its modules' functions. describing in detail whether each goal was reached and completed correctly. Continue to update and add additional tests to cover the changes as development moves forward and new features are added."
+  },
+  {
+    "type": "paragraph",
+    "index": 803,
+    "text": "Integration Testing"
+  },
+  {
+    "type": "paragraph",
+    "index": 804,
+    "text": "The system modules that are logically integrated and tested application projects are being tested by the researchers. focuses on verifying that the system's various modules or components interact as intended by testing their interactions. The importance of this kind of testing lies in its ability to find problems that unit testing could miss, like data flow issues, mismatched interfaces, and integration concerns."
+  },
+  {
+    "type": "paragraph",
+    "index": 805,
+    "text": "Figure 3.44:"
+  },
+  {
+    "type": "paragraph",
+    "index": 806,
+    "text": "Integration Testing figure of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 816,
+    "text": "Integration Testing: Bottom-Up Integration Approach"
+  },
+  {
+    "type": "table",
+    "index": 817,
+    "data": [
+      [
+        "ID",
+        "Test Case Objective",
+        "Test Case Description",
+        "Expected Result"
+      ],
+      [
+        "1",
+        "Register officers essential details, including names, unique student IDs and etc.",
+        "View officers details.",
+        "Displayofficers details."
+      ],
+      [
+        "2",
+        "Automatically records attendance by scanning RFID cards during duties, activities or events.",
+        "Scan the RFID card and Review the attendance record",
+        "Stored Officers Attendance."
+      ],
+      [
+        "3",
+        "Send SMS alerts specifically to the moderator regarding the attendance of officers and committees during duties, events, or activities.",
+        "Generate SMS message.",
+        "Send and view SMS alert message."
+      ],
+      [
+        "4",
+        "Peer Evaluation Assessment Feedback, allowing SSC officers to provide evaluations and feedback.",
+        "Generate and Review Evaluation.",
+        "Store evaluation"
+      ],
+      [
+        "5",
+        "Automatically generate attendance excel reports.",
+        "Display officers attendance.",
+        "Generate attendance in excel."
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 820,
+    "text": "Table 3.6: Case Table of RFID-based Attendance Tracking and Evaluation System with Web Interface and Excel Integration Test"
+  },
+  {
+    "type": "paragraph",
+    "index": 826,
+    "text": "Alpha Testing"
+  },
+  {
+    "type": "paragraph",
+    "index": 827,
+    "text": "The researchers try and test it to find any errors and make sure that it meets all the requirements for the features and goals required. Make sure that all of the hardware, software, and problem fixes from the earlier testing are operational to ensure that everything is functioning properly. In order to provide the product to the SEAIT Supreme Student Council, the system software must be fully operational."
+  },
+  {
+    "type": "paragraph",
+    "index": 828,
+    "text": "Evaluation Methodology"
+  },
+  {
+    "type": "paragraph",
+    "index": 829,
+    "text": "Evaluation of the system is a critical part of development. This will be evaluated based on how well the system functions, meets its objectives, and delights its users. The study assessed the system's usability, accessibility, and acceptability using the descriptive-development research methodology."
+  },
+  {
+    "type": "paragraph",
+    "index": 830,
+    "text": "Respondent of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 831,
+    "text": "The respondent of the study was composed of 2 possible users the moderator and officer"
+  },
+  {
+    "type": "paragraph",
+    "index": 832,
+    "text": "This study used a checklist and a rating scale questionnaire to gather the needed data and the responses to evaluate the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 833,
+    "text": "The checklist was used to evaluate the functionality contains a checklist form. included in the system, and for the accuracy, and accessibility contains the list of all system objectives and deliverables that the researchers want the respondents to check and evaluate. The frequency counts and the percentage will be computed."
+  },
+  {
+    "type": "paragraph",
+    "index": 834,
+    "text": "Weighted Mean. This tool was used to provide answer to the questions."
+  },
+  {
+    "type": "paragraph",
+    "index": 835,
+    "text": "The formula is:"
+  },
+  {
+    "type": "paragraph",
+    "index": 836,
+    "text": "WM"
+  },
+  {
+    "type": "paragraph",
+    "index": 837,
+    "text": "Where:"
+  },
+  {
+    "type": "paragraph",
+    "index": 838,
+    "text": "WM = weighted mean"
+  },
+  {
+    "type": "paragraph",
+    "index": 839,
+    "text": "X = number of respondents"
+  },
+  {
+    "type": "paragraph",
+    "index": 840,
+    "text": "Wi = Weight given to each respondent"
+  },
+  {
+    "type": "paragraph",
+    "index": 841,
+    "text": "N = number of cases"
+  },
+  {
+    "type": "paragraph",
+    "index": 842,
+    "text": "To check the functionality, accessibility, acceptability, and accuracy of the system, a 5-point Likert Scale is shown in the table. The mean was computed and interpreted in the table below."
+  },
+  {
+    "type": "paragraph",
+    "index": 847,
+    "text": "Table 3.7:"
+  },
+  {
+    "type": "paragraph",
+    "index": 849,
+    "text": "Interpretative Scale used to interpret the Weighted Mean"
+  },
+  {
+    "type": "table",
+    "index": 851,
+    "data": [
+      [
+        "CODE",
+        "MEAN RANGE",
+        "DESCRIPTION"
+      ],
+      [
+        "5",
+        "4.20-5.00",
+        "Strongly Agree"
+      ],
+      [
+        "4",
+        "3.40-4.19",
+        "Agree"
+      ],
+      [
+        "3",
+        "2.60-3.39",
+        "Moderately Agree"
+      ],
+      [
+        "2",
+        "1.80-2.59",
+        "Disagree"
+      ],
+      [
+        "1",
+        "1.00-1.79",
+        "Strongly Disagree"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 853,
+    "text": "Acceptance Testing"
+  },
+  {
+    "type": "paragraph",
+    "index": 854,
+    "text": "The Supreme Student Council Office served as the testing and evaluation site for this project.This was participated with the moderator and officers. The assessment form and a follow-up interview were used in this project to gather data. We created and distributed questionnaires to the participants."
+  },
+  {
+    "type": "paragraph",
+    "index": 855,
+    "text": "Table 3.8:"
+  },
+  {
+    "type": "paragraph",
+    "index": 857,
+    "text": "Evaluation Result of the System\u2019s Functionality"
+  },
+  {
+    "type": "table",
+    "index": 859,
+    "data": [
+      [
+        "No.",
+        "Functionality",
+        "Weighted Mean",
+        "Interpretation"
+      ],
+      [
+        "1.1       The system typically measured                  4.1                         Agree\n           the accuracy of officer\u2019s \nattendance reports.",
+        "1.1       The system typically measured                  4.1                         Agree\n           the accuracy of officer\u2019s \nattendance reports.",
+        "1.1       The system typically measured                  4.1                         Agree\n           the accuracy of officer\u2019s \nattendance reports.",
+        "1.1       The system typically measured                  4.1                         Agree\n           the accuracy of officer\u2019s \nattendance reports."
+      ],
+      [
+        "1.2      The system can assist users                      4.7                  Strongly Agree\n            to loo for User Satisfaction",
+        "1.2      The system can assist users                      4.7                  Strongly Agree\n            to loo for User Satisfaction",
+        "1.2      The system can assist users                      4.7                  Strongly Agree\n            to loo for User Satisfaction",
+        "1.2      The system can assist users                      4.7                  Strongly Agree\n            to loo for User Satisfaction"
+      ],
+      [
+        "1.3      The system can display                              5.0                  Strongly Agree\n           attendance reports\n           and provide SMS alert",
+        "1.3      The system can display                              5.0                  Strongly Agree\n           attendance reports\n           and provide SMS alert",
+        "1.3      The system can display                              5.0                  Strongly Agree\n           attendance reports\n           and provide SMS alert",
+        "1.3      The system can display                              5.0                  Strongly Agree\n           attendance reports\n           and provide SMS alert"
+      ],
+      [
+        "1.4      The system can generate excel                 4.8                  Strongly Agree\nattendance and statistical reports",
+        "1.4      The system can generate excel                 4.8                  Strongly Agree\nattendance and statistical reports",
+        "1.4      The system can generate excel                 4.8                  Strongly Agree\nattendance and statistical reports",
+        "1.4      The system can generate excel                 4.8                  Strongly Agree\nattendance and statistical reports"
+      ],
+      [
+        "TOTAL",
+        "TOTAL",
+        "4.65",
+        "Strongly Agree"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 861,
+    "text": "Table 3.8: Shows the result of the system\u2019s functionality with a weighted mean of 4.65 denotes that the respondents \u201cStrongly Agree\u201d that the system has the capability to provide functions which met the stated and implied the needs of the users under the specified condition of usage. The system performed the task required such as record  attendance and generate excel attendance reports for the SSC."
+  },
+  {
+    "type": "paragraph",
+    "index": 862,
+    "text": "Table 3.9:"
+  },
+  {
+    "type": "paragraph",
+    "index": 864,
+    "text": "Evaluation Result for System\u2019s Accuracy"
+  },
+  {
+    "type": "table",
+    "index": 866,
+    "data": [
+      [
+        "No.",
+        "Accuracy",
+        "Weighted Mean",
+        "Interpretation"
+      ],
+      [
+        "1.1        The regiers ster informatiion of               4.4                   Strongly Agree                 \n              the offic",
+        "1.1        The regiers ster informatiion of               4.4                   Strongly Agree                 \n              the offic",
+        "1.1        The regiers ster informatiion of               4.4                   Strongly Agree                 \n              the offic",
+        "1.1        The regiers ster informatiion of               4.4                   Strongly Agree                 \n              the offic"
+      ],
+      [
+        "1.2        The  system  automatically                     5.0                   Strongly Agree                         \n              records attendance by\n              scanning RFID cards \nduring duties",
+        "1.2        The  system  automatically                     5.0                   Strongly Agree                         \n              records attendance by\n              scanning RFID cards \nduring duties",
+        "1.2        The  system  automatically                     5.0                   Strongly Agree                         \n              records attendance by\n              scanning RFID cards \nduring duties",
+        "1.2        The  system  automatically                     5.0                   Strongly Agree                         \n              records attendance by\n              scanning RFID cards \nduring duties"
+      ],
+      [
+        "1.3         The system that will send                       4.67                 Strongly Agree                         \nSMS alerts specifically to the \nmoderator regarding the \nattendance of officers",
+        "1.3         The system that will send                       4.67                 Strongly Agree                         \nSMS alerts specifically to the \nmoderator regarding the \nattendance of officers",
+        "1.3         The system that will send                       4.67                 Strongly Agree                         \nSMS alerts specifically to the \nmoderator regarding the \nattendance of officers",
+        "1.3         The system that will send                       4.67                 Strongly Agree                         \nSMS alerts specifically to the \nmoderator regarding the \nattendance of officers"
+      ],
+      [
+        "1.4         The provide evaluation for                       1.0                 Strongly Disagree                       \nthe officer.",
+        "1.4         The provide evaluation for                       1.0                 Strongly Disagree                       \nthe officer.",
+        "1.4         The provide evaluation for                       1.0                 Strongly Disagree                       \nthe officer.",
+        "1.4         The provide evaluation for                       1.0                 Strongly Disagree                       \nthe officer."
+      ],
+      [
+        "1.5         The admin can generate the                    4.2                 Strongly Agree                          \n attendance with the details of\n the officers",
+        "1.5         The admin can generate the                    4.2                 Strongly Agree                          \n attendance with the details of\n the officers",
+        "1.5         The admin can generate the                    4.2                 Strongly Agree                          \n attendance with the details of\n the officers",
+        "1.5         The admin can generate the                    4.2                 Strongly Agree                          \n attendance with the details of\n the officers"
+      ],
+      [
+        "TOTAL",
+        "TOTAL",
+        "4.47",
+        "Strongly Agree"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 868,
+    "text": "Table 3.9: Shows the result of the system\u2019s accuracy with a 4.47 weighted mean, which denotes that the respondents \u201cStrongly Agree\u201d that the system-generated\u00a0officers reports and information for evaluation are well-identified and accurate. The result means that the user\u2019s information can be properly store and record their details and modified with necessary accuracy and properly arranged."
+  },
+  {
+    "type": "paragraph",
+    "index": 873,
+    "text": "Table 3.10:"
+  },
+  {
+    "type": "paragraph",
+    "index": 874,
+    "text": "Evaluation Result for System\u2019s Acceptability"
+  },
+  {
+    "type": "table",
+    "index": 876,
+    "data": [
+      [
+        "No.",
+        "Acceptability",
+        "Weighted Mean",
+        "Interpretation"
+      ],
+      [
+        "1.1         The register informatiion of                     4.4                    Strongly Agree\n   the officers",
+        "1.1         The register informatiion of                     4.4                    Strongly Agree\n   the officers",
+        "1.1         The register informatiion of                     4.4                    Strongly Agree\n   the officers",
+        "1.1         The register informatiion of                     4.4                    Strongly Agree\n   the officers"
+      ],
+      [
+        "1.2        The  system  automatically                     4.2                    Strongly Agree\n records attendance by scanning\n RFID cards during duties",
+        "1.2        The  system  automatically                     4.2                    Strongly Agree\n records attendance by scanning\n RFID cards during duties",
+        "1.2        The  system  automatically                     4.2                    Strongly Agree\n records attendance by scanning\n RFID cards during duties",
+        "1.2        The  system  automatically                     4.2                    Strongly Agree\n records attendance by scanning\n RFID cards during duties"
+      ],
+      [
+        "1.3        The system that will send SMS               5.00                  Strongly Agree\n alerts specifically to the moderator\n regarding the attendance of officers",
+        "1.3        The system that will send SMS               5.00                  Strongly Agree\n alerts specifically to the moderator\n regarding the attendance of officers",
+        "1.3        The system that will send SMS               5.00                  Strongly Agree\n alerts specifically to the moderator\n regarding the attendance of officers",
+        "1.3        The system that will send SMS               5.00                  Strongly Agree\n alerts specifically to the moderator\n regarding the attendance of officers"
+      ],
+      [
+        "1.4        The provide evaluation for                      4.3                     Strongly Agree\n the officers",
+        "1.4        The provide evaluation for                      4.3                     Strongly Agree\n the officers",
+        "1.4        The provide evaluation for                      4.3                     Strongly Agree\n the officers",
+        "1.4        The provide evaluation for                      4.3                     Strongly Agree\n the officers"
+      ],
+      [
+        "1.5        The admin can generate the                   4.4                    Strongly Agree\n attendance with the details of \nthe officers",
+        "1.5        The admin can generate the                   4.4                    Strongly Agree\n attendance with the details of \nthe officers",
+        "1.5        The admin can generate the                   4.4                    Strongly Agree\n attendance with the details of \nthe officers",
+        "1.5        The admin can generate the                   4.4                    Strongly Agree\n attendance with the details of \nthe officers"
+      ],
+      [
+        "TOTAL",
+        "TOTAL",
+        "4.46",
+        "Strongly Agree"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 878,
+    "text": "Table 3.10: Shows the result of systems acceptability with a 4.46 weighted mean, which denotes that the respondents \u201cStrongly Agree\u201d that the system application acceptability is highly acceptable."
+  },
+  {
+    "type": "paragraph",
+    "index": 879,
+    "text": "Table 3.11:"
+  },
+  {
+    "type": "paragraph",
+    "index": 881,
+    "text": "Overall Evaluation Result of the System"
+  },
+  {
+    "type": "table",
+    "index": 883,
+    "data": [
+      [
+        "Overall Result",
+        "Weighted Mean",
+        "Interpretation"
+      ],
+      [
+        "Functionality",
+        "4.65",
+        "Strongly Agree"
+      ],
+      [
+        "Accuracy",
+        "4.47",
+        "Strongly Agree"
+      ],
+      [
+        "Acceptability",
+        "4.46",
+        "Strongly Agree"
+      ],
+      [
+        "Overall Mean",
+        "4.53",
+        "Strongly Agree"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 884,
+    "text": "Table 3.11: Shows the overall result of the system\u2019s evaluation with an overall mean of 4.53 which denotes that they \u201cStrongly Agree\u201d that the system is functional, accurate, and acceptable in terms of system analysis and results. This proved that the system requirements and accepted by the Supreme Student Council."
+  },
+  {
+    "type": "paragraph",
+    "index": 886,
+    "text": "Implementation/ Deployment Phase"
+  },
+  {
+    "type": "paragraph",
+    "index": 888,
+    "text": "Deployment Diagram"
+  },
+  {
+    "type": "paragraph",
+    "index": 889,
+    "text": "The diagram shows the flow of the system on how to utilize and RFID-Based Attendance Tracking and Evaluation System with Web Interface and Excel Integration on how convenient having system. This shows the process of data and flows on how the systems work."
+  },
+  {
+    "type": "paragraph",
+    "index": 891,
+    "text": "Figure 3.45:  Deployment Diagram of RFID-Based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 895,
+    "text": "Implementation Budget/Cost Specification"
+  },
+  {
+    "type": "table",
+    "index": 896,
+    "data": [
+      [
+        "BENEFITS",
+        "2023",
+        "2024",
+        "2025",
+        "2026",
+        "2027",
+        "TOTAL"
+      ],
+      [
+        "Production Materials",
+        "",
+        "8,000",
+        "8,000",
+        "8,000",
+        "8,000",
+        "32,000"
+      ],
+      [
+        "Paper",
+        "",
+        "3,000",
+        "3,000",
+        "3,000",
+        "3,000",
+        "12,000"
+      ],
+      [
+        "Salary / Labor",
+        "",
+        "25,000",
+        "25,000",
+        "25,000",
+        "25,000",
+        "100,000"
+      ],
+      [
+        "TOTAL BENEFITS",
+        "",
+        "36,000",
+        "36,000",
+        "36,000",
+        "36,000",
+        "144,000"
+      ],
+      [
+        "DEVELOPMENT COST",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "Hardware Qualification",
+        "5,000",
+        "",
+        "",
+        "",
+        "",
+        "5,000"
+      ],
+      [
+        "Supplies Expense",
+        "3,000",
+        "",
+        "",
+        "",
+        "",
+        "3,000"
+      ],
+      [
+        "Transportation Expense",
+        "2,000",
+        "",
+        "",
+        "",
+        "",
+        "2,000"
+      ],
+      [
+        "Electricity Expense",
+        "2,000",
+        "",
+        "",
+        "",
+        "",
+        "2,000"
+      ],
+      [
+        "Research Expense",
+        "5,000",
+        "",
+        "",
+        "",
+        "",
+        "5,000"
+      ],
+      [
+        "Training Expense",
+        "3,000",
+        "",
+        "",
+        "",
+        "",
+        "3,000"
+      ],
+      [
+        "Project and Salaries/ Wages Cost",
+        "25,000",
+        "",
+        "",
+        "",
+        "",
+        "25,000"
+      ],
+      [
+        "Others",
+        "2,000",
+        "",
+        "",
+        "",
+        "",
+        "2,000"
+      ],
+      [
+        "Total Development Cost",
+        "47,000",
+        "",
+        "",
+        "",
+        "",
+        "47,000"
+      ],
+      [
+        "Operational Cost",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "Telecommunication Expense",
+        "",
+        "5,000",
+        "5,000",
+        "5,000",
+        "5,000",
+        ""
+      ],
+      [
+        "Total Operational Cost",
+        "",
+        "5,000",
+        "5,000",
+        "5,000",
+        "5,000",
+        "20,000"
+      ],
+      [
+        "Total Cost (TD+TD)",
+        "47,000",
+        "4,656.25",
+        "4,656.25",
+        "4,656.25",
+        "4,656.25",
+        "65,625"
+      ],
+      [
+        "Total Benefit\u2013Total Cost \u2013 Total Operational Cost",
+        "-47,000",
+        "65,625",
+        "65,625",
+        "65,625",
+        "65,625",
+        "195,500"
+      ],
+      [
+        "Cumulative Net Cash Flow",
+        "-47,000",
+        "13,500",
+        "74,000",
+        "134,500",
+        "195,500",
+        ""
+      ],
+      [
+        "Return of Investment (Roi)",
+        "536.06",
+        "536.06",
+        "536.06",
+        "536.06",
+        "536.06",
+        "536.06",
+        "536.06"
+      ],
+      [
+        "Break Even Point",
+        "1.34015",
+        "Cost is fully recovered within 1 year and 8 months",
+        "Cost is fully recovered within 1 year and 8 months",
+        "Cost is fully recovered within 1 year and 8 months",
+        "Cost is fully recovered within 1 year and 8 months",
+        "Cost is fully recovered within 1 year and 8 months",
+        "Cost is fully recovered within 1 year and 8 months"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 898,
+    "text": "Figure 3.46:  Implementation Budget/Cost of RFID-Based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 901,
+    "text": "Development/ Construction/ Build Phase"
+  },
+  {
+    "type": "paragraph",
+    "index": 903,
+    "text": "Technology Stack"
+  },
+  {
+    "type": "paragraph",
+    "index": 912,
+    "text": "Figure 3.47: Technology Stack of AttendEX."
+  },
+  {
+    "type": "paragraph",
+    "index": 914,
+    "text": "SOFTWARE SPECIFICATION"
+  },
+  {
+    "type": "paragraph",
+    "index": 915,
+    "text": "Language: PHP"
+  },
+  {
+    "type": "paragraph",
+    "index": 916,
+    "text": "Technology: No specific framework"
+  },
+  {
+    "type": "paragraph",
+    "index": 917,
+    "text": "Database: MySQL"
+  },
+  {
+    "type": "paragraph",
+    "index": 918,
+    "text": "IDE: Visual Studio Code"
+  },
+  {
+    "type": "paragraph",
+    "index": 919,
+    "text": "Operating System: Windows 11"
+  },
+  {
+    "type": "paragraph",
+    "index": 920,
+    "text": "HARDWARE SPECIFICATION"
+  },
+  {
+    "type": "paragraph",
+    "index": 921,
+    "text": "Processor: 11th Gen Intel\u00ae Core\u2122 i3-1115G4"
+  },
+  {
+    "type": "paragraph",
+    "index": 922,
+    "text": "RAM: 8GB"
+  },
+  {
+    "type": "paragraph",
+    "index": 923,
+    "text": "Storage: 475 GB"
+  },
+  {
+    "type": "paragraph",
+    "index": 924,
+    "text": "Other Hardware"
+  },
+  {
+    "type": "paragraph",
+    "index": 925,
+    "text": "RFID Reader: RFID-RC522"
+  },
+  {
+    "type": "paragraph",
+    "index": 926,
+    "text": "Wi-Fi Access Point: Globe At Home Prepaid Wifi"
+  },
+  {
+    "type": "paragraph",
+    "index": 927,
+    "text": "GPRS Shield: SIMCom SIM900"
+  },
+  {
+    "type": "paragraph",
+    "index": 928,
+    "text": "Program Specification"
+  },
+  {
+    "type": "paragraph",
+    "index": 929,
+    "text": "Language: PHP"
+  },
+  {
+    "type": "paragraph",
+    "index": 930,
+    "text": "Database: MySQL"
+  },
+  {
+    "type": "paragraph",
+    "index": 931,
+    "text": "IDE: Visual Studio Code"
+  },
+  {
+    "type": "paragraph",
+    "index": 933,
+    "text": "Human Resource Specification"
+  },
+  {
+    "type": "paragraph",
+    "index": 934,
+    "text": "Admin- must have the basic knowledge about technology such as opening and managing documents, typing, scanning or printing. He/She must also know basic how to use computing devices, must know basic file manage techniques, how to explore applications, and must know the background of this system including the attendance process using RFID card and reader to be used."
+  },
+  {
+    "type": "paragraph",
+    "index": 935,
+    "text": "Employee- must be familiar with technologies such as RFID cards, a reader that scans for attendance, and desktop computers or laptops."
+  },
+  {
+    "type": "paragraph",
+    "index": 939,
+    "text": "Risk Management Plan/ Framework"
+  },
+  {
+    "type": "paragraph",
+    "index": 940,
+    "text": "Risk Management Process"
+  },
+  {
+    "type": "paragraph",
+    "index": 942,
+    "text": "Figure 3.48: Risk Management Process Cycle of RFID-Based Attendance Tracking and Evaluation System with Web Interface and Excel Integration (AttendEX)."
+  },
+  {
+    "type": "paragraph",
+    "index": 944,
+    "text": "STEP 1: Risk Identification"
+  },
+  {
+    "type": "paragraph",
+    "index": 945,
+    "text": "During Risk identification, the project team will have an obligation to recognize and categorize risk sources. The project team and developers are responsible for detecting and troubleshooting\u00a0any risks, including faults or possible problems, that might impact the system's structure and output. The hacker, who is part of the development team, will attempt to take control of the system to\u00a0identify particular spots of vulnerability."
+  },
+  {
+    "type": "paragraph",
+    "index": 947,
+    "text": "Step 3: Risk Prioritization"
+  },
+  {
+    "type": "paragraph",
+    "index": 948,
+    "text": "Prioritizing risks is the process of figuring out which ones require your immediate attention. This ought to be determined by the possibility of\u00a0risk and the potential consequences. Prioritizing risks can be accomplished by comparing them to the project and determining which are more likely to materialize and which will have a greater impact."
+  },
+  {
+    "type": "paragraph",
+    "index": 949,
+    "text": "Step 4: Risk Treatment an Response"
+  },
+  {
+    "type": "paragraph",
+    "index": 950,
+    "text": "The risk response planning\u00a0lessen or eliminate project dangers as well as how to maximize their impact. The goal of project managers should be to get rid of threats before they happen. In addition, the project manager has to raise the probability and importance of opportunities while lowering the probability and impact of risk."
+  },
+  {
+    "type": "paragraph",
+    "index": 951,
+    "text": "Step 5: Risk Monitoring and Evaluation"
+  },
+  {
+    "type": "paragraph",
+    "index": 952,
+    "text": "In a risk evaluation, estimated threats are compared to per-established risk criteria inside the organization. Risk factors may include related expenses and advantages, regulatory obligations, and system failures."
+  },
+  {
+    "type": "paragraph",
+    "index": 957,
+    "text": "User-Guide"
+  },
+  {
+    "type": "paragraph",
+    "index": 958,
+    "text": "The Admin/User will be guided through the RFID-Based Attendance Tracking System and Evaluation with Web-Interface and Excel Integration."
+  },
+  {
+    "type": "paragraph",
+    "index": 959,
+    "text": "1.0 System Login - The Admin will be required to enter his/her given username and password."
+  },
+  {
+    "type": "paragraph",
+    "index": 960,
+    "text": "1.1 Officer Management - The Admin will be able to register officer\u2019s RFID-cards and information such as: Personal Information, Position, course, and School ID number."
+  },
+  {
+    "type": "paragraph",
+    "index": 961,
+    "text": "1.2 Officer Attendance - The Admin will be able to view the attendance and click the export button to export the data into Excel."
+  },
+  {
+    "type": "paragraph",
+    "index": 962,
+    "text": "1.3 Evaluation - The Admin will review the the evaluations by officers to monitor their performance."
+  },
+  {
+    "type": "paragraph",
+    "index": 963,
+    "text": "1.4 Reports - The Admin will see a bar graph showing the Officer\u2019s performance over the month."
+  },
+  {
+    "type": "paragraph",
+    "index": 964,
+    "text": "1.5 Dashboard - The dashboard will display the total officers and provides real-time total count of officers who attended on the current date."
+  },
+  {
+    "type": "paragraph",
+    "index": 965,
+    "text": "1.6 The Attendance Frame will be connected to RFID-Card reader that will be used by officers to tap their RFID cards when logging in and logging out."
+  },
+  {
+    "type": "paragraph",
+    "index": 966,
+    "text": "1.7 Evaluation Form - The user/Officer will be able to evaluate their co-officers and submit the form."
+  },
+  {
+    "type": "paragraph",
+    "index": 968,
+    "text": "Installation Guide"
+  },
+  {
+    "type": "paragraph",
+    "index": 969,
+    "text": "Here are the following steps in installing AttendEx to your desktop/Laptop devices:"
+  },
+  {
+    "type": "paragraph",
+    "index": 970,
+    "text": "The installation process has 3 stages:"
+  },
+  {
+    "type": "paragraph",
+    "index": 971,
+    "text": "1. Installation of Required Software"
+  },
+  {
+    "type": "paragraph",
+    "index": 972,
+    "text": "2. Database Installation"
+  },
+  {
+    "type": "paragraph",
+    "index": 973,
+    "text": "3. System Installation"
+  },
+  {
+    "type": "paragraph",
+    "index": 974,
+    "text": "Install XAMPP for Windows:"
+  },
+  {
+    "type": "paragraph",
+    "index": 975,
+    "text": "Visit the official XAMPP website: https://www.apachefriends.org/download.html"
+  },
+  {
+    "type": "paragraph",
+    "index": 976,
+    "text": "Download the XAMPP installer for Windows."
+  },
+  {
+    "type": "paragraph",
+    "index": 977,
+    "text": "Run the installer and follow the on-screen instructions to complete the installation."
+  },
+  {
+    "type": "paragraph",
+    "index": 978,
+    "text": "2.Start Apache and MySQL:"
+  },
+  {
+    "type": "paragraph",
+    "index": 979,
+    "text": "Open the XAMPP Control Panel after installation."
+  },
+  {
+    "type": "paragraph",
+    "index": 980,
+    "text": "Start the Apache server by clicking the \"Start\" button next to \"Apache.\""
+  },
+  {
+    "type": "paragraph",
+    "index": 981,
+    "text": "Start the MySQL server by clicking the \"Start\" button next to \"MySQL.\""
+  },
+  {
+    "type": "paragraph",
+    "index": 982,
+    "text": "3.Access MySQL Admin Panel:"
+  },
+  {
+    "type": "paragraph",
+    "index": 983,
+    "text": "Open your web browser."
+  },
+  {
+    "type": "paragraph",
+    "index": 984,
+    "text": "Go to http://localhost/phpmyadmin/ to access the MySQL administration panel or click the \u201cAdmin\u201d next to \u201cStart\u201d button."
+  },
+  {
+    "type": "paragraph",
+    "index": 985,
+    "text": "Obtain AttendEx Zip File:"
+  },
+  {
+    "type": "paragraph",
+    "index": 986,
+    "text": "Obtain the AttendEx application zip files containing the system files."
+  },
+  {
+    "type": "paragraph",
+    "index": 987,
+    "text": "Extract AttendEx Files:"
+  },
+  {
+    "type": "paragraph",
+    "index": 988,
+    "text": "Extract the system files to a directory within the XAMPP htdocs folder (typically located at C:\\xampp\\htdocs\\)."
+  },
+  {
+    "type": "paragraph",
+    "index": 989,
+    "text": "Access AttendEx:"
+  },
+  {
+    "type": "paragraph",
+    "index": 990,
+    "text": "Run AttendEx by accessing it through your web browser."
+  },
+  {
+    "type": "paragraph",
+    "index": 991,
+    "text": "The link to access the system: http://localhost/Attendex/signin.html"
+  },
+  {
+    "type": "paragraph",
+    "index": 994,
+    "text": "CHAPTER IV"
+  },
+  {
+    "type": "paragraph",
+    "index": 995,
+    "text": "Summary"
+  },
+  {
+    "type": "paragraph",
+    "index": 996,
+    "text": "The study found that AttendEx, RFID-Based Attendance Tracking and Evaluation System with Web Interface and Excel Integration created for the Supreme Student Council of South East Asian Institute of Technology (SEAIT), efficiently record the student body attendance and evaluation. AttendEx improves communication and performance capabilities by including user-friendly features like automated attendance, peer assistment evaluation, and SMS alerting systems for the moderator. Testing verifies AttendEx\u2019s functioning, accuracy, and acceptance, with users strongly agreeing that it improves accuracy and security. The approach successfully addresses issues such as inefficient communication during an event, difficulty in monitoring attendance, performance rating, and obstacles encountered in decision making. AttendEx emerges as a dependable solution for the different monitoring needs of SEAIT Supreme Student Council, creating confidence among student body and fighting disinformation among the organizations."
+  },
+  {
+    "type": "paragraph",
+    "index": 997,
+    "text": "Conclusion"
+  },
+  {
+    "type": "paragraph",
+    "index": 998,
+    "text": "In conclusion, \u201cAttendEx, RFID-Based Attendance Tracking and Evaluation System with Web Interface and Excel Integration\" is an important step in improving the accuracy and efficiency of the Supreme Student Council of South East Asian Institute of Technology (SEAIT). The research effectively identifies and tackles significant issues with attendance communication, performance, and student body obstacles at events. AttendEx is built using the Agile technique, with straightforward features and thorough testing to assure operation, accuracy, and acceptance. The findings highlight AttendEx's success in reducing inconsistent records and inaccuracy concerns, building trust with organizations, and countering misinformation and misunderstanding in the student body. AttendEx emerges as a dependable solution, offering SSC SEAIT with easily accessible and real-time records, ensuring an accountable and more efficient environment. Moving forward, the deployment and ongoing refinement of AttendEx provide prospective options for improving SSC managing attendance and performance at SEAIT and other organizational institutions confronting comparable difficulties."
+  },
+  {
+    "type": "paragraph",
+    "index": 999,
+    "text": "Recommendation"
+  },
+  {
+    "type": "paragraph",
+    "index": 1000,
+    "text": "The \u201cAttendEx, RFID-Based Attendance Tracking and Evaluation System with Web Interface and Excel Integration\u201d offers a transformative solution to streamline attendance monitoring and recording processes at the Supreme Student Council. Several recommendations are put forth to maximize its potential impact and ensure its seamless integration into daily operations. As a recommendation, AttendEx should make further improvements, such as optimizing the system to handle many simultaneous users and RFID scans by implementing load balancing, implementing algorithms to detect anomalies in attendance data, and integrating an advanced offline recording of attendance and evaluation system for accurate demand forecasting and resource allocation. Implementing these recommendations will elevate user satisfaction and position itself for sustained success and growth."
+  },
+  {
+    "type": "paragraph",
+    "index": 1005,
+    "text": "REFERENCES"
+  },
+  {
+    "type": "paragraph",
+    "index": 1007,
+    "text": "References"
+  },
+  {
+    "type": "paragraph",
+    "index": 1008,
+    "text": "Alrikabi, H. Th. S., Alaidi, A. H. M., & Abed, F. T. (2018, June 10). Attendance \tSystem Design and implementation based on Radio Frequency \tIdentification (RFID) and Arduino."
+  },
+  {
+    "type": "paragraph",
+    "index": 1009,
+    "text": "https://www.researchgate.net/publication/328051941_Attendance_System_Design_and_implementation_based_on_Radio_Frequency_Identification_RFID_and_Arduino"
+  },
+  {
+    "type": "paragraph",
+    "index": 1010,
+    "text": "Amora, E. N. O., Romero, V. K., Amoguis, R. C., Olandria, J. E., Olandria, E. N. & Bernales, A. M. J. (2020, December). Web-based attendance monitoring system."
+  },
+  {
+    "type": "paragraph",
+    "index": 1011,
+    "text": "https://www.ioer-imrj.com/wp-content/uploads/2020/12/Web-%E2%80%93-Based-Attendance-Monitoring-System.pdf"
+  },
+  {
+    "type": "paragraph",
+    "index": 1012,
+    "text": "Bharathy, Ms, et al. (2021, June). International Journal of Advances in Engineering and Management (IJAEM) Smart Attendance Monitoring System Using IoT and RFID. Vol. 9001, 2008, p. 1307,"
+  },
+  {
+    "type": "paragraph",
+    "index": 1013,
+    "text": "ijaem.net/issue_dcp/Smart%20Attendance%20Monitoring%20System%20using%20IoT%20and%20%20RFID.pdf, https://doi.org/10.35629/5252-030613071313."
+  },
+  {
+    "type": "paragraph",
+    "index": 1014,
+    "text": "Calo, A. M. V. M., Barbosa, J. B., & Llevado, J. C. (2021, December 22). In-Classroom Faculty Attendance Monitoring System based on Ultra High Frequency (UHF) Radio Frequency Identification (RFID) with Captured Image Cross-verification Mechanism."
+  },
+  {
+    "type": "paragraph",
+    "index": 1015,
+    "text": "https://doi.org/10.17485/ijst/v14i45.1782"
+  },
+  {
+    "type": "paragraph",
+    "index": 1016,
+    "text": "Dultiao, J. A. L. & Duldulao, A. V. (2019). IT CENTER ATTENDANCE MONITORING SYSTEM USING RFID."
+  },
+  {
+    "type": "paragraph",
+    "index": 1017,
+    "text": "https://ejournals.ph/article.php?id=17045"
+  },
+  {
+    "type": "paragraph",
+    "index": 1018,
+    "text": "Joshi, A., Saxena, A., Ahmad, A., & Juneja, P. (2021, January 1). RFID Based Attendance System."
+  },
+  {
+    "type": "paragraph",
+    "index": 1019,
+    "text": "https://doi.org/10.46501/ijmtst0701009"
+  },
+  {
+    "type": "paragraph",
+    "index": 1020,
+    "text": "Qureshi, M. R. J. (2020, May). The Proposed Implementation of RFID based \tAttendance System."
+  },
+  {
+    "type": "paragraph",
+    "index": 1021,
+    "text": "https://doi.org/10.2139/ssrn.3635316"
+  },
+  {
+    "type": "paragraph",
+    "index": 1022,
+    "text": "Rjeib, H. D., Ali, N. santaS., Farawn, A. A., Al-Sadawi, B., & Alsharqi, H. (2018, January 1). Attendance and Information System using RFID and Web-Based Application for Academic Sector."
+  },
+  {
+    "type": "paragraph",
+    "index": 1024,
+    "text": "https://doi.org/10.14569/ijacsa.2018.090137"
+  },
+  {
+    "type": "paragraph",
+    "index": 1026,
+    "text": "Mrabet, H. E., & Moussa, A. A. (2020). IoT-School Attendance System Using RFID Technology. In www.learntechlib.org. International Association of Online Engineering."
+  },
+  {
+    "type": "paragraph",
+    "index": 1028,
+    "text": "https://www.learntechlib.org/p/217817/"
+  },
+  {
+    "type": "paragraph",
+    "index": 1029,
+    "text": "Nivetha, R., Kavipriya, M., Pavithra, R., Jeyanthi, C., & Lakshmi, V. S. (2020, October). Student Attendance System Using RFID."
+  },
+  {
+    "type": "paragraph",
+    "index": 1030,
+    "text": "https://journal.ijresm.com/index.php/ijresm/article/view/327/302"
+  },
+  {
+    "type": "paragraph",
+    "index": 1031,
+    "text": "Santander , J. R. B. (2018). iNotify&Monitor System with Data Analytics using RFID and Mobile Broadband Technology. researchgate.net."
+  },
+  {
+    "type": "paragraph",
+    "index": 1032,
+    "text": "https://www.researchgate.net/publication/323595239_iNotifyMonitor_System_with_Data_Analytics_using_RFID_and_Mobile_Broadband_Technology"
+  },
+  {
+    "type": "paragraph",
+    "index": 1033,
+    "text": "Ula, Pratama, Asbar, Fuadi, Fajri, & Hardi. (2021). A New Model of The Student Attendance Monitoring System Using RFID Technology. Journal of Physics: Conference Series. Retrieved September 15, 2023, from"
+  },
+  {
+    "type": "paragraph",
+    "index": 1034,
+    "text": "https://iopscience.iop.org/article/10.1088/1742-6596/1807/1/012026"
+  },
+  {
+    "type": "paragraph",
+    "index": 1048,
+    "text": "CURRICULUM VITAE"
+  },
+  {
+    "type": "paragraph",
+    "index": 1069,
+    "text": "MAP OF RESEARCH ENVIRONMENT"
+  },
+  {
+    "type": "paragraph",
+    "index": 1073,
+    "text": "Supreme Student Council, South East Asian Institute of Technology, Incorporated,"
+  },
+  {
+    "type": "paragraph",
+    "index": 1074,
+    "text": "National Highway, Tupi, South Cotabato, 9505"
+  }
+]

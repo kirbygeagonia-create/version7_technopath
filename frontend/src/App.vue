@@ -136,7 +136,11 @@
             <span v-if="item.path === '/notifications' && unreadCount > 0" class="nav-dot"></span>
           </span>
           <span class="app-nav-label">{{ item.label }}</span>
+<<<<<<< HEAD
           <!-- Notification badge -->
+=======
+          <!-- Badge only on /notifications — feedback ≠ notifications -->
+>>>>>>> 2120b5cc5792784b71f56272822728812e4d775e
           <span v-if="item.path === '/notifications' && unreadCount > 0" class="nav-badge">
             {{ unreadCount > 9 ? '9+' : unreadCount }}
           </span>

@@ -139,6 +139,30 @@
               <input v-model="form.capacity" type="number" min="1" />
             </div>
           </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Course / Program</label>
+              <select v-model="form.course_code">
+                <option value="">— Shared / No specific course —</option>
+                <option value="BSIT">BSIT</option>
+                <option value="BSCS">BSCS</option>
+                <option value="BSECE">BSECE</option>
+                <option value="BSEd">BSEd</option>
+                <option value="Criminology">Criminology</option>
+                <option value="BSHM">BSHM</option>
+                <option value="BSA">BSA</option>
+                <option value="BSBA">BSBA</option>
+                <option value="STEM">STEM</option>
+                <option value="ABM">ABM</option>
+                <option value="HUMSS">HUMSS</option>
+                <option value="GAS">GAS</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Highlight Color <span style="font-size:11px;color:var(--color-text-secondary)">(optional)</span></label>
+              <input v-model="form.course_color" type="color" style="height:36px;width:100%;padding:2px 4px;cursor:pointer" />
+            </div>
+          </div>
           <div class="form-group checkbox-group">
             <label class="checkbox-label">
               <input v-model="form.is_active" type="checkbox" />
@@ -231,7 +255,7 @@ function editRoom(room) {
 function closeModal() {
   showCreateModal.value = false
   showEditModal.value = false
-  form.value = { id: null, room_number: '', name: '', building_id: '', floor: 1, type: 'classroom', capacity: 30, is_active: true }
+  form.value = { id: null, room_number: '', name: '', building_id: '', floor: 1, type: 'classroom', capacity: 30, is_active: true, course_code: '', course_color: '' }
 }
 
 function confirmDelete(room) {

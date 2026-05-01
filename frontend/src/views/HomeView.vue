@@ -92,6 +92,7 @@
 
       </div>
 
+<<<<<<< HEAD
 
 
     </div>
@@ -194,6 +195,89 @@
 
             @touchend="endPan"
 
+=======
+      <!-- Scrollable Filter Chips -->
+      <div class="filter-chips-container">
+        <button 
+          class="filter-chip" 
+          :class="{ active: !selectedFacility && !selectedRoom }"
+          @click="clearFilters"
+        >
+          All
+        </button>
+        <button 
+          v-for="facility in facilities"
+          :key="facility.id"
+          class="filter-chip"
+          :class="{ active: selectedFacility === facility.name }"
+          @click="selectFacility(facility.name)"
+        >
+          {{ facility.name }}
+        </button>
+      </div>
+
+      <!-- Course Filter Row — highlight rooms by academic program -->
+      <div v-if="courses.length > 0" class="course-filter-row">
+        <span class="course-filter-label">
+          <span class="material-icons" style="font-size:13px;vertical-align:middle">school</span>
+          My Course:
+        </span>
+        <div class="course-chips-scroll">
+          <button
+            class="course-chip"
+            :class="{ active: !activeCourse }"
+            @click="setCourse('')"
+          >All</button>
+          <button
+            v-for="course in courses"
+            :key="course.course_code"
+            class="course-chip"
+            :class="{ active: activeCourse === course.course_code }"
+            :style="activeCourse === course.course_code
+              ? { background: course.course_color, color: '#fff', borderColor: course.course_color }
+              : { borderColor: course.course_color, color: course.course_color }"
+            @click="setCourse(course.course_code)"
+          >{{ course.course_code }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map container with markers -->
+    <div class="map-wrapper">
+      <div 
+        class="map-container"
+        ref="mapContainer"
+        @wheel.prevent="handleZoom"
+        @mousedown="startPan"
+        @mousemove="handlePan"
+        @mouseup="endPan"
+        @mouseleave="endPan"
+        @touchstart="startTouchPan"
+        @touchmove="handleTouchPan"
+        @touchend="endPan"
+      >
+        <div 
+          class="map-content"
+          :style="mapTransformStyle"
+        >
+          <!-- SEAIT Campus Map SVG -->
+          <div class="seait-map-wrapper">
+            <img 
+              src="../assets/SEAIT_Map.svg" 
+              class="seait-map-image"
+              alt="SEAIT Campus Map"
+              draggable="false"
+            />
+          </div>
+          
+          <!-- Map markers overlay -->
+          <div
+            v-for="marker in filteredMarkers"
+            :key="marker.id"
+            class="map-marker"
+            :style="[getMarkerStyle(marker), markerCourseStyle(marker)]"
+            @click.stop="showMarkerInfo(marker)"
+>>>>>>> 2120b5cc5792784b71f56272822728812e4d775e
           >
 
             <div 
@@ -559,7 +643,13 @@ const rooms = ref([])
 const selectedFacility = ref('')
 
 const selectedRoom = ref('')
+<<<<<<< HEAD
 
+=======
+// Course filter — populated from /api/rooms/courses/
+const courses = ref([])
+const activeCourse = ref(localStorage.getItem('tp_selected_course') || '')
+>>>>>>> 2120b5cc5792784b71f56272822728812e4d775e
 const isFacilitiesExpanded = ref(false)
 
 const isRoomsExpanded = ref(false)
@@ -624,6 +714,7 @@ const {
 
 } = useMapPanZoom()
 
+<<<<<<< HEAD
 
 
 // Filtered markers - DISABLED (markers removed from map view)
@@ -657,6 +748,46 @@ const {
 // })
 
 
+=======
+// Filtered markers based on selection
+const filteredMarkers = computed(() => {
+  let base = mapMarkers.value
+
+  // Facility/room type filter
+  if (selectedFacility.value || selectedRoom.value) {
+    base = base.filter(marker => {
+      if (selectedFacility.value && marker.marker_type === 'facility') {
+        return marker.name === selectedFacility.value
+      }
+      if (selectedRoom.value && marker.marker_type === 'room') {
+        return marker.name === selectedRoom.value
+      }
+      return false
+    })
+  }
+
+  return base
+})
+>>>>>>> 2120b5cc5792784b71f56272822728812e4d775e
+
+// Separate from filter — dim markers that don't belong to selected course
+function markerCourseStyle(marker) {
+  if (!activeCourse.value) return {}
+  if (marker.marker_type === 'facility') return {}
+  const matched = marker.course_code === activeCourse.value
+  if (!matched) return { opacity: '0.15', filter: 'grayscale(1)', pointerEvents: 'none' }
+  const course = courses.value.find(c => c.course_code === activeCourse.value)
+  return course ? { '--marker-color': course.course_color } : {}
+}
+
+function setCourse(code) {
+  activeCourse.value = activeCourse.value === code ? '' : code
+  if (activeCourse.value) {
+    localStorage.setItem('tp_selected_course', activeCourse.value)
+  } else {
+    localStorage.removeItem('tp_selected_course')
+  }
+}
 
 // Methods
 
@@ -701,6 +832,18 @@ const loadData = async () => {
     }
 
     
+<<<<<<< HEAD
+=======
+    // Load course list for filter chips
+    if (isOnline()) {
+      try {
+        const coursesRes = await api.get('/rooms/courses/')
+        courses.value = coursesRes.data
+      } catch {
+        courses.value = []
+      }
+    }
+>>>>>>> 2120b5cc5792784b71f56272822728812e4d775e
 
     // Try to load search history from API if online
 

@@ -1,0 +1,4273 @@
+[
+  {
+    "type": "paragraph",
+    "index": 0,
+    "text": "CHAPTER 1"
+  },
+  {
+    "type": "paragraph",
+    "index": 1,
+    "text": "THE PROBLEM AND ITS BACKGROUND"
+  },
+  {
+    "type": "paragraph",
+    "index": 2,
+    "text": "Introduction"
+  },
+  {
+    "type": "paragraph",
+    "index": 3,
+    "text": "The TechnoPath: SEAIT Guide Map and Navigation System is a progressive web application-based guide map system designed to display the complete layout of the South East Asian Institute of Technology, Inc. campus, located at Barangay Crossing Rubber, National Highway, Tupi, South Cotabato, 9505, Philippines. The study provides interactive two-dimensional or 2D map of the campus buildings, including the RST, MST, and JST buildings, the Basic Education building, the gymnasium, canteens, playground, and other campus facilities, with each map containing labeled rooms, offices, and key institutional areas organized by floor level. The study further incorporates a QR code access point posted at the main gate of the SEAIT campus, enabling students, faculty, and visitors to immediately load the campus guide map upon arrival by scanning the code with a mobile device, without requiring prior application installation or knowledge of the application URL. The study operates under a structured role-based administrative backend with a four-tier hierarchy, the Super Admin, the Safety and Security Office, with full system access including structural building information management, approval of campus-wide announcements, and administration of all user accounts. The College Dean with Department-level management and oversight authority with direct publication rights for department-scoped announcements; campus-wide announcements require Super Admin approval. Program Head and Basic Education Head Department-specific data management (classroom assignments, departmental announcements) with direct publication of department-scoped announcements; campus-wide announcements require Super Admin approval. Guest Users or the students, faculty, and visitors, with consolidated access to all navigation features, maps, AI chatbot, and notifications. An AI Virtual Guide feature is integrated into the study to deliver conversational navigation assistance, allowing users to describe their intended destination in natural language and receive directional guidance based on stored campus navigation data. The study operates in both online modes, using an external AI API, and offline mode, using a local FAQ database with keyword matching, thereby supporting independent wayfinding across the entire SEAIT campus grounds and buildings regardless of internet connectivity."
+  },
+  {
+    "type": "paragraph",
+    "index": 4,
+    "text": "The current orientation and navigation process, according to Head Officer of Safety and Security Office, Romel B. Maloloy-on, the SEAIT campus is conducted entirely through manual navigation by having printed room signages to each floor in every building around the campus, with no structured digital wayfinding system in place to assist individuals entering or moving within the campus premises. Guiding is provided informally through verbal instructions from teachers, staff members, or senior students encountered along the way, and the accuracy of the directions received depends entirely on the personal knowledge and availability of the individual being asked."
+  },
+  {
+    "type": "paragraph",
+    "index": 5,
+    "text": "The absence of a campus guide map and a centralized digital navigation reference have produced recurring orientation challenges among SEAIT students, faculty, and visitors that directly affect academic punctuality, institutional efficiency, and the overall campus experience. [1] No centralized digital guide exists that presents a clear and visual path from the main gate to the different buildings and facilities of the SEAIT campus, causing delays, missed classes, and unnecessary confusion for individuals who are unfamiliar with the campus layout. [2] No updated digital reference or announcement platform exists to broadcast changes in room labels and classroom assignments when modifications occur each semester, leaving students and faculty without a reliable and current source of room designation information and causing repeated instances of students arriving at incorrect classrooms. [3] New students, transferees, and visitors are unable to locate the offices and inquiry desks within the SEAIT campus buildings when seeking academic assistance, administrative transactions, or institutional inquiries, resulting in repeated misdirection, wasted time, and frustration as individuals are directed from one location to another without a definitive reference. [4] Freshmen, transferees, and visitors frequently become confused and disoriented upon entering the SEAIT campus due to unfamiliarity with the campus buildings, classroom locations, and facility layouts, with no immediately accessible and accurate guide map available to orient new arrivals upon entry. [5] Students, faculty, and visitors frequently hesitate to ask for directions from teachers, staff, or senior students due to social reluctance or the unavailability of campus personnel at the moment of need, and when directions are obtained, the information received is often outdated, incomplete, or inaccurate, which compounds the confusion and delays experienced by the individual seeking guidance."
+  },
+  {
+    "type": "paragraph",
+    "index": 6,
+    "text": "TechnoPath: SEAIT Guide Map and Navigation System delivers immediate and practical benefits to students, faculty, visitors, and the institution as a whole by providing a centralized, accurate, and readily accessible digital navigation reference that eliminates the confusion, delays, and misdirection caused by the absence of a formalized campus wayfinding system. Students and visitors gain the access of a guide map to independently locate classrooms, offices, and facilities without relying on verbal directions, while the institution benefits from a structured, updatable platform that reduces repeated inquiries and ensures that navigational information remains current throughout the academic year. These benefits are realized through five core features: an interactive 2D campus ground layout and building floor maps with clearly labeled rooms and highlighted offices; a QR code access point at the main gate for immediate system access upon arrival; a building room update module that allows the Safety and Security Office administrator to add, modify, and delete room labels and classroom assignments; and an AI Virtual Guide that responds to natural language queries with conversational directional guidance based on stored campus navigation data."
+  },
+  {
+    "type": "paragraph",
+    "index": 8,
+    "text": "Objectives of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 9,
+    "text": "General Objective"
+  },
+  {
+    "type": "paragraph",
+    "index": 10,
+    "text": "The study aims to design and develop the TechnoPath: SEAIT Guide Map and Navigation System for the students, faculty, visitors, and the Safety and Security Office of South East Asian Institute of Technology, Inc. (SEAIT), Barangay Crossing Rubber, National Highway, Tupi, South Cotabato, to provide a centralized, interactive, and digitalized guide map and navigation platform that addresses campus orientation and wayfinding challenges."
+  },
+  {
+    "type": "paragraph",
+    "index": 11,
+    "text": "Special Objectives"
+  },
+  {
+    "type": "paragraph",
+    "index": 12,
+    "text": "To be able to displayadd ang mga function a visual route from the main gate to the different buildings and facilities of SEAIT campus and to show interactive 2D floor maps of the SEAIT buildings with labeled rooms to guide students, faculty, and visitors in locating classrooms, offices, and facilities within the SEAIT campus."
+  },
+  {
+    "type": "paragraph",
+    "index": 13,
+    "text": "To be able to provide a digital platform where SEAIT departmental Program Head, Basic Ed Head, Dean, and Safety and Security Office can make announcements and can add, modify, and delete room labels, office designations, and classroom assignments through the administrative backend for accurate and current student, faculty, and visitor reference."
+  },
+  {
+    "type": "paragraph",
+    "index": 14,
+    "text": "To be able to display labeled building maps that highlight the offices, inquiry desks, and key rooms within the SEAIT campus buildings to help students, faculty, and visitors locate them quickly."
+  },
+  {
+    "type": "paragraph",
+    "index": 15,
+    "text": "To be able to provide a scannable QR code posted at the main gate of the SEAIT campus that allows students, faculty, and visitors to immediately access the TechnoPath Guide Map and Navigation System."
+  },
+  {
+    "type": "paragraph",
+    "index": 16,
+    "text": "To be able to provide an AI-powered virtual assistant that answers location-related questions and gives route directions to help students, faculty, and visitors find classrooms, offices, and facilities independently."
+  },
+  {
+    "type": "paragraph",
+    "index": 17,
+    "text": "Scope and Limitations of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 18,
+    "text": "Scope of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 19,
+    "text": "The study is developed to address the campus navigation and orientation challenges experienced by students, faculty, visitors, and the Safety and Security Office of South East Asian Institute of Technology, Inc. (SEAIT), Barangay Crossing Rubber, National Highway, Tupi, South Cotabato. The institution currently lacks a centralized and digitalized campus guide, leaving freshmen, transferees, and visitors without a reliable reference for locating buildings, classrooms, offices, and facilities. The TechnoPath: SEAIT Guide Map and Navigation System was developed to provide an accessible, accurate, and updatable digital guide that serves the entire SEAIT campus grounds and buildings, enabling all user groups to navigate the campus independently and efficiently."
+  },
+  {
+    "type": "paragraph",
+    "index": 21,
+    "text": "Campus Navigation Guide with 2D Building Floor Maps"
+  },
+  {
+    "type": "paragraph",
+    "index": 22,
+    "text": "The feature allows users to view and interact the main gate, campus walkways, and the locations of all buildings, and to navigate individual building floors with labeled rooms, highlighted offices, and key facility markers. The navigation guide also displays visual routes from the main gate to the target buildings to assist users who are visiting the campus for the first time."
+  },
+  {
+    "type": "paragraph",
+    "index": 23,
+    "text": "Building Classroom and Room Updates"
+  },
+  {
+    "type": "paragraph",
+    "index": 24,
+    "text": "The feature ensures that the navigational information displayed to users remains accurate and reflects current institutional arrangements, particularly when room assignments are changed during the academic year."
+  },
+  {
+    "type": "paragraph",
+    "index": 25,
+    "text": "SEAIT Building Room Maps with Highlighted Offices"
+  },
+  {
+    "type": "paragraph",
+    "index": 26,
+    "text": "The feature allows users to retrieve the location of specific offices within the building floors, enabling faster and more accurate navigation to administrative and academic service areas without requiring verbal directions from campus personnel."
+  },
+  {
+    "type": "paragraph",
+    "index": 27,
+    "text": "QR Code Access Point (Main Gate)"
+  },
+  {
+    "type": "paragraph",
+    "index": 28,
+    "text": "The feature allows any user \u2014 students, faculty, or visitors \u2014 to retrieve and load the campus guide map immediately upon arrival by scanning the code with a mobile device, without requiring a prior application installation or knowledge of the URL."
+  },
+  {
+    "type": "paragraph",
+    "index": 30,
+    "text": "AI Chatbot / Virtual Guide"
+  },
+  {
+    "type": "paragraph",
+    "index": 31,
+    "text": "The feature operates in dual modes: Online Mode, which uses an external AI API through the Python backend for conversational responses, and Offline Mode, which uses a local FAQ database with keyword matching for navigation assistance when internet connectivity is unavailable. The system automatically detects connectivity status and switches modes seamlessly."
+  },
+  {
+    "type": "paragraph",
+    "index": 32,
+    "text": "Limitations of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 33,
+    "text": "The TechnoPath: SEAIT Guide Map and Navigation System is limited to the campus premises of South East Asian Institute of Technology, Inc. (SEAIT) and does not extend to off-campus locations or external facilities. The study operates as a 2D visual map and navigation guide and does not incorporate real-time GPS tracking, augmented reality overlays, or three-dimensional building visualization. Navigation through the AI Virtual Guide feature is limited to responses based on the stored campus map and location data, and the study is unable to provide answers outside the scope of campus-related queries. The building room update module restricts data modification access to authorized administrators only, and the study does not allow public users to add, edit, or delete any campus information. The study does not include real-time event scheduling, emergency alerts, or integration with any external institutional management system. The accuracy of map information is dependent on the timely updating of room labels and office designations by the authorized administrators, and the study does not automatically reflect physical changes to the campus that are not entered through the administrative backend."
+  },
+  {
+    "type": "paragraph",
+    "index": 35,
+    "text": "Significance of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 36,
+    "text": "The TechnoPath: SEAIT Guide Map and Navigation System holds practical and academic significance for the different groups who are directly and indirectly connected to the South East Asian Institute of Technology, Inc. (SEAIT). The following are the groups that benefit from the conduct of the study:"
+  },
+  {
+    "type": "paragraph",
+    "index": 37,
+    "text": "Students"
+  },
+  {
+    "type": "paragraph",
+    "index": 38,
+    "text": "The study enables SEAIT students, particularly freshmen and transferees, to locate classrooms, offices, and facilities within the campus through an interactive digital guide. The study reduces confusion and prevents late attendance by providing accurate and updated navigation references before and during class days. Students are encouraged to navigate between buildings and campus areas independently, without relying on verbal directions from others."
+  },
+  {
+    "type": "paragraph",
+    "index": 40,
+    "text": "Faculty"
+  },
+  {
+    "type": "paragraph",
+    "index": 41,
+    "text": "The study serves as a centralized digital reference platform for SEAIT faculty by providing updated classroom labels and departmental announcements. Each Program Head and Basic Education Head is granted department-level administrative access to manage classroom labeling and departmental announcements, while the Dean serves as a college-level oversight authority with the ability to manage department rooms and facilities, post department-scoped announcements directly, monitor departmental data integrity, and view department-level audit logs and reports."
+  },
+  {
+    "type": "paragraph",
+    "index": 44,
+    "text": "Safety and Security Office"
+  },
+  {
+    "type": "paragraph",
+    "index": 45,
+    "text": "The study serves as a digital management tool that allows the Safety and Security Office to oversee structural building information, including room creation, deletion, and layout configuration. The study ensures that students, faculty, and visitors receive accurate and updated navigational information, reducing repeated inquiries and miscommunication at the institutional level. The Safety and Security Office, which manages campus safety and gate security operations, holds the appropriate authority to administer the QR code access point posted at the main gate and to maintain the accuracy of the campus navigation data within the system."
+  },
+  {
+    "type": "paragraph",
+    "index": 46,
+    "text": "Visitors"
+  },
+  {
+    "type": "paragraph",
+    "index": 47,
+    "text": "Visitors to the SEAIT campus are among the primary beneficiaries of the study, as they have no prior familiarity with the campus layout. The QR code access point at the main gate allows visitors to immediately load the guide map upon arrival and independently locate offices, facilities, and key campus areas without requiring assistance from campus personnel. The study reduces the inconvenience of seeking verbal directions and ensures that visitors are guided efficiently throughout the campus."
+  },
+  {
+    "type": "paragraph",
+    "index": 48,
+    "text": "Researchers"
+  },
+  {
+    "type": "paragraph",
+    "index": 49,
+    "text": "The researchers involved in the study gain practical experience in system analysis, design, and implementation within an actual educational environment. The study allows the researchers to apply acquired knowledge in developing a real-world solution that addresses an institutional navigation challenge, particularly for freshmen, transferees, and visitors finding and navigating classrooms and facilities within the SEAIT campus."
+  },
+  {
+    "type": "paragraph",
+    "index": 50,
+    "text": "Future Researchers"
+  },
+  {
+    "type": "paragraph",
+    "index": 51,
+    "text": "The study provides future researchers with a reference model for developing campus navigation and digital mapping systems in different institutions. The study can serve as a foundation for further investigations related to campus digital solutions, user experience in educational systems, and location-based information systems within Philippine academic settings."
+  },
+  {
+    "type": "paragraph",
+    "index": 52,
+    "text": "Flow of the Study"
+  },
+  {
+    "type": "paragraph",
+    "index": 53,
+    "text": "The conceptual framework of the TechnoPath: SEAIT Guide Map and Navigation System follows the Input-Process-Output (IPO) model, which illustrates the data requirements, operational procedures, and expected output of the study."
+  },
+  {
+    "type": "table",
+    "index": 58,
+    "data": [
+      [
+        "OUTPUT"
+      ],
+      [
+        "TechnoPath: SEAIT Guide Map and Navigation System"
+      ]
+    ]
+  },
+  {
+    "type": "table",
+    "index": 59,
+    "data": [
+      [
+        "PROCESS"
+      ],
+      [
+        "\u2022 Computed navigation route to the selected destination. \n\u2022 Validates, updates, and stores submitted room labels, office designations, and classroom assignments in database.\n \u2022 View Highlights facilities and rooms, navigation tab and information tab.\n\u2022 Validates scanned QR code, loads the campus guide map. \n\u2022 Verify Processes AI chatbot queries online or via offline by FAQ matching."
+      ]
+    ]
+  },
+  {
+    "type": "table",
+    "index": 60,
+    "data": [
+      [
+        "INPUT"
+      ],
+      [
+        "\u2022 Select Destination routes and current location.\n\u2022 Create Admin announcements, room labels, office designations, and classroom assignments.\n\u2022 View Labeled rooms and highlighted buildings.\n\u2022 Scan QR code.\n\u2022 Add Chat with AI chatbot."
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 65,
+    "text": "Definition of Terms"
+  },
+  {
+    "type": "paragraph",
+    "index": 66,
+    "text": "SEAIT \u2014 South East Asian Institute of Technology, Inc., the educational institution located at Barangay Crossing Rubber, National Highway, Tupi, South Cotabato, 9505, Philippines, where the TechnoPath Guide Map and Navigation System is developed and implemented."
+  },
+  {
+    "type": "paragraph",
+    "index": 67,
+    "text": "Progressive Web Application (PWA) \u2014 A type of application software delivered through the web, built using common web technologies including HTML, CSS, and JavaScript, intended to work on any platform using a standards-compliant browser, featuring offline capability, installability, and native app-like experience."
+  },
+  {
+    "type": "paragraph",
+    "index": 68,
+    "text": "Vue.js \u2014 A progressive JavaScript framework used as the frontend technology of TechnoPath to build the user interface components, handle client-side routing, and manage application state through the Pinia store."
+  },
+  {
+    "type": "paragraph",
+    "index": 69,
+    "text": "Django \u2014 A high-level Python web framework used as the primary backend technology of TechnoPath, providing the ORM, authentication system, and REST API endpoints through Django REST Framework."
+  },
+  {
+    "type": "paragraph",
+    "index": 70,
+    "text": "PostgreSQL \u2014 An advanced open-source relational database used as the primary production database for TechnoPath, providing robust data storage, complex queries, and transaction support."
+  },
+  {
+    "type": "paragraph",
+    "index": 71,
+    "text": "SQLite \u2014 A lightweight, serverless database used as the development database for TechnoPath and for lightweight local data storage."
+  },
+  {
+    "type": "paragraph",
+    "index": 72,
+    "text": "IndexedDB \u2014 A low-level API for client-side storage of significant amounts of structured data in the browser, used in TechnoPath for offline data persistence enabling offline-first operation."
+  },
+  {
+    "type": "paragraph",
+    "index": 73,
+    "text": "Super Admin \u2014 The highest administrative role in TechnoPath, assigned to the Safety and Security Office, with full system access including managing all departments, approving campus-wide announcements, and viewing all audit logs."
+  },
+  {
+    "type": "paragraph",
+    "index": 74,
+    "text": "Dean \u2014 An administrative role in TechnoPath assigned to College Deans, with department-level management authority including the ability to post department-scoped announcements directly while requiring approval for campus-wide announcements."
+  },
+  {
+    "type": "paragraph",
+    "index": 75,
+    "text": "Program Head \u2014 An administrative role in TechnoPath assigned to College Program Heads, with authority to manage department-specific rooms and announcements, requiring approval for campus-wide announcements."
+  },
+  {
+    "type": "paragraph",
+    "index": 76,
+    "text": "Basic Ed Head \u2014 An administrative role in TechnoPath assigned to the Basic Education Department Head, with the same permissions as Program Head for managing Basic Education department data."
+  },
+  {
+    "type": "paragraph",
+    "index": 77,
+    "text": "Guest User \u2014 A consolidated user category in TechnoPath encompassing students, faculty, and visitors, with read-only access to navigation features, maps, AI chatbot, and notifications."
+  },
+  {
+    "type": "paragraph",
+    "index": 78,
+    "text": "Role-Based Access Control (RBAC) \u2014 A security approach used in TechnoPath that assigns specific data management permissions to different user roles, ensuring appropriate access levels based on institutional responsibilities."
+  },
+  {
+    "type": "paragraph",
+    "index": 79,
+    "text": "Announcement Approval Workflow \u2014 A process in TechnoPath where campus-wide announcements created by Dean, Program Head, or Basic Ed Head require approval from the Super Admin before publication, while department-scoped announcements can be published directly."
+  },
+  {
+    "type": "paragraph",
+    "index": 80,
+    "text": "Dijkstra's Algorithm \u2014 A shortest-path computation algorithm implemented in the TechnoPath navigation system in JavaScript to calculate the most efficient route between two locations on the campus map, using stored navigation graph data."
+  },
+  {
+    "type": "paragraph",
+    "index": 81,
+    "text": "Offline-First Architecture \u2014 A system design approach wherein TechnoPath stores all essential data locally (IndexedDB) to function fully without an active internet connection, with automatic synchronization when connectivity is restored."
+  },
+  {
+    "type": "paragraph",
+    "index": 82,
+    "text": "Soft Delete \u2014 A data management technique used in TechnoPath wherein a deleted record is marked as inactive using a boolean flag (is_deleted) rather than being permanently removed, preserving data integrity and allowing restoration."
+  },
+  {
+    "type": "paragraph",
+    "index": 83,
+    "text": "JWT (JSON Web Token) \u2014 A stateless authentication mechanism used in TechnoPath for securing the administrative backend, issued on login and validated on each API request."
+  },
+  {
+    "type": "paragraph",
+    "index": 84,
+    "text": "Navigation Graph \u2014 A mathematical data structure composed of nodes (representing navigable locations such as rooms, corridors, and staircases) and edges (representing pathways with distance weights) used by TechnoPath to compute campus navigation routes."
+  },
+  {
+    "type": "paragraph",
+    "index": 85,
+    "text": "QR Code Access Point \u2014 A Quick Response code posted at the main gate of the SEAIT campus that, when scanned, loads the TechnoPath interface directly on the user's device without requiring prior application installation."
+  },
+  {
+    "type": "paragraph",
+    "index": 86,
+    "text": "FAQ Database \u2014 A local database containing pre-written question-and-answer pairs covering common campus navigation queries, serving as the fallback knowledge source for the AI chatbot when the device has no internet connection."
+  },
+  {
+    "type": "paragraph",
+    "index": 87,
+    "text": "Audit Log \u2014 A comprehensive record of all administrative actions performed in TechnoPath, tracking who made changes, what was changed, and when, for accountability and data integrity purposes."
+  },
+  {
+    "type": "paragraph",
+    "index": 88,
+    "text": "Keyword Matching \u2014 A text-processing technique used in the offline mode of the TechnoPath AI chatbot wherein the user's query is compared against pre-defined keywords associated with FAQ entries to return the closest matching response."
+  },
+  {
+    "type": "paragraph",
+    "index": 104,
+    "text": "CHAPTER 3"
+  },
+  {
+    "type": "paragraph",
+    "index": 105,
+    "text": "RESEARCH METHODOLOGY AND DESIGN"
+  },
+  {
+    "type": "paragraph",
+    "index": 107,
+    "text": "This chapter presents the research methodology, development environment, software engineering model, system development phases, project timeline, functional decomposition diagram, use case d, diagram, storyboard design, database design, entity relationship diagram, and data dictionary employed in the development of TechnoPath: SEAIT Guide Map and Navigation System."
+  },
+  {
+    "type": "paragraph",
+    "index": 109,
+    "text": "Environment"
+  },
+  {
+    "type": "paragraph",
+    "index": 110,
+    "text": "TechnoPath: SEAIT Guide Map and Navigation System was developed and implemented at South East Asian Institute of Technology, Inc. (SEAIT), Barangay Crossing Rubber, National Highway, Tupi, South Cotabato 9505, Philippines. The study was conducted within the SEAIT campus premises, covering the RST, MST, and JST buildings, the Basic Education building, the gymnasium, canteens, playground, and other campus facilities and grounds."
+  },
+  {
+    "type": "paragraph",
+    "index": 112,
+    "text": "Software Engineering Methodology"
+  },
+  {
+    "type": "paragraph",
+    "index": 113,
+    "text": "The development of TechnoPath: SEAIT Guide Map and Navigation System adheres to the Agile Software Development Life Cycle (SDLC). The Agile methodology uses sprints and phases, its selected because the study requires iterative development, continuous stakeholders feedback and testing, and the flexibility to accommodate requirement changes and corrections throughout the development cycle. Stakeholders involved in the iterative review process include the panel of evaluators, the Safety and Security Office, and the end-users."
+  },
+  {
+    "type": "paragraph",
+    "index": 120,
+    "text": "Figure 3.3. The Agile Software Development Life Cycle (SDLC) model adopted for the development of TechnoPath: SEAIT Guide Map and Navigation System, illustrating the iterative Sprint cycles of Planning, Analysis, Design, Implementation, Testing, and Review."
+  },
+  {
+    "type": "paragraph",
+    "index": 121,
+    "text": "System Development Phases"
+  },
+  {
+    "type": "paragraph",
+    "index": 122,
+    "text": "The development of TechnoPath: SEAIT Guide Map and Navigation System is organized into four Sprints, each containing the standard Agile phases of Planning, Analysis, Design, Implementation, Testing, and Review."
+  },
+  {
+    "type": "paragraph",
+    "index": 123,
+    "text": "Gantt Chart"
+  },
+  {
+    "type": "paragraph",
+    "index": 135,
+    "text": "Figure 3.4. Gantt chart of TechnoPath: SEAIT Guide Map and Navigation System development timeline, covering January 5, 2026 to May 2026."
+  },
+  {
+    "type": "paragraph",
+    "index": 136,
+    "text": "Sprint 1 \u2014 Core Foundation and Campus Map (Weeks 2\u20135)"
+  },
+  {
+    "type": "paragraph",
+    "index": 137,
+    "text": "Phase 1: Planning - The researchers define the project scope, identify the cited problems, establish system requirements, and create the product backlog. The Sprint 1 backlog prioritizes the core campus map display, building floor maps, room labeling features, and the Vue.js frontend foundation."
+  },
+  {
+    "type": "paragraph",
+    "index": 138,
+    "text": "Phase 2: Analysis - The researchers analyze the campus layout of SEAIT, gather floor plan data for the RST, MST, JST, and Basic Education buildings, identify all rooms, offices, and facilities to be included in the digital map, and define the data structure for storing room coordinates, building information, and navigation paths in PostgreSQL and SQLite."
+  },
+  {
+    "type": "paragraph",
+    "index": 139,
+    "text": "Phase 3: Design - The researchers design the Vue.js component architecture, create the database schema for facilities, rooms, and navigation nodes using Django ORM, design the REST API endpoints, and create user interface wireframes for the home screen, map display, and room directory."
+  },
+  {
+    "type": "paragraph",
+    "index": 140,
+    "text": "Phase 4: Implementation - The researchers develop the Vue.js application shell with routing and state management, implement the interactive 2D campus map display using SVG assets and Leaflet, build the Django backend with initial database models, implement the building floor map viewer with labeled rooms and highlighted offices, and set up Django REST Framework endpoints."
+  },
+  {
+    "type": "paragraph",
+    "index": 141,
+    "text": "Phase 5: Testing - The researchers conduct unit testing on map rendering, room data retrieval, and floor-switching functionality, test the REST API endpoints, and perform initial usability testing with sample users to validate map accuracy."
+  },
+  {
+    "type": "paragraph",
+    "index": 142,
+    "text": "Phase 6: Review - The researchers present the Sprint 1 increment to the thesis adviser and panel evaluators, gather feedback on map accuracy, room labeling, and interface design, and document corrections to be addressed in the succeeding Sprint."
+  },
+  {
+    "type": "paragraph",
+    "index": 143,
+    "text": "Sprint 2 \u2014 Administrative Backend and Room Updates (Weeks 4\u20139)"
+  },
+  {
+    "type": "paragraph",
+    "index": 144,
+    "text": "Phase 1: Planning - The researchers define the Sprint 2 backlog, prioritizing the role-based administrative backend with a four-tier hierarchy (Super Admin, Dean, Program Head, Basic Education Head), the announcement approval workflow, and admin authentication."
+  },
+  {
+    "type": "paragraph",
+    "index": 145,
+    "text": "Phase 2: Analysis -The researchers analyze the administrative workflow for the Safety and Security Office, College Deans, Program Heads, and Basic Education Heads; define role-based access permissions including the approval workflow for campus-wide announcements; and determine the CRUD operations required with audit logging."
+  },
+  {
+    "type": "paragraph",
+    "index": 146,
+    "text": "Phase 3: Design -The researchers design the admin authentication with JWT, the role-based access control system, the admin dashboard with statistics, CRUD management screens for facilities and rooms, the announcement approval workflow interface, and the admin audit log."
+  },
+  {
+    "type": "paragraph",
+    "index": 147,
+    "text": "Phase 4: Implementation - The researchers develop the Django authentication module with JWT using Simple JWT, implement the custom AdminUser model with role hierarchy and permissions, build CRUD operations with soft delete functionality, implement role-based access control, build the announcement approval workflow, and implement the comprehensive admin audit log."
+  },
+  {
+    "type": "paragraph",
+    "index": 148,
+    "text": "Phase 5: Testing - The researchers conduct unit testing on the authentication module, validate CRUD operations for data integrity, test role-based access restrictions, test the approval workflow, and perform security testing on the admin login system."
+  },
+  {
+    "type": "paragraph",
+    "index": 149,
+    "text": "Phase 6: Review -The researchers present the Sprint 2 increment, gather feedback on the administrative workflow, approval process, and access control logic, and document final refinements."
+  },
+  {
+    "type": "paragraph",
+    "index": 150,
+    "text": "Sprint 3 \u2014 Navigation Engine and QR Code Access (Weeks 7\u20139)"
+  },
+  {
+    "type": "paragraph",
+    "index": 151,
+    "text": "Phase 1: Planning - The researchers define the Sprint 3 backlog, prioritizing campus navigation route computation using Dijkstra's algorithm, visual route overlay on the map, the QR code access point feature, and the IndexedDB offline storage system."
+  },
+  {
+    "type": "paragraph",
+    "index": 152,
+    "text": "Phase 2: Analysis - The researchers analyze pathway connections between buildings, rooms, and campus areas; define the navigation graph (nodes and edges) with distance weights; determine the QR code content and deep linking workflow; and define the offline data synchronization requirements."
+  },
+  {
+    "type": "paragraph",
+    "index": 153,
+    "text": "Phase 3: Design - The researchers design the navigation route overlay interface, the step-by-step direction display panel, the QR code generation and scanning workflow, the IndexedDB schema for offline storage, and the background sync mechanism."
+  },
+  {
+    "type": "paragraph",
+    "index": 154,
+    "text": "Phase 4: Implementation - The researchers implement Dijkstra's shortest-path algorithm in JavaScript for offline route computation, develop the navigation route overlay on the 2D map, build the QR code access point feature with deep linking, implement IndexedDB storage using Dexie, and create the background sync service worker for PWA offline functionality."
+  },
+  {
+    "type": "paragraph",
+    "index": 155,
+    "text": "Phase 5: Testing - The researchers conduct unit testing on the pathfinding algorithm, validate route accuracy across multiple origin-destination pairs, test the QR code scanning workflow on multiple devices, test offline mode functionality, and perform integration testing between the navigation engine and campus map display."
+  },
+  {
+    "type": "paragraph",
+    "index": 156,
+    "text": "Phase 6: Review - The researchers present the Sprint 3 increment, gather feedback on navigation accuracy, QR code usability, and offline functionality, and document refinements for the next Sprint."
+  },
+  {
+    "type": "paragraph",
+    "index": 157,
+    "text": "Sprint 4 \u2014 AI Chatbot Integration and Notification System (Weeks 10\u201313)"
+  },
+  {
+    "type": "paragraph",
+    "index": 158,
+    "text": "Phase 1: Planning - The researchers define the Sprint 4 backlog, prioritizing the Flask-based AI chatbot microservice, OpenAI API integration, offline FAQ keyword matching, and the push notification and announcement delivery system."
+  },
+  {
+    "type": "paragraph",
+    "index": 159,
+    "text": "Phase 2: Analysis - The researchers analyze the conversational flow requirements for the AI Virtual Guide, define the FAQ knowledge base structure for offline mode, determine OpenAI API prompt engineering requirements, and specify the announcement and notification data models."
+  },
+  {
+    "type": "paragraph",
+    "index": 160,
+    "text": "Phase 3: Design - The researchers design the Flask chatbot microservice architecture, the dual-mode chatbot interface (online and offline), the FAQ database schema, the announcement creation and approval flow for the admin backend, and the notification delivery interface for guest users."
+  },
+  {
+    "type": "paragraph",
+    "index": 161,
+    "text": "Phase 4: Implementation - The researchers develop the Flask chatbot service with OpenAI API proxy, implement keyword-matching offline mode using the FAQ database, integrate the chatbot frontend in the Vue.js PWA, build the announcement module with approval workflow in Django, and implement the push notification system using browser Notifications API."
+  },
+  {
+    "type": "paragraph",
+    "index": 162,
+    "text": "Phase 5: Testing - The researchers conduct functional testing on the chatbot in both online and offline modes, validate FAQ keyword matching accuracy, test announcement creation and approval workflows, and test push notification delivery across different devices."
+  },
+  {
+    "type": "paragraph",
+    "index": 163,
+    "text": "Phase 6: Review - The researchers present the Sprint 4 increment to stakeholders, gather feedback on chatbot response accuracy, announcement workflow, and notification delivery, and document corrections for the final Sprint."
+  },
+  {
+    "type": "paragraph",
+    "index": 164,
+    "text": "Sprint 5 \u2014 Feedback System, Analytics, and Final Deployment (Weeks 14\u201317)"
+  },
+  {
+    "type": "paragraph",
+    "index": 165,
+    "text": "Phase 1: Planning - The researchers define the Sprint 5 backlog, prioritizing the feedback and ratings system, usage analytics, system configuration settings, final UI polish, and deployment preparation for the production environment."
+  },
+  {
+    "type": "paragraph",
+    "index": 166,
+    "text": "Phase 2: Analysis - The researchers analyze feedback collection requirements, define analytics data tracking needs (search history, screen views, session usage), review all system modules for completeness, and identify remaining deficiencies from prior Sprint reviews."
+  },
+  {
+    "type": "paragraph",
+    "index": 167,
+    "text": "Phase 3: Design - The researchers finalize the feedback form and rating interface, design the analytics dashboard for the admin backend, prepare the production deployment configuration (Nginx, PostgreSQL, HTTPS), and design the system configuration management interface."
+  },
+  {
+    "type": "paragraph",
+    "index": 168,
+    "text": "Phase 4: Implementation - The researchers implement the feedback and ratings module with flag functionality, build the usage analytics tracking components, finalize system configuration management, complete final UI revisions, configure Nginx reverse proxy for production, migrate database to PostgreSQL, and perform end-to-end deployment."
+  },
+  {
+    "type": "paragraph",
+    "index": 169,
+    "text": "Phase 5: Testing - The researchers conduct comprehensive system testing including unit testing, integration testing, and user acceptance testing with target respondents; perform security testing; validate all five core features in the production environment; and assess system performance under simulated concurrent usage."
+  },
+  {
+    "type": "paragraph",
+    "index": 170,
+    "text": "Phase 6: Review - The researchers present the completed TechnoPath system to the panel of evaluators and stakeholders, collect formal evaluation results, document final observations and recommendations, and complete all research documentation requirements."
+  },
+  {
+    "type": "paragraph",
+    "index": 183,
+    "text": "Functional Decomposition Diagram (FDD)"
+  },
+  {
+    "type": "paragraph",
+    "index": 184,
+    "text": "The Functional Decomposition Diagram (FDD) illustrates the main features and sub-functions of TechnoPath: SEAIT Guide Map and Navigation System, organized hierarchically from the system level down to individual functional components. The system is decomposed into six primary functional modules: QR Code Access Point, Campus Navigation Guide with 2D Floor Maps, Building Room Maps with Highlighted Offices, Building Classroom and Room Updates Module, AI Chatbot / Virtual Guide, and the Admin Panel."
+  },
+  {
+    "type": "paragraph",
+    "index": 193,
+    "text": "Figure 3.5. Functional Decomposition Diagram of TechnoPath: SEAIT Guide Map and Navigation System"
+  },
+  {
+    "type": "paragraph",
+    "index": 202,
+    "text": "Use Case Diagram"
+  },
+  {
+    "type": "paragraph",
+    "index": 203,
+    "text": "The Use Case Matrix identifies the primary and secondary actors of TechnoPath: SEAIT Guide Map and Navigation System and maps each actor to the system functions they interact with."
+  },
+  {
+    "type": "paragraph",
+    "index": 221,
+    "text": "Use Case Matrix"
+  },
+  {
+    "type": "paragraph",
+    "index": 222,
+    "text": "The Figure 3.6 presents the Use Case Matrix for TechnoPath: SEAIT Guide Map and Navigation System, detailing the primary actor, description, precondition, dynamic precondition, trigger or event, and basic flow for each use case."
+  },
+  {
+    "type": "table",
+    "index": 224,
+    "data": [
+      [
+        "Use Case Name",
+        "Primary Actor",
+        "Description",
+        "Precondition",
+        "Dynamic Precondition",
+        "Trigger / Event",
+        "Basic Flow"
+      ],
+      [
+        "Scan QR Code at Main Gate",
+        "Student / Faculty / Visitor",
+        "The system loads the TechnoPath campus map interface when the user scans the QR code posted at the main gate.",
+        "QR code has been generated and posted at the main gate by Super Admin. System is deployed and accessible via URL.",
+        "User arrives at the main gate with a mobile device. User opens the device camera or QR scanning application.",
+        "User scans the QR code with a mobile device.",
+        "1. User scans QR code. 2. Device reads encoded URL. 3. Browser opens TechnoPath URL. 4. System loads the campus map interface."
+      ],
+      [
+        "View Campus Ground Layout Map",
+        "Student / Faculty / Visitor",
+        "The system displays the interactive 2D campus ground map with buildings, pathways, and map markers.",
+        "System is deployed. Campus map SVG assets are loaded in the database.",
+        "User completes the onboarding tutorial or dismisses it. User is on the home screen.",
+        "User opens the TechnoPath application or is redirected from the QR code scan.",
+        "1. System renders the 2D SVG campus map. 2. Map markers and labels are displayed. 3. User can pan and zoom the map. 4. User can tap a building to view details."
+      ],
+      [
+        "Navigate to a Destination",
+        "Student / Faculty / Visitor",
+        "The system computes and displays the shortest route from the user's selected origin to the target destination using the navigation graph.",
+        "Navigation nodes and edges are stored in the database. Campus map is displayed.",
+        "User selects a starting point and a destination from the map or search bar.",
+        "User initiates navigation by selecting a destination.",
+        "1. User selects a destination. 2. System retrieves navigation graph. 3. Dijkstra's algorithm computes shortest path. 4. Route is overlaid on the campus map. 5. Step-by-step directions are displayed."
+      ],
+      [
+        "Use AI Chatbot (Online Mode)",
+        "Student / Faculty / Visitor",
+        "The system forwards the user's navigation query to the OpenAI API via Flask and returns a conversational response.",
+        "Flask microservice is running. OpenAI API key is configured. Device has internet connectivity.",
+        "User navigates to the chatbot screen. Connectivity check returns online status.",
+        "User submits a text query in the AI chatbot interface.",
+        "1. User types a navigation query. 2. System detects online mode. 3. Query is sent to Flask microservice. 4. Flask proxies to OpenAI API. 5. AI response is returned. 6. Response is displayed in chat."
+      ],
+      [
+        "Use AI Chatbot (Offline Mode)",
+        "Student / Faculty / Visitor",
+        "The system matches the user's query against the local FAQ database using keyword matching and returns the closest stored response.",
+        "FAQ entries are present in the database. System has been loaded while online at least once (data cached in IndexedDB).",
+        "User is in an area with no internet connectivity. Connectivity check returns offline status.",
+        "User submits a text query in the AI chatbot interface while offline.",
+        "1. User types a navigation query. 2. System detects offline mode. 3. Query keywords are extracted. 4. Keywords are matched against FAQ entries. 5. Closest matching FAQ response is returned. 6. Response is displayed in chat."
+      ],
+      [
+        "Submit Anonymous Feedback",
+        "Student / Faculty / Visitor",
+        "The system accepts and stores anonymous feedback or a rating submitted by the user regarding a room, facility, or the system overall.",
+        "Feedback module is accessible. No authentication is required.",
+        "User navigates to the feedback screen after using the system.",
+        "User submits the feedback form.",
+        "1. User fills in feedback form with rating and optional comment. 2. User selects category. 3. User submits the form. 4. System stores feedback anonymously. 5. Confirmation message is displayed."
+      ],
+      [
+        "Log In to Admin Panel",
+        "Super Admin / Dean / Program Head / Basic Ed Head",
+        "The system authenticates the administrator's credentials and issues a JWT access token upon successful verification.",
+        "Admin account is active in the database. System authentication endpoint is reachable.",
+        "Authorized administrator navigates to the admin login URL.",
+        "Administrator enters username and password and clicks the login button.",
+        "1. Admin enters credentials. 2. System validates credentials against database. 3. JWT token is issued upon success. 4. Admin is redirected to the dashboard. 5. Unauthorized attempts are logged."
+      ],
+      [
+        "Manage Rooms (Add, Edit, Delete, Restore)",
+        "Super Admin / Dean / Program Head / Basic Ed Head",
+        "The system allows authorized administrators to create, modify, soft delete, and restore room records within the system.",
+        "Administrator is authenticated. Facility exists in the database for room assignment.",
+        "Administrator navigates to the Room Management section of the admin panel.",
+        "Administrator selects Add, Edit, Delete, or Restore action on a room record.",
+        "1. Admin selects a facility. 2. Admin chooses the action (Add/Edit/Delete/Restore). 3. System validates input. 4. Database is updated. 5. Audit log records the action. 6. Confirmation is displayed."
+      ],
+      [
+        "Approve or Reject Announcement",
+        "Super Admin / Dean",
+        "The system allows the Super Admin or Dean to review, approve, or reject pending announcements submitted by subordinate administrators.",
+        "Announcement with status 'pending_approval' exists in the database. Approver is authenticated with appropriate role.",
+        "Super Admin or Dean navigates to the Announcements Management section.",
+        "Super Admin or Dean reviews a pending announcement and selects Approve or Reject.",
+        "1. Admin opens a pending announcement. 2. Admin reviews content. 3. Admin clicks Approve or Reject. 4. If approved, status changes to 'published'. 5. Notification is dispatched. 6. Audit log records the decision."
+      ],
+      [
+        "View Audit Log",
+        "Super Admin / Dean",
+        "The system displays an immutable, filterable log of all administrative actions performed within the system, including timestamps, IP addresses, and before/after value differences.",
+        "Administrator is authenticated with Super Admin or Dean role.",
+        "Administrator navigates to the Audit Log section of the admin panel.",
+        "Administrator opens the Audit Log page.",
+        "1. System retrieves audit log records. 2. Records are displayed in chronological order. 3. Admin applies filters (date, action type, entity). 4. Matching records are displayed."
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 226,
+    "text": "Figure 3.6.1 Use Case Matrix of TechnoPath: SEAIT Guide Map and Navigation System."
+  },
+  {
+    "type": "paragraph",
+    "index": 229,
+    "text": "Storyboard"
+  },
+  {
+    "type": "paragraph",
+    "index": 230,
+    "text": "The storyboard presents the conceptual visualization of TechnoPath: SEAIT Guide Map and Navigation System interface, illustrating the expected screen flow and user interaction sequence for each primary screen of the application."
+  },
+  {
+    "type": "paragraph",
+    "index": 231,
+    "text": "Splash Screen"
+  },
+  {
+    "type": "paragraph",
+    "index": 238,
+    "text": "Figure 3.7.1 The app opens with an animated splash screen displaying the TechnoPath logo and SEAIT branding before auto-redirecting to the home screen once per session."
+  },
+  {
+    "type": "paragraph",
+    "index": 239,
+    "text": "Onboarding Tutorial"
+  },
+  {
+    "type": "paragraph",
+    "index": 245,
+    "text": "Figure 3.7.2A three-step modal tutorial appears on first launch, guiding the user through the map, navigation, and chatbot features with a skip option."
+  },
+  {
+    "type": "paragraph",
+    "index": 246,
+    "text": "Home / Map Overview"
+  },
+  {
+    "type": "paragraph",
+    "index": 251,
+    "text": "Figure 3.7.3The home screen displays the interactive SEAIT SVG campus map with facility and room dropdown selectors, map markers, zoom controls, and a bottom navigation bar."
+  },
+  {
+    "type": "paragraph",
+    "index": 258,
+    "text": "Map Explore View"
+  },
+  {
+    "type": "paragraph",
+    "index": 263,
+    "text": "Figure 3.7.4The map explore view provides a full-screen immersive map with filter chips, a toggle for labels, and a slide-up detail panel when a marker is tapped."
+  },
+  {
+    "type": "paragraph",
+    "index": 264,
+    "text": "Navigation / Route View"
+  },
+  {
+    "type": "paragraph",
+    "index": 270,
+    "text": "Figure 3.7.5The navigation view lets users select an origin and destination from dropdowns, then renders an animated Dijkstra-computed route line overlaid on the campus map."
+  },
+  {
+    "type": "paragraph",
+    "index": 271,
+    "text": "AI Chatbot View"
+  },
+  {
+    "type": "paragraph",
+    "index": 277,
+    "text": "Figure 3.7.6The AI chatbot provides conversational campus Q&A using the Flask/OpenAI backend online and falls back to local FAQ entries when the device is offline."
+  },
+  {
+    "type": "paragraph",
+    "index": 279,
+    "text": "Notifications View"
+  },
+  {
+    "type": "paragraph",
+    "index": 285,
+    "text": "Figure 3.7.7The notification\u2019s view lists campus announcements and alerts with unread badge counts, department source labels, and a mark-all-read action."
+  },
+  {
+    "type": "paragraph",
+    "index": 286,
+    "text": "Info / Directory View"
+  },
+  {
+    "type": "paragraph",
+    "index": 292,
+    "text": "Figure 3.7.8The directory view lists all campus buildings, rooms, instructors, and employees in a searchable card list with a detail modal on tap"
+  },
+  {
+    "type": "paragraph",
+    "index": 293,
+    "text": "Feedback View"
+  },
+  {
+    "type": "paragraph",
+    "index": 298,
+    "text": "Figure 3.7.9The feedback view allows anonymous star-rating and comment submission optionally linked to a specific facility or room, then posts to the Django REST API."
+  },
+  {
+    "type": "paragraph",
+    "index": 301,
+    "text": "Settings View"
+  },
+  {
+    "type": "paragraph",
+    "index": 306,
+    "text": "Figure 3.7.10The settings view provides profile access, admin login shortcut, dark mode toggle, and a facilities-and-rooms browser with the app version displayed at the bottom."
+  },
+  {
+    "type": "paragraph",
+    "index": 307,
+    "text": "Admin Login View"
+  },
+  {
+    "type": "paragraph",
+    "index": 315,
+    "text": "Figure 3.7.11The admin login screen is a centered card on a desktop browser page where admins enter credentials that are validated via JWT authentication with a 5-attempt lockout."
+  },
+  {
+    "type": "paragraph",
+    "index": 316,
+    "text": "Admin Dashboard"
+  },
+  {
+    "type": "paragraph",
+    "index": 324,
+    "text": "Figure 3.7.12The admin dashboard displays live stat cards for announcements, pending approvals, active users, and feedback, plus quick-action buttons and a recent activity feed."
+  },
+  {
+    "type": "paragraph",
+    "index": 325,
+    "text": "Announcements Management"
+  },
+  {
+    "type": "paragraph",
+    "index": 333,
+    "text": "Figure 3.7.13The announcements management page shows a filterable table of all announcements with status badges, and a modal form for creating new ones with scope and approval routing."
+  },
+  {
+    "type": "paragraph",
+    "index": 334,
+    "text": "Pending Approvals"
+  },
+  {
+    "type": "paragraph",
+    "index": 342,
+    "text": "Figure 3.7.14The pending approvals queue (Super Admin only) shows submitted announcements awaiting review, with inline approve or reject-with-note actions for each."
+  },
+  {
+    "type": "paragraph",
+    "index": 345,
+    "text": "Facilities Management"
+  },
+  {
+    "type": "paragraph",
+    "index": 353,
+    "text": "Figure 3.7.15The facilities management page (Super Admin only) lists all campus buildings in a table with add, edit, and soft-delete actions plus an edit modal for name, code, floors, and SVG ID."
+  },
+  {
+    "type": "paragraph",
+    "index": 354,
+    "text": "Navigation Graph Editor"
+  },
+  {
+    "type": "paragraph",
+    "index": 362,
+    "text": "Figure 3.7.16The navigation graph editor (Super Admin only) provides a visual canvas to place, connect, and weight navigation nodes and edges used by the Dijkstra pathfinder."
+  },
+  {
+    "type": "paragraph",
+    "index": 363,
+    "text": "Admin Accounts Management"
+  },
+  {
+    "type": "paragraph",
+    "index": 371,
+    "text": "Figure 3.7.17The admin accounts page (Super Admin only) manages all administrator user accounts with role assignment, department linkage, active/inactive toggle, and password reset."
+  },
+  {
+    "type": "paragraph",
+    "index": 372,
+    "text": "Audit Log View"
+  },
+  {
+    "type": "paragraph",
+    "index": 380,
+    "text": "Figure 3.7.18The audit log view (Super Admin, and Dean for own dept) shows an immutable, filterable table of all admin actions with timestamps, IP addresses, and before/after value diffs."
+  },
+  {
+    "type": "paragraph",
+    "index": 401,
+    "text": "Database Design"
+  },
+  {
+    "type": "paragraph",
+    "index": 402,
+    "text": "The database design of TechnoPath: SEAIT Guide Map and Navigation System employs SQLite as the local on-device database engine, managed through the sqflite Flutter package. The database stores all campus navigation data, room and facility information, FAQ entries, feedback records, administrative user accounts, and system configuration locally on the mobile device to support offline-first operation."
+  },
+  {
+    "type": "paragraph",
+    "index": 410,
+    "text": "Figure 3.8. Database Design of TechnoPath: SEAIT Guide Map and Navigation System"
+  },
+  {
+    "type": "paragraph",
+    "index": 423,
+    "text": "Entity Relationship Diagram"
+  },
+  {
+    "type": "paragraph",
+    "index": 439,
+    "text": "Figure 3.9. Entity Relationship Diagram of TechnoPath: SEAIT Guide Map and Navigation System"
+  },
+  {
+    "type": "paragraph",
+    "index": 449,
+    "text": "Data Dictionary"
+  },
+  {
+    "type": "paragraph",
+    "index": 450,
+    "text": "This data dictionary documents all tables, columns, data types, constraints, and relationships for the TechnoPath SEAIT Campus Guide system."
+  },
+  {
+    "type": "paragraph",
+    "index": 451,
+    "text": "Table 1: django_admin_log (LogEntry)"
+  },
+  {
+    "type": "table",
+    "index": 452,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "AutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "action_time",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Action time"
+      ],
+      [
+        "user_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (admin_users)",
+        "User"
+      ],
+      [
+        "content_type_id",
+        "ForeignKey",
+        "NULL",
+        "FK (django_content_type)",
+        "Content type"
+      ],
+      [
+        "object_id",
+        "TextField",
+        "NULL",
+        "-",
+        "Object id"
+      ],
+      [
+        "object_repr",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Object repr"
+      ],
+      [
+        "action_flag",
+        "PositiveSmallIntegerField",
+        "NOT NULL",
+        "-",
+        "Action flag"
+      ],
+      [
+        "change_message",
+        "TextField",
+        "NOT NULL",
+        "-",
+        "Change message"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 453,
+    "text": "Table 2: auth_permission (Permission)"
+  },
+  {
+    "type": "table",
+    "index": 454,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "AutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "name",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Name"
+      ],
+      [
+        "content_type_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (django_content_type)",
+        "Content type"
+      ],
+      [
+        "codename",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Codename"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 455,
+    "text": "Table 3: auth_group_permissions (Group_permissions)"
+  },
+  {
+    "type": "table",
+    "index": 456,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "AutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "group_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (auth_group)",
+        "Group"
+      ],
+      [
+        "permission_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (auth_permission)",
+        "Permission"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 457,
+    "text": "Table 4: auth_group (Group)"
+  },
+  {
+    "type": "table",
+    "index": 458,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "AutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "name",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Name"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 459,
+    "text": "Table 5: django_content_type (ContentType)"
+  },
+  {
+    "type": "table",
+    "index": 460,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "AutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "app_label",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "App label"
+      ],
+      [
+        "model",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Python model class name"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 461,
+    "text": "Table 6: django_session (Session)"
+  },
+  {
+    "type": "table",
+    "index": 462,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "session_key",
+        "CharField",
+        "NOT NULL",
+        "PK",
+        "Session key"
+      ],
+      [
+        "session_data",
+        "TextField",
+        "NOT NULL",
+        "-",
+        "Session data"
+      ],
+      [
+        "expire_date",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Expire date"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 463,
+    "text": "Table 7: admin_users_groups (AdminUser_groups)"
+  },
+  {
+    "type": "table",
+    "index": 464,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "adminuser_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (admin_users)",
+        "Adminuser"
+      ],
+      [
+        "group_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (auth_group)",
+        "Group"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 465,
+    "text": "Table 8: admin_users_user_permissions (AdminUser_user_permissions)"
+  },
+  {
+    "type": "table",
+    "index": 466,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "adminuser_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (admin_users)",
+        "Adminuser"
+      ],
+      [
+        "permission_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (auth_permission)",
+        "Permission"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 467,
+    "text": "Table 9: admin_users (AdminUser)"
+  },
+  {
+    "type": "table",
+    "index": 468,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "password",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Password"
+      ],
+      [
+        "is_superuser",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Designates that this user has all permissions without explicitly assigning them."
+      ],
+      [
+        "username",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Username"
+      ],
+      [
+        "email",
+        "EmailField",
+        "NULL",
+        "-",
+        "Email"
+      ],
+      [
+        "display_name",
+        "CharField",
+        "NULL",
+        "-",
+        "Full name or title shown in audit logs and admin panel"
+      ],
+      [
+        "role",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Role"
+      ],
+      [
+        "department",
+        "CharField",
+        "NULL",
+        "-",
+        "Department"
+      ],
+      [
+        "department_label",
+        "CharField",
+        "NULL",
+        "-",
+        "Override label shown on announcements. Auto-filled from department if blank."
+      ],
+      [
+        "is_active",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is active"
+      ],
+      [
+        "is_staff",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is staff"
+      ],
+      [
+        "login_attempts",
+        "IntegerField",
+        "NOT NULL",
+        "-",
+        "Login attempts"
+      ],
+      [
+        "locked_until",
+        "DateTimeField",
+        "NULL",
+        "-",
+        "Locked until"
+      ],
+      [
+        "last_login",
+        "DateTimeField",
+        "NULL",
+        "-",
+        "Last login"
+      ],
+      [
+        "show_email_public",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Allow email to be shown in public directory"
+      ],
+      [
+        "office_location",
+        "CharField",
+        "NULL",
+        "-",
+        "Office location for public directory"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ],
+      [
+        "updated_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Updated at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 469,
+    "text": "Table 10: facilities (Facility)"
+  },
+  {
+    "type": "table",
+    "index": 470,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "name",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Name"
+      ],
+      [
+        "code",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Code"
+      ],
+      [
+        "description",
+        "TextField",
+        "NULL",
+        "-",
+        "Description"
+      ],
+      [
+        "facility_type",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Facility type"
+      ],
+      [
+        "building_code",
+        "CharField",
+        "NULL",
+        "-",
+        "Building code"
+      ],
+      [
+        "department_id",
+        "ForeignKey",
+        "NULL",
+        "FK (departments)",
+        "Department"
+      ],
+      [
+        "latitude",
+        "FloatField",
+        "NULL",
+        "-",
+        "Latitude"
+      ],
+      [
+        "longitude",
+        "FloatField",
+        "NULL",
+        "-",
+        "Longitude"
+      ],
+      [
+        "image_path",
+        "CharField",
+        "NULL",
+        "-",
+        "Image path"
+      ],
+      [
+        "map_svg_id",
+        "CharField",
+        "NULL",
+        "-",
+        "SVG element ID e.g. building-RST"
+      ],
+      [
+        "total_floors",
+        "IntegerField",
+        "NOT NULL",
+        "-",
+        "Total floors"
+      ],
+      [
+        "is_deleted",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is deleted"
+      ],
+      [
+        "is_active",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is active"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ],
+      [
+        "updated_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Updated at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 471,
+    "text": "Table 11: rooms (Room)"
+  },
+  {
+    "type": "table",
+    "index": 472,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "facility_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (facilities)",
+        "Facility"
+      ],
+      [
+        "name",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Name"
+      ],
+      [
+        "code",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Code"
+      ],
+      [
+        "room_number",
+        "CharField",
+        "NULL",
+        "-",
+        "Room number"
+      ],
+      [
+        "description",
+        "TextField",
+        "NULL",
+        "-",
+        "Description"
+      ],
+      [
+        "floor",
+        "IntegerField",
+        "NOT NULL",
+        "-",
+        "Floor"
+      ],
+      [
+        "map_svg_id",
+        "CharField",
+        "NULL",
+        "-",
+        "SVG element ID e.g. RST-F1-CL1"
+      ],
+      [
+        "room_type",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Room type"
+      ],
+      [
+        "capacity",
+        "IntegerField",
+        "NOT NULL",
+        "-",
+        "Capacity"
+      ],
+      [
+        "is_office",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is office"
+      ],
+      [
+        "is_crucial",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is crucial"
+      ],
+      [
+        "search_count",
+        "IntegerField",
+        "NOT NULL",
+        "-",
+        "Search count"
+      ],
+      [
+        "course_code",
+        "CharField",
+        "NULL",
+        "-",
+        "Academic program that primarily uses this room (e.g. BSIT, BSCS)"
+      ],
+      [
+        "course_color",
+        "CharField",
+        "NULL",
+        "-",
+        "Hex highlight color for map (e.g. #FF5722). Auto-assigned if blank."
+      ],
+      [
+        "is_deleted",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is deleted"
+      ],
+      [
+        "is_active",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is active"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ],
+      [
+        "updated_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Updated at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 473,
+    "text": "Table 12: navigation_nodes (NavigationNode)"
+  },
+  {
+    "type": "table",
+    "index": 474,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "name",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Name"
+      ],
+      [
+        "node_type",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Node type"
+      ],
+      [
+        "facility_id",
+        "ForeignKey",
+        "NULL",
+        "FK (facilities)",
+        "Facility"
+      ],
+      [
+        "room_id",
+        "ForeignKey",
+        "NULL",
+        "FK (rooms)",
+        "Room"
+      ],
+      [
+        "map_svg_id",
+        "CharField",
+        "NULL",
+        "-",
+        "Map svg id"
+      ],
+      [
+        "x",
+        "FloatField",
+        "NOT NULL",
+        "-",
+        "X"
+      ],
+      [
+        "y",
+        "FloatField",
+        "NOT NULL",
+        "-",
+        "Y"
+      ],
+      [
+        "floor",
+        "IntegerField",
+        "NOT NULL",
+        "-",
+        "Floor"
+      ],
+      [
+        "is_deleted",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is deleted"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ],
+      [
+        "updated_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Updated at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 475,
+    "text": "Table 13: navigation_edges (NavigationEdge)"
+  },
+  {
+    "type": "table",
+    "index": 476,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "from_node_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (navigation_nodes)",
+        "From node"
+      ],
+      [
+        "to_node_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (navigation_nodes)",
+        "To node"
+      ],
+      [
+        "distance",
+        "IntegerField",
+        "NOT NULL",
+        "-",
+        "Distance"
+      ],
+      [
+        "is_bidirectional",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is bidirectional"
+      ],
+      [
+        "is_deleted",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is deleted"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ],
+      [
+        "updated_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Updated at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 477,
+    "text": "Table 14: faq_entries (FAQEntry)"
+  },
+  {
+    "type": "table",
+    "index": 478,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "question",
+        "TextField",
+        "NOT NULL",
+        "-",
+        "Question"
+      ],
+      [
+        "answer",
+        "TextField",
+        "NOT NULL",
+        "-",
+        "Answer"
+      ],
+      [
+        "category",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Category"
+      ],
+      [
+        "keywords",
+        "TextField",
+        "NOT NULL",
+        "-",
+        "Comma-separated keywords for offline matching"
+      ],
+      [
+        "usage_count",
+        "IntegerField",
+        "NOT NULL",
+        "-",
+        "Usage count"
+      ],
+      [
+        "is_deleted",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is deleted"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ],
+      [
+        "updated_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Updated at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 479,
+    "text": "Table 15: ai_chat_logs (AIChatLog)"
+  },
+  {
+    "type": "table",
+    "index": 480,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "user_query",
+        "TextField",
+        "NOT NULL",
+        "-",
+        "User query"
+      ],
+      [
+        "ai_response",
+        "TextField",
+        "NULL",
+        "-",
+        "Ai response"
+      ],
+      [
+        "mode",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Mode"
+      ],
+      [
+        "response_time_ms",
+        "IntegerField",
+        "NULL",
+        "-",
+        "Response time ms"
+      ],
+      [
+        "is_successful",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is successful"
+      ],
+      [
+        "error_message",
+        "TextField",
+        "NULL",
+        "-",
+        "Error message"
+      ],
+      [
+        "faq_entry_id",
+        "ForeignKey",
+        "NULL",
+        "FK (faq_entries)",
+        "Faq entry"
+      ],
+      [
+        "session_id",
+        "CharField",
+        "NULL",
+        "-",
+        "Session id"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 481,
+    "text": "Table 16: notifications (Notification)"
+  },
+  {
+    "type": "table",
+    "index": 482,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "title",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Title"
+      ],
+      [
+        "message",
+        "TextField",
+        "NOT NULL",
+        "-",
+        "Message"
+      ],
+      [
+        "type",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Type"
+      ],
+      [
+        "source_label",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Department or office name shown on the mobile card"
+      ],
+      [
+        "source_color",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Color key: red, dark_blue, green, charcoal, purple, teal, amber, blue, dark_green, indigo, brown, orange"
+      ],
+      [
+        "announcement_id",
+        "ForeignKey",
+        "NULL",
+        "FK (announcements)",
+        "Announcement"
+      ],
+      [
+        "priority",
+        "IntegerField",
+        "NOT NULL",
+        "-",
+        "Priority"
+      ],
+      [
+        "expires_at",
+        "DateTimeField",
+        "NULL",
+        "-",
+        "Expires at"
+      ],
+      [
+        "created_by_id",
+        "ForeignKey",
+        "NULL",
+        "FK (admin_users)",
+        "Created by"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 483,
+    "text": "Table 17: notification_read_status (NotificationReadStatus)"
+  },
+  {
+    "type": "table",
+    "index": 484,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "user_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (admin_users)",
+        "User"
+      ],
+      [
+        "notification_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (notifications)",
+        "Notification"
+      ],
+      [
+        "read_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Read at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 485,
+    "text": "Table 18: feedback (Feedback)"
+  },
+  {
+    "type": "table",
+    "index": 486,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "rating",
+        "IntegerField",
+        "NULL",
+        "-",
+        "Rating"
+      ],
+      [
+        "comment",
+        "TextField",
+        "NULL",
+        "-",
+        "Comment"
+      ],
+      [
+        "category",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Category"
+      ],
+      [
+        "facility_id",
+        "ForeignKey",
+        "NULL",
+        "FK (facilities)",
+        "Facility"
+      ],
+      [
+        "room_id",
+        "ForeignKey",
+        "NULL",
+        "FK (rooms)",
+        "Room"
+      ],
+      [
+        "is_anonymous",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is anonymous"
+      ],
+      [
+        "location",
+        "CharField",
+        "NULL",
+        "-",
+        "Optional campus location name this feedback relates to"
+      ],
+      [
+        "is_flagged",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is flagged"
+      ],
+      [
+        "flag_reason",
+        "TextField",
+        "NULL",
+        "-",
+        "Flag reason"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 487,
+    "text": "Table 19: departments (Department)"
+  },
+  {
+    "type": "table",
+    "index": 488,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "name",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Name"
+      ],
+      [
+        "code",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Code"
+      ],
+      [
+        "description",
+        "TextField",
+        "NULL",
+        "-",
+        "Description"
+      ],
+      [
+        "head_user_id",
+        "ForeignKey",
+        "NULL",
+        "FK (admin_users)",
+        "Head user"
+      ],
+      [
+        "is_active",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is active"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 489,
+    "text": "Table 20: map_markers (MapMarker)"
+  },
+  {
+    "type": "table",
+    "index": 490,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "facility_id",
+        "ForeignKey",
+        "NULL",
+        "FK (facilities)",
+        "Facility"
+      ],
+      [
+        "room_id",
+        "ForeignKey",
+        "NULL",
+        "FK (rooms)",
+        "Room"
+      ],
+      [
+        "name",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Name"
+      ],
+      [
+        "x_position",
+        "FloatField",
+        "NOT NULL",
+        "-",
+        "X position"
+      ],
+      [
+        "y_position",
+        "FloatField",
+        "NOT NULL",
+        "-",
+        "Y position"
+      ],
+      [
+        "marker_type",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Marker type"
+      ],
+      [
+        "icon_name",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Icon name"
+      ],
+      [
+        "color_hex",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Color hex"
+      ],
+      [
+        "is_active",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is active"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 491,
+    "text": "Table 21: map_labels (MapLabel)"
+  },
+  {
+    "type": "table",
+    "index": 492,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "label_text",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Label text"
+      ],
+      [
+        "x_position",
+        "FloatField",
+        "NOT NULL",
+        "-",
+        "X position"
+      ],
+      [
+        "y_position",
+        "FloatField",
+        "NOT NULL",
+        "-",
+        "Y position"
+      ],
+      [
+        "font_size",
+        "IntegerField",
+        "NOT NULL",
+        "-",
+        "Font size"
+      ],
+      [
+        "color_hex",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Color hex"
+      ],
+      [
+        "rotation",
+        "FloatField",
+        "NOT NULL",
+        "-",
+        "Rotation"
+      ],
+      [
+        "is_active",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is active"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 493,
+    "text": "Table 22: notification_types (NotificationType)"
+  },
+  {
+    "type": "table",
+    "index": 494,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "name",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Name"
+      ],
+      [
+        "description",
+        "TextField",
+        "NULL",
+        "-",
+        "Description"
+      ],
+      [
+        "icon_name",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Icon name"
+      ],
+      [
+        "color_hex",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Color hex"
+      ],
+      [
+        "is_active",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is active"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 495,
+    "text": "Table 23: notification_preferences (NotificationPreference)"
+  },
+  {
+    "type": "table",
+    "index": 496,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "user_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (admin_users)",
+        "User"
+      ],
+      [
+        "notification_type_id",
+        "ForeignKey",
+        "NOT NULL",
+        "FK (notification_types)",
+        "Notification type"
+      ],
+      [
+        "is_enabled",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is enabled"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 497,
+    "text": "Table 24: admin_audit_log (AdminAuditLog)"
+  },
+  {
+    "type": "table",
+    "index": 498,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "admin_id",
+        "ForeignKey",
+        "NULL",
+        "FK (admin_users)",
+        "Admin"
+      ],
+      [
+        "action",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Action"
+      ],
+      [
+        "entity_type",
+        "CharField",
+        "NULL",
+        "-",
+        "Entity type"
+      ],
+      [
+        "entity_id",
+        "IntegerField",
+        "NULL",
+        "-",
+        "Entity id"
+      ],
+      [
+        "entity_label",
+        "CharField",
+        "NULL",
+        "-",
+        "Entity label"
+      ],
+      [
+        "old_value_json",
+        "TextField",
+        "NULL",
+        "-",
+        "Old value json"
+      ],
+      [
+        "new_value_json",
+        "TextField",
+        "NULL",
+        "-",
+        "New value json"
+      ],
+      [
+        "ip_address",
+        "CharField",
+        "NULL",
+        "-",
+        "Ip address"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 499,
+    "text": "Table 25: search_history (SearchHistory)"
+  },
+  {
+    "type": "table",
+    "index": 500,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "user_id",
+        "ForeignKey",
+        "NULL",
+        "FK (admin_users)",
+        "User"
+      ],
+      [
+        "query",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Query"
+      ],
+      [
+        "results_count",
+        "IntegerField",
+        "NOT NULL",
+        "-",
+        "Results count"
+      ],
+      [
+        "was_clicked",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Was clicked"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 502,
+    "text": "Table 25: app_config (AppConfig)"
+  },
+  {
+    "type": "table",
+    "index": 503,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "config_key",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Config key"
+      ],
+      [
+        "config_value",
+        "TextField",
+        "NOT NULL",
+        "-",
+        "Config value"
+      ],
+      [
+        "description",
+        "TextField",
+        "NULL",
+        "-",
+        "Description"
+      ],
+      [
+        "updated_by_id",
+        "ForeignKey",
+        "NULL",
+        "FK (admin_users)",
+        "Updated by"
+      ],
+      [
+        "updated_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Updated at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 505,
+    "text": "Table 26: announcements (Announcement)"
+  },
+  {
+    "type": "table",
+    "index": 506,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Id"
+      ],
+      [
+        "title",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Title"
+      ],
+      [
+        "content",
+        "TextField",
+        "NOT NULL",
+        "-",
+        "Content"
+      ],
+      [
+        "created_by_id",
+        "ForeignKey",
+        "NULL",
+        "FK (admin_users)",
+        "Created by"
+      ],
+      [
+        "source_label",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Department label shown on the mobile notification card"
+      ],
+      [
+        "source_color",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Color key for the department chip on mobile"
+      ],
+      [
+        "scope",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Scope"
+      ],
+      [
+        "target_department",
+        "CharField",
+        "NULL",
+        "-",
+        "Set when scope=department to filter which users see this"
+      ],
+      [
+        "status",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Status"
+      ],
+      [
+        "requires_approval",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Requires approval"
+      ],
+      [
+        "approved_by_id",
+        "ForeignKey",
+        "NULL",
+        "FK (admin_users)",
+        "Approved by"
+      ],
+      [
+        "rejected_by_id",
+        "ForeignKey",
+        "NULL",
+        "FK (admin_users)",
+        "Rejected by"
+      ],
+      [
+        "rejection_note",
+        "TextField",
+        "NULL",
+        "-",
+        "Reason for rejection \u2014 shown to the submitting admin"
+      ],
+      [
+        "approved_at",
+        "DateTimeField",
+        "NULL",
+        "-",
+        "Approved at"
+      ],
+      [
+        "archived_by_id",
+        "ForeignKey",
+        "NULL",
+        "FK (admin_users)",
+        "Archived by"
+      ],
+      [
+        "archived_at",
+        "DateTimeField",
+        "NULL",
+        "-",
+        "Archived at"
+      ],
+      [
+        "is_deleted",
+        "BooleanField",
+        "NOT NULL",
+        "-",
+        "Is deleted"
+      ],
+      [
+        "created_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Created at"
+      ],
+      [
+        "updated_at",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Updated at"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 507,
+    "text": "Table 27: django_migrations (Migration History)"
+  },
+  {
+    "type": "table",
+    "index": 508,
+    "data": [
+      [
+        "Column Name",
+        "Data Type",
+        "Null/Not Null",
+        "PK / FK",
+        "Description"
+      ],
+      [
+        "id",
+        "BigAutoField",
+        "NOT NULL",
+        "PK",
+        "Primary Key"
+      ],
+      [
+        "app",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Django Application Name"
+      ],
+      [
+        "name",
+        "CharField",
+        "NOT NULL",
+        "-",
+        "Migration Name"
+      ],
+      [
+        "applied",
+        "DateTimeField",
+        "NOT NULL",
+        "-",
+        "Date/Time Applied"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 510,
+    "text": "Network Model"
+  },
+  {
+    "type": "paragraph",
+    "index": 511,
+    "text": "The devices used in the network and their corresponding signal or network types are as follows: Student, Faculty, and Visitor mobile devices connect via wireless LAN through the campus wireless access point; the Admin PC and Faculty workstations connect via Ethernet (wired LAN) through the campus switch; the TechnoPath Server (hosting Nginx, Django, and Flask services) connects via Ethernet to the campus switch; the Campus Switch manages all internal LAN traffic using Ethernet; the Campus Router provides routing between the campus LAN and the external internet, enabling online AI API calls from the Flask chatbot service."
+  },
+  {
+    "type": "paragraph",
+    "index": 520,
+    "text": "Figure 3.10. Network Model of TechnoPath: SEAIT Guide Map and Navigation System"
+  },
+  {
+    "type": "paragraph",
+    "index": 533,
+    "text": "Networking Topology"
+  },
+  {
+    "type": "paragraph",
+    "index": 544,
+    "text": "Figure 3.11. Network Model of TechnoPath: SEAIT Guide Map and Navigation System"
+  },
+  {
+    "type": "paragraph",
+    "index": 546,
+    "text": "The network topology implemented for TechnoPath: SEAIT Guide Map and Navigation System is a Star-Bus Hybrid topology. The topology combines a star configuration at the client edge with a bus or tiered configuration at the server side."
+  },
+  {
+    "type": "paragraph",
+    "index": 547,
+    "text": "At the client edge, all user devices (student and visitor mobile devices, faculty laptops, and admin workstations) connect to a central Campus Switch or Wireless Access Point, forming a star topology wherein every endpoint communicates exclusively through the central node and does not directly communicate with other endpoints. The central switch serves as the hub of this star arrangement."
+  },
+  {
+    "type": "paragraph",
+    "index": 548,
+    "text": "At the server side, the three server processes (Vue.js served by Nginx on port 80/443, Django REST API on port 8000, and Flask chatbot on port 5000) reside on the same physical server and share the same internal LAN segment. Their inter-process communication follows a linear sequential pattern resembling a bus arrangement, with the Nginx reverse proxy receiving inbound requests and forwarding them to Django or Flask based on URL prefix routing."
+  },
+  {
+    "type": "paragraph",
+    "index": 549,
+    "text": "The three-tier application architecture maps directly onto the network topology as follows: Tier 1 (Presentation) is the Vue.js PWA served by Nginx to client browsers via the wireless LAN or Ethernet LAN; Tier 2 (Application) consists of the Django REST API and Flask chatbot microservice, both residing on the server within the LAN; and Tier 3 (Data) is the SQLite or PostgreSQL database instance accessed exclusively by the Django ORM from the same server."
+  },
+  {
+    "type": "paragraph",
+    "index": 550,
+    "text": "Network security is enforced through Nginx HTTPS (port 443) on the server-facing side, with JWT token-based authentication on all Django API endpoints. All internal server-to-server traffic between Django and Flask remains within the server's localhost network and does not traverse the campus LAN."
+  },
+  {
+    "type": "paragraph",
+    "index": 558,
+    "text": "List of Modules"
+  },
+  {
+    "type": "paragraph",
+    "index": 559,
+    "text": "The following is a complete enumeration of all modules and features of TechnoPath:"
+  },
+  {
+    "type": "paragraph",
+    "index": 560,
+    "text": "QR Code Access Point"
+  },
+  {
+    "type": "paragraph",
+    "index": 561,
+    "text": "Generates and displays the campus entry QR code; processes scan and redirects to campus map."
+  },
+  {
+    "type": "paragraph",
+    "index": 562,
+    "text": "User Roles: Super Admin, All Guest Users"
+  },
+  {
+    "type": "paragraph",
+    "index": 564,
+    "text": "Interactive 2D Campus Ground Map"
+  },
+  {
+    "type": "paragraph",
+    "index": 565,
+    "text": "Renders the full SVG campus layout with building markers, walkways, and zoom and pan interaction."
+  },
+  {
+    "type": "paragraph",
+    "index": 566,
+    "text": "User Roles: All Guest Users"
+  },
+  {
+    "type": "paragraph",
+    "index": 567,
+    "text": "2D Building Floor Map Viewer"
+  },
+  {
+    "type": "paragraph",
+    "index": 568,
+    "text": "Displays floor-level building maps with labeled rooms, highlighted offices, and floor switching."
+  },
+  {
+    "type": "paragraph",
+    "index": 569,
+    "text": "User Roles: All Guest Users"
+  },
+  {
+    "type": "paragraph",
+    "index": 570,
+    "text": "Campus Navigation Route"
+  },
+  {
+    "type": "paragraph",
+    "index": 571,
+    "text": "Computes and overlays the shortest path between origin and destination using Dijkstra's algorithm."
+  },
+  {
+    "type": "paragraph",
+    "index": 572,
+    "text": "User Roles: All Guest Users"
+  },
+  {
+    "type": "paragraph",
+    "index": 573,
+    "text": "Room and Facility Search"
+  },
+  {
+    "type": "paragraph",
+    "index": 574,
+    "text": "Searches campus rooms and facilities by name or keyword with dropdown selector."
+  },
+  {
+    "type": "paragraph",
+    "index": 575,
+    "text": "User Roles: All Guest Users"
+  },
+  {
+    "type": "paragraph",
+    "index": 576,
+    "text": "Map Marker Management"
+  },
+  {
+    "type": "paragraph",
+    "index": 577,
+    "text": "Adds, edits, and deletes visual markers on the campus map SVG."
+  },
+  {
+    "type": "paragraph",
+    "index": 578,
+    "text": "User Roles: Super Admin"
+  },
+  {
+    "type": "paragraph",
+    "index": 579,
+    "text": "Map Label Management"
+  },
+  {
+    "type": "paragraph",
+    "index": 580,
+    "text": "Adds, edits, and deletes text labels displayed on the campus map SVG.\tUser Roles: Super Admin"
+  },
+  {
+    "type": "paragraph",
+    "index": 581,
+    "text": "Building Classroom and Room Updates"
+  },
+  {
+    "type": "paragraph",
+    "index": 582,
+    "text": "Provides full CRUD operations for facility and room records with soft delete and restore."
+  },
+  {
+    "type": "paragraph",
+    "index": 583,
+    "text": "User Roles: Super Admin, Dean, Program Head, Basic Ed Head"
+  },
+  {
+    "type": "paragraph",
+    "index": 584,
+    "text": "Role-Based Administrative Backend"
+  },
+  {
+    "type": "paragraph",
+    "index": 585,
+    "text": "Enforces four-tier role hierarchy with differentiated permissions for Super Admin, Dean, Program Head, and Basic Ed Head."
+  },
+  {
+    "type": "paragraph",
+    "index": 586,
+    "text": "User Roles: All Admin Roles"
+  },
+  {
+    "type": "paragraph",
+    "index": 587,
+    "text": "Admin Authentication (JWT)"
+  },
+  {
+    "type": "paragraph",
+    "index": 588,
+    "text": "Authenticates administrators via credentials and issues JWT access tokens; enforces login attempt limits."
+  },
+  {
+    "type": "paragraph",
+    "index": 589,
+    "text": "User Roles: All Admin Roles"
+  },
+  {
+    "type": "paragraph",
+    "index": 590,
+    "text": "Admin Dashboard"
+  },
+  {
+    "type": "paragraph",
+    "index": 591,
+    "text": "Displays real-time system statistics and recent activity for the authenticated administrator."
+  },
+  {
+    "type": "paragraph",
+    "index": 592,
+    "text": "User Roles: All Admin Roles"
+  },
+  {
+    "type": "paragraph",
+    "index": 593,
+    "text": "Announcement Management"
+  },
+  {
+    "type": "paragraph",
+    "index": 594,
+    "text": "Creates, submits, approves, rejects, publishes, and archives announcements with scope-based workflow."
+  },
+  {
+    "type": "paragraph",
+    "index": 595,
+    "text": "User Roles: All Admin Roles"
+  },
+  {
+    "type": "paragraph",
+    "index": 598,
+    "text": "Push Notification System"
+  },
+  {
+    "type": "paragraph",
+    "index": 599,
+    "text": "Delivers system notifications and announcements to guest users based on scope and type."
+  },
+  {
+    "type": "paragraph",
+    "index": 600,
+    "text": "User Roles: All Admin Roles, All Guest Users"
+  },
+  {
+    "type": "paragraph",
+    "index": 601,
+    "text": "AI Virtual Guide (Online Mode)"
+  },
+  {
+    "type": "paragraph",
+    "index": 602,
+    "text": "Proxies\u2019 user queries to OpenAI API via Flask microservice and returns conversational responses."
+  },
+  {
+    "type": "paragraph",
+    "index": 603,
+    "text": "User Roles: All Guest Users"
+  },
+  {
+    "type": "paragraph",
+    "index": 604,
+    "text": "FAQ Fallback (Offline Mode)"
+  },
+  {
+    "type": "paragraph",
+    "index": 605,
+    "text": "Matches user queries against FAQ database using keyword matching for responses without internet."
+  },
+  {
+    "type": "paragraph",
+    "index": 606,
+    "text": "User Roles: All Guest Users"
+  },
+  {
+    "type": "paragraph",
+    "index": 607,
+    "text": "FAQ Knowledge Base Management"
+  },
+  {
+    "type": "paragraph",
+    "index": 608,
+    "text": "Adds, edits, and deletes FAQ entries used by the offline chatbot mode.\tUser Roles: Super Admin"
+  },
+  {
+    "type": "paragraph",
+    "index": 609,
+    "text": "AI Chat Log Viewer"
+  },
+  {
+    "type": "paragraph",
+    "index": 610,
+    "text": "Displays and reviews chatbot conversation history with mode, response time, and success indicators."
+  },
+  {
+    "type": "paragraph",
+    "index": 611,
+    "text": "User Roles: Super Admin"
+  },
+  {
+    "type": "paragraph",
+    "index": 612,
+    "text": "Feedback and Rating System"
+  },
+  {
+    "type": "paragraph",
+    "index": 613,
+    "text": "Collects anonymous user ratings and feedback with category selection and optional comments."
+  },
+  {
+    "type": "paragraph",
+    "index": 614,
+    "text": "User Roles: All Guest Users"
+  },
+  {
+    "type": "paragraph",
+    "index": 615,
+    "text": "Feedback Flag Management"
+  },
+  {
+    "type": "paragraph",
+    "index": 616,
+    "text": "Allows admins to flag, review, and resolve inappropriate or inaccurate feedback entries."
+  },
+  {
+    "type": "paragraph",
+    "index": 617,
+    "text": "User Roles: Super Admin, Dean"
+  },
+  {
+    "type": "paragraph",
+    "index": 618,
+    "text": "Admin Accounts Management"
+  },
+  {
+    "type": "paragraph",
+    "index": 619,
+    "text": "Manages administrator user accounts including creation, role assignment, status toggle, and password reset."
+  },
+  {
+    "type": "paragraph",
+    "index": 620,
+    "text": "User Roles: Super Admin"
+  },
+  {
+    "type": "paragraph",
+    "index": 621,
+    "text": "Admin Audit Log"
+  },
+  {
+    "type": "paragraph",
+    "index": 622,
+    "text": "Records all administrative actions with timestamp, actor, action type, and before/after data; read-only."
+  },
+  {
+    "type": "paragraph",
+    "index": 623,
+    "text": "User Roles: Super Admin, Dean"
+  },
+  {
+    "type": "paragraph",
+    "index": 624,
+    "text": "Usage Analytics and Reports"
+  },
+  {
+    "type": "paragraph",
+    "index": 625,
+    "text": "Tracks and displays search history, session duration, screen views, and event analytics."
+  },
+  {
+    "type": "paragraph",
+    "index": 626,
+    "text": "User Roles: Super Admin, Dean"
+  },
+  {
+    "type": "paragraph",
+    "index": 627,
+    "text": "System Configuration Management"
+  },
+  {
+    "type": "paragraph",
+    "index": 628,
+    "text": "Manages system-wide configuration key-value pairs stored in the app_config table.\tSuper Admin"
+  },
+  {
+    "type": "paragraph",
+    "index": 631,
+    "text": "Offline PWA Support"
+  },
+  {
+    "type": "paragraph",
+    "index": 632,
+    "text": "Caches API responses, campus map data, room directory, and FAQ responses in IndexedDB for offline use."
+  },
+  {
+    "type": "paragraph",
+    "index": 633,
+    "text": "User Roles: All Guest Users"
+  },
+  {
+    "type": "paragraph",
+    "index": 634,
+    "text": "Onboarding Tutorial Displays"
+  },
+  {
+    "type": "paragraph",
+    "index": 635,
+    "text": "Three-step first-launch modal guiding users through map, navigation, and chatbot features."
+  },
+  {
+    "type": "paragraph",
+    "index": 636,
+    "text": "User Roles: All Guest UsersSEAIT Guide Map and Navigation System:"
+  },
+  {
+    "type": "paragraph",
+    "index": 644,
+    "text": "Development/ Construction/ Build Phase"
+  },
+  {
+    "type": "paragraph",
+    "index": 646,
+    "text": "Technology Stack"
+  },
+  {
+    "type": "paragraph",
+    "index": 654,
+    "text": "Figure 3.12: Technology Stack of Technopath"
+  },
+  {
+    "type": "paragraph",
+    "index": 655,
+    "text": "Ayaw e table"
+  },
+  {
+    "type": "paragraph",
+    "index": 656,
+    "text": "Software Specification"
+  },
+  {
+    "type": "table",
+    "index": 658,
+    "data": [
+      [
+        "Component",
+        "Technology / Tool",
+        "Version / Notes"
+      ],
+      [
+        "Frontend Framework",
+        "Vue.js",
+        "Version 3, Composition API"
+      ],
+      [
+        "State Management",
+        "Pinia",
+        "Vue.js state management library"
+      ],
+      [
+        "Frontend Build Tool",
+        "Vite",
+        "With Vite PWA plugin and Workbox"
+      ],
+      [
+        "Backend Framework",
+        "Django",
+        "Version 4.2+"
+      ],
+      [
+        "REST API Layer",
+        "Django REST Framework",
+        "DRF with Simple JWT"
+      ],
+      [
+        "AI Microservice",
+        "Flask",
+        "Python micro-framework"
+      ],
+      [
+        "AI API",
+        "OpenAI GPT API",
+        "Online chatbot mode"
+      ],
+      [
+        "Database (Production)",
+        "PostgreSQL",
+        "Relational database"
+      ],
+      [
+        "Database (Development)",
+        "SQLite",
+        "File-based relational database"
+      ],
+      [
+        "Web Server / Proxy",
+        "Nginx",
+        "Production reverse proxy"
+      ],
+      [
+        "Offline Storage",
+        "IndexedDB via Dexie",
+        "Browser-side caching"
+      ],
+      [
+        "Authentication",
+        "JSON Web Tokens (JWT)",
+        "via Simple JWT library"
+      ],
+      [
+        "Map Rendering",
+        "SVG assets with Leaflet.js",
+        "Interactive 2D campus map"
+      ],
+      [
+        "IDE",
+        "Visual Studio Code",
+        "Primary development environment"
+      ],
+      [
+        "Version Control",
+        "Git / GitHub",
+        "Repository management"
+      ],
+      [
+        "Operating System",
+        "Windows 11 / Ubuntu (Server)",
+        "Development and deployment OS"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 660,
+    "text": "Hardware Specification"
+  },
+  {
+    "type": "table",
+    "index": 661,
+    "data": [
+      [
+        "Component",
+        "Specification"
+      ],
+      [
+        "Development Workstation Processor",
+        "Intel Core i5 or equivalent (minimum quad-core, 2.0 GHz)"
+      ],
+      [
+        "Development Workstation RAM",
+        "8 GB minimum (16 GB recommended)"
+      ],
+      [
+        "Development Workstation Storage",
+        "256 GB SSD minimum"
+      ],
+      [
+        "Production Server Processor",
+        "Dual-core 2.0 GHz minimum"
+      ],
+      [
+        "Production Server RAM",
+        "4 GB minimum (8 GB recommended for PostgreSQL and Nginx)"
+      ],
+      [
+        "Production Server Storage",
+        "50 GB SSD minimum"
+      ],
+      [
+        "Network Interface",
+        "100 Mbps Ethernet or 802.11n Wi-Fi minimum for campus deployment"
+      ],
+      [
+        "Client Device (Guest User)",
+        "Any smartphone or tablet with a modern browser (Chrome, Firefox, Safari); no installation required"
+      ],
+      [
+        "Client Device (Admin User)",
+        "Desktop or laptop with modern browser and stable LAN or Wi-Fi connection"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 663,
+    "text": "Program Specification"
+  },
+  {
+    "type": "table",
+    "index": 664,
+    "data": [
+      [
+        "Specification",
+        "Details"
+      ],
+      [
+        "Programming Languages",
+        "JavaScript (Vue.js frontend), Python (Django backend and Flask microservice)"
+      ],
+      [
+        "Database Query Language",
+        "SQL via Django ORM (PostgreSQL / SQLite)"
+      ],
+      [
+        "API Protocol",
+        "RESTful HTTP with JSON payloads"
+      ],
+      [
+        "Authentication Protocol",
+        "JSON Web Token (JWT) with 8-hour access token and 7-day refresh token"
+      ],
+      [
+        "Offline Mode Protocol",
+        "Service Worker (Workbox NetworkFirst strategy), IndexedDB via Dexie"
+      ],
+      [
+        "Navigation Algorithm",
+        "Dijkstra's Shortest Path Algorithm (JavaScript implementation)"
+      ],
+      [
+        "AI Query Protocol",
+        "OpenAI Chat Completion API (online); keyword matching against FAQ SQLite (offline)"
+      ],
+      [
+        "CORS Policy",
+        "Configured in Django settings for localhost:5173 and localhost:3000 in development; production domain in production"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "index": 666,
+    "text": "Human Resource Specification"
+  },
+  {
+    "type": "paragraph",
+    "index": 668,
+    "text": "Super Admin (Safety and Security Office)"
+  },
+  {
+    "type": "paragraph",
+    "index": 669,
+    "text": "The Super Admin must possess basic to intermediate computer literacy skills, including familiarity with web browser navigation, form input, and file management. The Super Admin must understand the institutional structure of SEAIT to accurately manage building and room records. No programming knowledge is required. The Super Admin must be capable of generating the QR code for the main gate, managing administrator accounts, approving announcements, and reviewing audit logs through the administrative backend."
+  },
+  {
+    "type": "paragraph",
+    "index": 670,
+    "text": "Dean / Program Head / Basic Education Head"
+  },
+  {
+    "type": "paragraph",
+    "index": 671,
+    "text": "Administrative users at the Dean, Program Head, and Basic Education Head levels must possess basic computer literacy and familiarity with web-based form interfaces. Proficiency with word processing and digital communication is beneficial. Users must be capable of creating and submitting announcements and managing classroom assignment records within their authorized scope."
+  },
+  {
+    "type": "paragraph",
+    "index": 672,
+    "text": "Guest Users (Students, Faculty, Visitors)"
+  },
+  {
+    "type": "paragraph",
+    "index": 673,
+    "text": "Guest users are required only to have basic smartphone or device literacy, including the ability to open a web browser, scan a QR code, and interact with a touch-based interface. No account registration, application installation, or technical knowledge is required."
+  },
+  {
+    "type": "paragraph",
+    "index": 734,
+    "text": "REFERENCES"
+  },
+  {
+    "type": "paragraph",
+    "index": 758,
+    "text": "References"
+  },
+  {
+    "type": "paragraph",
+    "index": 761,
+    "text": "Bagwan, S., Akashe, S., Hippargi, S., & Halkude, V. (20230. Campus Navigation System. IJRAR, 10(4)."
+  },
+  {
+    "type": "paragraph",
+    "index": 763,
+    "text": "https://ijrar.org/papers/IJRAR23D2431.pdf"
+  },
+  {
+    "type": "paragraph",
+    "index": 765,
+    "text": "Carabuena, F. R. (2024). Enhancing Campus Navigation with Augmented   \tReality: A     Mobile-Based Directory System for Romblon State University"
+  },
+  {
+    "type": "paragraph",
+    "index": 766,
+    "text": "Cajidiocan Campus.Scribd."
+  },
+  {
+    "type": "paragraph",
+    "index": 768,
+    "text": "https://www.scribd.com/document/835070345/Copy-of-Revision-Enhancing-Campus-Navigation-With-Augmented-Reality-a-Mobile-Based-Directory-System-for-Romblon-State-University-Cajidiocan-Campus"
+  },
+  {
+    "type": "paragraph",
+    "index": 770,
+    "text": "Costales, J. A., Vida, A. K. S., & Albino, M. G. (2023). Mobile Based Navigation"
+  },
+  {
+    "type": "paragraph",
+    "index": 771,
+    "text": "System for Visually Impaired Person Using Image Detection with Voice"
+  },
+  {
+    "type": "paragraph",
+    "index": 772,
+    "text": "Translation. ResearchGate."
+  },
+  {
+    "type": "paragraph",
+    "index": 774,
+    "text": "https://www.researchgate.net/publication/373132565_Mobile_Based_Navigati on_System_for_Visually_Impaired_Person_Using_Image_Detection_with_Voi ce_Translation"
+  },
+  {
+    "type": "paragraph",
+    "index": 776,
+    "text": "Fernandez, R. B., Leynes, M., Almario, M. J. S., Aputan, C., Iloseo, F. J. T., & Manalang, J. R. P. (2025). Smart campus directory: AI-powered navigation system deployment for Universidad de Manila. International Journal of"
+  },
+  {
+    "type": "paragraph",
+    "index": 777,
+    "text": "Engineering \tTechnology \tResearch \tManagement, \t9(10)."
+  },
+  {
+    "type": "paragraph",
+    "index": 778,
+    "text": "https://doi.org/10.5281/zenodo.17251000"
+  },
+  {
+    "type": "paragraph",
+    "index": 779,
+    "text": "Gonzales, L. J. A. (2025). Development of an interactive wayfinding system using a mobile application in the college building of University of Perpetual Help System Laguna-Jonelta. International Journal of Future Engineering Innovations,2(4),129\u2013137."
+  },
+  {
+    "type": "paragraph",
+    "index": 781,
+    "text": "https://www.futureengineeringjournal.com/uploads/archives/20250802111349_FEI-2025-4-026.1.pdf"
+  },
+  {
+    "type": "paragraph",
+    "index": 782,
+    "text": "Guerra, J. P., Cahilig, R., Tarroza, T. M., Mara\u00f1on, R., Magsipoc, N. F., & Secugal, K."
+  },
+  {
+    "type": "paragraph",
+    "index": 783,
+    "text": "A. S. (2025). U-roAm: Augmented Reality Based Campus Navigation and"
+  },
+  {
+    "type": "paragraph",
+    "index": 784,
+    "text": "Building Directory for University of Antique Main Campus. Business, Education,"
+  },
+  {
+    "type": "paragraph",
+    "index": 785,
+    "text": "Social \tSciences, \tand \tTechnology, \t1(2), \t101\u2013108."
+  },
+  {
+    "type": "paragraph",
+    "index": 787,
+    "text": "https://doi.org/10.69478/BEST2025v1n2a015"
+  },
+  {
+    "type": "paragraph",
+    "index": 789,
+    "text": "Li, J., Smith, R., & Chen, T. (2025). Work in progress: CampNav \u2014 A navigation system in complex buildings and campus settings (Work-In-Progress Paper). American Society for Engineering Education (ASEE)."
+  },
+  {
+    "type": "paragraph",
+    "index": 790,
+    "text": "CampNav_Final.pdf"
+  },
+  {
+    "type": "paragraph",
+    "index": 792,
+    "text": "Lu, F., Zhou, H., Guo, L., Chen, J., & Pei, L. (2021). An ARCORE-Based augmented reality campus navigation system. Applied Sciences, 11(16), 7515."
+  },
+  {
+    "type": "paragraph",
+    "index": 794,
+    "text": "https://doi.org/10.3390/app11167515"
+  },
+  {
+    "type": "paragraph",
+    "index": 796,
+    "text": "Neelakantappa B. B., Madhura S., Meghana C. L., & Mandara H. P. (2025). Smart"
+  },
+  {
+    "type": "paragraph",
+    "index": 797,
+    "text": "Campus \tNavigation \tSystem. \tIJFMR, \t7(10)."
+  },
+  {
+    "type": "paragraph",
+    "index": 799,
+    "text": "https://www.ijfmr.com/papers/2025/1/34970.pdf"
+  },
+  {
+    "type": "paragraph",
+    "index": 801,
+    "text": "Oyeman, E. C., Bantiling, J. R. A., Lerio, M. L. P., & Soberano, K. T. (2024). Campus interactive information kiosk with 3D mapping. International Journal of Creative"
+  },
+  {
+    "type": "paragraph",
+    "index": 802,
+    "text": "Research \tThoughts \t(IJCRT), \t12(6), \tg968\u2013g978."
+  },
+  {
+    "type": "paragraph",
+    "index": 804,
+    "text": "http://www.ijcrt.org/papers/IJCRT2406786.pdf"
+  },
+  {
+    "type": "paragraph",
+    "index": 806,
+    "text": "Raja, N., Pugalenthi, V., & Keerthika, E. (2023). Smart Campus Navigation System."
+  },
+  {
+    "type": "paragraph",
+    "index": 807,
+    "text": "Scribd."
+  },
+  {
+    "type": "paragraph",
+    "index": 809,
+    "text": "https://www.scribd.com/document/676591127/Smart-Campus-"
+  },
+  {
+    "type": "paragraph",
+    "index": 810,
+    "text": "Navigation-System?v=0.261"
+  },
+  {
+    "type": "paragraph",
+    "index": 812,
+    "text": "Sarpate, D., Futane, O., Narawade, V., Dhole, P., & Bhandare, H. (2024). Campus"
+  },
+  {
+    "type": "paragraph",
+    "index": 813,
+    "text": "Indoor Navigation System. Arificial Intelligence & Data Science Engineering, Zeal College of Engineering and Research, IJARESM."
+  },
+  {
+    "type": "paragraph",
+    "index": 815,
+    "text": "https://www.ijaresm.com/uploaded_files/document_file/Prof._Dikshendra_Sar pate_XQsS.pdf"
+  },
+  {
+    "type": "paragraph",
+    "index": 855,
+    "text": "CURRICULUM"
+  },
+  {
+    "type": "paragraph",
+    "index": 856,
+    "text": "VITAE"
+  },
+  {
+    "type": "paragraph",
+    "index": 884,
+    "text": "CURRICULUM VITAE"
+  },
+  {
+    "type": "paragraph",
+    "index": 886,
+    "text": "Full Name:"
+  },
+  {
+    "type": "paragraph",
+    "index": 887,
+    "text": "Date of Birth:"
+  },
+  {
+    "type": "paragraph",
+    "index": 888,
+    "text": "Place of Birth:"
+  },
+  {
+    "type": "paragraph",
+    "index": 889,
+    "text": "Civil Status:"
+  },
+  {
+    "type": "paragraph",
+    "index": 890,
+    "text": "Nationality:"
+  },
+  {
+    "type": "paragraph",
+    "index": 891,
+    "text": "Religion:"
+  },
+  {
+    "type": "paragraph",
+    "index": 892,
+    "text": "Home Address:"
+  },
+  {
+    "type": "paragraph",
+    "index": 893,
+    "text": "Contact Number:"
+  },
+  {
+    "type": "paragraph",
+    "index": 894,
+    "text": "Email Address:"
+  },
+  {
+    "type": "paragraph",
+    "index": 895,
+    "text": "Student ID Number:"
+  },
+  {
+    "type": "paragraph",
+    "index": 896,
+    "text": "Course and Year:"
+  },
+  {
+    "type": "paragraph",
+    "index": 897,
+    "text": "Department:"
+  },
+  {
+    "type": "paragraph",
+    "index": 898,
+    "text": "Institution: South East Asian Institute of Technology, Inc."
+  },
+  {
+    "type": "paragraph",
+    "index": 899,
+    "text": "Primary Education:"
+  },
+  {
+    "type": "paragraph",
+    "index": 900,
+    "text": "Secondary Education:"
+  },
+  {
+    "type": "paragraph",
+    "index": 901,
+    "text": "Senior High School:"
+  },
+  {
+    "type": "paragraph",
+    "index": 902,
+    "text": "Tertiary (Current):\tBS Information Technology, SEAIT"
+  },
+  {
+    "type": "paragraph",
+    "index": 903,
+    "text": "Relevant Skills:"
+  },
+  {
+    "type": "paragraph",
+    "index": 905,
+    "text": "Full Name:"
+  },
+  {
+    "type": "paragraph",
+    "index": 906,
+    "text": "Date of Birth:"
+  },
+  {
+    "type": "paragraph",
+    "index": 907,
+    "text": "Place of Birth:"
+  },
+  {
+    "type": "paragraph",
+    "index": 908,
+    "text": "Civil Status:"
+  },
+  {
+    "type": "paragraph",
+    "index": 909,
+    "text": "Nationality:"
+  },
+  {
+    "type": "paragraph",
+    "index": 910,
+    "text": "Religion:"
+  },
+  {
+    "type": "paragraph",
+    "index": 911,
+    "text": "Home Address:"
+  },
+  {
+    "type": "paragraph",
+    "index": 912,
+    "text": "Contact Number:"
+  },
+  {
+    "type": "paragraph",
+    "index": 913,
+    "text": "Email Address:"
+  },
+  {
+    "type": "paragraph",
+    "index": 914,
+    "text": "Student ID Number:"
+  },
+  {
+    "type": "paragraph",
+    "index": 915,
+    "text": "Course and Year:"
+  },
+  {
+    "type": "paragraph",
+    "index": 916,
+    "text": "Department:"
+  },
+  {
+    "type": "paragraph",
+    "index": 917,
+    "text": "Institution:\tSouth East Asian Institute of Technology, Inc."
+  },
+  {
+    "type": "paragraph",
+    "index": 918,
+    "text": "Primary Education:"
+  },
+  {
+    "type": "paragraph",
+    "index": 919,
+    "text": "Secondary Education:"
+  },
+  {
+    "type": "paragraph",
+    "index": 920,
+    "text": "Senior High School:"
+  },
+  {
+    "type": "paragraph",
+    "index": 921,
+    "text": "Tertiary (Current):\tBS Information Technology, SEAIT"
+  },
+  {
+    "type": "paragraph",
+    "index": 923,
+    "text": "Full Name:"
+  },
+  {
+    "type": "paragraph",
+    "index": 924,
+    "text": "Date of Birth:"
+  },
+  {
+    "type": "paragraph",
+    "index": 925,
+    "text": "Place of Birth:"
+  },
+  {
+    "type": "paragraph",
+    "index": 926,
+    "text": "Civil Status:"
+  },
+  {
+    "type": "paragraph",
+    "index": 927,
+    "text": "Nationality:"
+  },
+  {
+    "type": "paragraph",
+    "index": 928,
+    "text": "Religion:"
+  },
+  {
+    "type": "paragraph",
+    "index": 929,
+    "text": "Home Address:"
+  },
+  {
+    "type": "paragraph",
+    "index": 930,
+    "text": "Contact Number:"
+  },
+  {
+    "type": "paragraph",
+    "index": 931,
+    "text": "Email Address:"
+  },
+  {
+    "type": "paragraph",
+    "index": 932,
+    "text": "Student ID Number:"
+  },
+  {
+    "type": "paragraph",
+    "index": 933,
+    "text": "Course and Year:"
+  },
+  {
+    "type": "paragraph",
+    "index": 934,
+    "text": "Department:"
+  },
+  {
+    "type": "paragraph",
+    "index": 935,
+    "text": "Institution: South East Asian Institute of Technology, Inc."
+  },
+  {
+    "type": "paragraph",
+    "index": 936,
+    "text": "Primary Education:"
+  },
+  {
+    "type": "paragraph",
+    "index": 937,
+    "text": "Secondary Education:"
+  },
+  {
+    "type": "paragraph",
+    "index": 938,
+    "text": "Senior High School:"
+  },
+  {
+    "type": "paragraph",
+    "index": 939,
+    "text": "Tertiary (Current): BS Information Technology, SEAIT"
+  },
+  {
+    "type": "paragraph",
+    "index": 959,
+    "text": "APPENDIX D"
+  },
+  {
+    "type": "paragraph",
+    "index": 960,
+    "text": "(Map of Research Environment)"
+  },
+  {
+    "type": "paragraph",
+    "index": 971,
+    "text": "Map of Research Environment"
+  },
+  {
+    "type": "paragraph",
+    "index": 987,
+    "text": "Figure??"
+  }
+]
