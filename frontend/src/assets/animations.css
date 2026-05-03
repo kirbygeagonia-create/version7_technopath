@@ -1,18 +1,504 @@
-/*
-  Animata staggered-card pattern (github.com/codse/animata)
-  Original: Framer Motion AnimatePresence + motion.li with delay: i * 0.06
-  Ported to: CSS animation-delay equivalents
-*/
-@keyframes animataStaggerIn {
-  from { opacity: 0; transform: translateY(12px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+/* ============================================================
+   TECHNOPATH — ANIMATION & TRANSITION SYSTEM
+   Covers: page transitions, card entrances, button feedback,
+           bottom nav, modals, headers, skeletons, ripples,
+           scroll reveals, and micro-interactions.
+   Respects prefers-reduced-motion automatically.
+   ============================================================ */
+
+/* ── 1. Timing & easing tokens ───────────────────────────── */
+:root {
+  --anim-fast:    120ms;
+  --anim-normal:  240ms;
+  --anim-slow:    380ms;
+  --anim-slower:  520ms;
+
+  /* Named easings */
+  --ease-snap:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-bounce:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-decel:   cubic-bezier(0, 0, 0.2, 1);
+  --ease-accel:   cubic-bezier(0.4, 0, 1, 1);
+  --ease-standard:cubic-bezier(0.4, 0, 0.2, 1);
 }
-.stagger-card { opacity: 0; animation: animataStaggerIn 0.35s cubic-bezier(0,0,0.2,1) forwards; }
+
+/* ── 2. Page route transitions ────────────────────────────── */
+/* Used by Vue Router <Transition name="page-slide"> */
+
+.page-slide-enter-active {
+  transition: opacity var(--anim-normal) var(--ease-decel),
+              transform var(--anim-normal) var(--ease-decel);
+  will-change: opacity, transform;
+}
+
+.page-slide-leave-active {
+  transition: opacity var(--anim-fast) var(--ease-accel),
+              transform var(--anim-fast) var(--ease-accel);
+  will-change: opacity, transform;
+}
+
+.page-slide-enter-from {
+  opacity: 0;
+  transform: translateY(14px) scale(0.99);
+}
+
+.page-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.99);
+}
+
+/* ── 3. Fade transition (modals, overlays) ────────────────── */
+.fade-enter-active { transition: opacity var(--anim-normal) var(--ease-decel); }
+.fade-leave-active { transition: opacity var(--anim-fast)   var(--ease-accel); }
+.fade-enter-from,
+.fade-leave-to     { opacity: 0; }
+
+/* ── 4. Slide-up sheet (bottom sheets, menus) ─────────────── */
+.slide-up-enter-active {
+  transition: opacity var(--anim-normal) var(--ease-decel),
+              transform var(--anim-normal) var(--ease-smooth);
+}
+.slide-up-leave-active {
+  transition: opacity var(--anim-fast) var(--ease-accel),
+              transform var(--anim-fast) var(--ease-accel);
+}
+.slide-up-enter-from { opacity: 0; transform: translateY(100%); }
+.slide-up-leave-to   { opacity: 0; transform: translateY(100%); }
+
+/* ── 5. Scale-in (dialogs, popovers) ──────────────────────── */
+.scale-enter-active {
+  transition: opacity var(--anim-normal) var(--ease-decel),
+              transform var(--anim-normal) var(--ease-bounce);
+}
+.scale-leave-active {
+  transition: opacity var(--anim-fast) var(--ease-accel),
+              transform var(--anim-fast) var(--ease-accel);
+}
+.scale-enter-from { opacity: 0; transform: scale(0.88); }
+.scale-leave-to   { opacity: 0; transform: scale(0.92); }
+
+/* ── 6. Keyframe library ──────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.92) translateY(8px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(0.6); }
+  70%  { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounceIn {
+  0%   { opacity: 0; transform: scale(0.3); }
+  50%  { opacity: 1; transform: scale(1.05); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+
+@keyframes navBounce {
+  0%   { transform: scale(1)    translateY(0);    }
+  40%  { transform: scale(1.28) translateY(-4px); }
+  100% { transform: scale(1)    translateY(0);    }
+}
+
+@keyframes headerSlideDown {
+  from { opacity: 0; transform: translateY(-100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes badgePop {
+  0%   { transform: scale(0); }
+  60%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+@keyframes skeletonWave {
+  0%   { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+/* ── 7. Stagger card entrance ─────────────────────────────── */
+/* Add class="stagger-card" to list items for cascade entrance */
+
+.stagger-card {
+  opacity: 0;
+  animation: fadeInUp var(--anim-normal) var(--ease-smooth) forwards;
+}
+
 .stagger-card:nth-child(1)  { animation-delay:   0ms; }
-.stagger-card:nth-child(2)  { animation-delay:  60ms; }
-.stagger-card:nth-child(3)  { animation-delay: 120ms; }
-.stagger-card:nth-child(4)  { animation-delay: 180ms; }
-.stagger-card:nth-child(5)  { animation-delay: 240ms; }
-.stagger-card:nth-child(6)  { animation-delay: 300ms; }
-.stagger-card:nth-child(7)  { animation-delay: 360ms; }
-.stagger-card:nth-child(8)  { animation-delay: 420ms; }
+.stagger-card:nth-child(2)  { animation-delay:  50ms; }
+.stagger-card:nth-child(3)  { animation-delay: 100ms; }
+.stagger-card:nth-child(4)  { animation-delay: 150ms; }
+.stagger-card:nth-child(5)  { animation-delay: 200ms; }
+.stagger-card:nth-child(6)  { animation-delay: 250ms; }
+.stagger-card:nth-child(7)  { animation-delay: 300ms; }
+.stagger-card:nth-child(8)  { animation-delay: 350ms; }
+.stagger-card:nth-child(9)  { animation-delay: 400ms; }
+.stagger-card:nth-child(10) { animation-delay: 450ms; }
+
+/* ── 8. Utility animation classes ─────────────────────────── */
+
+.anim-fade-in       { animation: fadeIn      var(--anim-normal) var(--ease-decel) both; }
+.anim-fade-in-up    { animation: fadeInUp    var(--anim-normal) var(--ease-smooth) both; }
+.anim-fade-in-down  { animation: fadeInDown  var(--anim-normal) var(--ease-smooth) both; }
+.anim-fade-in-scale { animation: fadeInScale var(--anim-normal) var(--ease-bounce) both; }
+.anim-pop-in        { animation: popIn       var(--anim-slow)   var(--ease-bounce) both; }
+.anim-slide-left    { animation: slideInLeft var(--anim-normal) var(--ease-smooth) both; }
+.anim-slide-right   { animation: slideInRight var(--anim-normal) var(--ease-smooth) both; }
+
+/* Delay helpers */
+.anim-delay-1 { animation-delay:  80ms; }
+.anim-delay-2 { animation-delay: 160ms; }
+.anim-delay-3 { animation-delay: 240ms; }
+.anim-delay-4 { animation-delay: 320ms; }
+.anim-delay-5 { animation-delay: 400ms; }
+
+/* ── 9. Button & interactive element micro-interactions ───── */
+
+/* Ripple effect — add .ripple-btn to any button */
+.ripple-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%);
+  transform: scale(0);
+  opacity: 0;
+  border-radius: inherit;
+  transition: transform 0.4s var(--ease-decel), opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.ripple-btn:active::after {
+  transform: scale(2.5);
+  opacity: 1;
+  transition: none;
+}
+
+/* Press feedback for all interactive elements */
+button:active:not(:disabled),
+[role="button"]:active:not(:disabled),
+.pressable:active {
+  transform: scale(0.96);
+  transition: transform var(--anim-fast) var(--ease-accel);
+}
+
+/* Hover lift for cards */
+.card-hover {
+  transition: transform var(--anim-normal) var(--ease-smooth),
+              box-shadow var(--anim-normal) var(--ease-smooth);
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-hover:active {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ── 10. Bottom navigation active animation ───────────────── */
+
+.app-nav-item.app-active .material-icons {
+  animation: navBounce var(--anim-slow) var(--ease-bounce) forwards;
+}
+
+/* Active indicator pill slide-in */
+.app-nav-item.app-active::before {
+  animation: fadeInDown var(--anim-normal) var(--ease-bounce) both;
+}
+
+/* ── 11. Header entrance ──────────────────────────────────── */
+
+.settings-header,
+.home-header,
+.nav-header-bar {
+  animation: headerSlideDown var(--anim-slow) var(--ease-smooth) both;
+}
+
+/* ── 12. Notification badge pop ───────────────────────────── */
+
+.nav-badge,
+.home-header-badge,
+.fab-badge {
+  animation: badgePop var(--anim-slow) var(--ease-bounce) both;
+}
+
+/* ── 13. Skeleton loading shimmer ─────────────────────────── */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-2) 25%,
+    var(--color-surface)   50%,
+    var(--color-surface-2) 75%
+  );
+  background-size: 400px 100%;
+  animation: skeletonWave 1.4s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+/* ── 14. Highlight card entrance ──────────────────────────── */
+
+.highlight-card {
+  animation: fadeInScale var(--anim-slow) var(--ease-smooth) both;
+}
+
+.highlight-card:nth-child(1) { animation-delay:  80ms; }
+.highlight-card:nth-child(2) { animation-delay: 160ms; }
+.highlight-card:nth-child(3) { animation-delay: 240ms; }
+.highlight-card:nth-child(4) { animation-delay: 320ms; }
+
+/* ── 15. Announcement card entrance ──────────────────────── */
+
+.announcement-card {
+  animation: fadeInUp var(--anim-normal) var(--ease-smooth) both;
+}
+
+.announcement-card:nth-child(1) { animation-delay:  60ms; }
+.announcement-card:nth-child(2) { animation-delay: 120ms; }
+.announcement-card:nth-child(3) { animation-delay: 180ms; }
+
+/* ── 16. Search bar focus animation ───────────────────────── */
+
+.home-header-search-inner {
+  transition: box-shadow var(--anim-normal) var(--ease-smooth),
+              border-color var(--anim-normal) var(--ease-smooth),
+              background var(--anim-normal) var(--ease-smooth);
+}
+
+.home-header-search-inner.is-focused {
+  animation: none; /* handled by CSS transition above */
+}
+
+/* ── 17. Search suggestions dropdown ─────────────────────── */
+
+.home-search-suggestions,
+.unified-suggestions {
+  animation: fadeInScale var(--anim-fast) var(--ease-bounce) both;
+  transform-origin: top center;
+}
+
+.suggestion-item {
+  transition: background var(--anim-fast) var(--ease-decel),
+              transform  var(--anim-fast) var(--ease-smooth);
+}
+
+.suggestion-item:hover {
+  transform: translateX(3px);
+}
+
+/* ── 18. Map controls entrance ────────────────────────────── */
+
+.map-controls,
+.home-map-controls {
+  animation: slideInRight var(--anim-slow) var(--ease-bounce) both;
+  animation-delay: 300ms;
+}
+
+/* ── 19. Bottom sheet / menu sheet ────────────────────────── */
+
+.menu-sheet {
+  animation: slideUpSheet var(--anim-slow) var(--ease-smooth) both;
+}
+
+@keyframes slideUpSheet {
+  from { transform: translateY(100%); opacity: 0.6; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.menu-sheet-overlay {
+  animation: fadeIn var(--anim-normal) var(--ease-decel) both;
+}
+
+/* ── 20. Modal dialog ─────────────────────────────────────── */
+
+.dialog {
+  animation: fadeInScale var(--anim-normal) var(--ease-bounce) both;
+}
+
+.modal-overlay {
+  animation: fadeIn var(--anim-normal) var(--ease-decel) both;
+}
+
+/* ── 21. Sidebar nav item hover ───────────────────────────── */
+
+.app-side-nav-item {
+  transition: background var(--anim-fast) var(--ease-decel),
+              color       var(--anim-fast) var(--ease-decel),
+              transform   var(--anim-fast) var(--ease-smooth);
+}
+
+.app-side-nav-item:hover {
+  transform: translateX(3px);
+}
+
+/* ── 22. Settings / profile list items ────────────────────── */
+
+.settings-item,
+.profile-item,
+.infoview-item-card,
+.favorites-item,
+.notifications-card {
+  transition: background  var(--anim-fast) var(--ease-decel),
+              box-shadow  var(--anim-fast) var(--ease-decel),
+              transform   var(--anim-fast) var(--ease-smooth),
+              border-color var(--anim-fast) var(--ease-decel);
+}
+
+.infoview-item-card:hover,
+.favorites-item:hover {
+  transform: translateY(-2px);
+}
+
+/* ── 23. Chatbot message entrance ─────────────────────────── */
+
+.chatbot-message-wrapper.bot {
+  animation: slideInLeft var(--anim-normal) var(--ease-smooth) both;
+}
+
+.chatbot-message-wrapper.user {
+  animation: slideInRight var(--anim-normal) var(--ease-smooth) both;
+}
+
+/* ── 24. Notification card entrance ──────────────────────── */
+
+.notifications-card {
+  animation: fadeInUp var(--anim-normal) var(--ease-smooth) both;
+}
+
+/* ── 25. Splash screen ────────────────────────────────────── */
+
+.splash-logo-container {
+  animation: bounceIn var(--anim-slower) var(--ease-bounce) both;
+}
+
+.splash-title {
+  animation: fadeInUp var(--anim-normal) var(--ease-smooth) both;
+  animation-delay: 300ms;
+}
+
+.splash-subtitle {
+  animation: fadeInUp var(--anim-normal) var(--ease-smooth) both;
+  animation-delay: 420ms;
+}
+
+/* ── 26. Icon button press feedback ──────────────────────── */
+
+.home-header-icon-btn,
+.nav-icon-btn,
+.map-ctrl-btn,
+.mapview-zoom-btn {
+  transition: background  var(--anim-fast) var(--ease-decel),
+              transform   var(--anim-fast) var(--ease-bounce),
+              border-color var(--anim-fast) var(--ease-decel);
+}
+
+/* ── 27. Course / filter chips ────────────────────────────── */
+
+.course-chip,
+.mapview-chip,
+.mapview-floor-chip,
+.feedback-chip {
+  transition: background   var(--anim-fast) var(--ease-decel),
+              border-color var(--anim-fast) var(--ease-decel),
+              color        var(--anim-fast) var(--ease-decel),
+              transform    var(--anim-fast) var(--ease-bounce);
+}
+
+.course-chip:hover,
+.mapview-chip:hover,
+.feedback-chip:hover {
+  transform: translateY(-1px);
+}
+
+/* ── 28. Gallery image hover ──────────────────────────────── */
+
+.gallery-item {
+  transition: transform var(--anim-normal) var(--ease-smooth),
+              box-shadow var(--anim-normal) var(--ease-smooth);
+}
+
+.gallery-item:hover {
+  transform: scale(1.025) translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── 29. Scroll-reveal utility ────────────────────────────── */
+/* Add class="reveal" to any element — JS adds "revealed" when in viewport */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--anim-slow) var(--ease-smooth),
+              transform var(--anim-slow) var(--ease-smooth);
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── 30. Respect prefers-reduced-motion ───────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration:       0.01ms !important;
+    animation-iteration-count: 1     !important;
+    transition-duration:      0.01ms !important;
+    scroll-behavior:          auto   !important;
+  }
+}

@@ -18,22 +18,30 @@ services:
         sync: false   # Set manually in Render dashboard — use PostgreSQL
       - key: ALLOWED_HOSTS
         value: ".onrender.com"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: FLASK_CHATBOT_URL
+        value: https://technopath-chatbot.onrender.com
 
   # Flask Chatbot AI Service
   - type: web
     name: technopath-chatbot
     runtime: python
     plan: free
-    rootDir: chatbot_flask
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 60
+    rootDir: .
+    buildCommand: pip install -r chatbot_flask/requirements.txt
+    startCommand: cd chatbot_flask && gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 60
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.0"
       - key: FLASK_DEBUG
         value: "false"
+      - key: DATABASE_URL
+        sync: false   # Set from your PostgreSQL database
       - key: OPENAI_API_KEY
         sync: false   # Set manually in Render dashboard — NEVER commit this key
+      - key: DJANGO_API_URL
+        value: https://technopath-backend.onrender.com
 
   # Vue 3 Frontend (Vite)
   - type: web

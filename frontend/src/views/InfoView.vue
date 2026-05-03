@@ -9,9 +9,8 @@
     </header>
 
     <div class="infoview-content">
-      <div v-if="loading" class="infoview-loading">
-        <div class="infoview-spinner"></div>
-        <p>Loading...</p>
+      <div v-if="loading" class="infoview-skeleton-wrapper">
+        <AppSkeleton :loading="loading" />
       </div>
 
       <div v-else-if="items.length === 0" class="infoview-empty">
@@ -98,6 +97,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import api from '../services/api.js'
+import AppSkeleton from '../components/AppSkeleton.vue'
 
 const router = useRouter()
 const route = useRoute()

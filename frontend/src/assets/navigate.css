@@ -20,24 +20,30 @@
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   padding-top: calc(var(--space-3) + var(--safe-top));
-  background: var(--color-primary);
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 60%, #E65100 100%);
   color: white;
   z-index: 20;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .navview-back-btn {
   width: 44px;
   height: 44px;
   border-radius: var(--radius-full);
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
   color: white;
-  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: background var(--duration-fast);
 }
+
+.navview-back-btn:hover { background: rgba(255,255,255,0.3); }
+
+/* Note: Navigate header brand styling is now in NavigateView.vue <style scoped> */
 
 .navview-title {
   flex: 1;
@@ -493,4 +499,146 @@ body.dark-mode .navview-marker-name {
   .navview-map-img {
     max-width: 1200px;
   }
+}
+
+/* ── NavigateView Zoom Button Controls ────────────────────── */
+
+.navview-zoom-controls {
+  position: absolute;
+  right: var(--space-4);
+  bottom: clamp(80px, 12vh, 130px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  z-index: 20;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+}
+
+.navview-zoom-controls .navview-zoom-btn {
+  width:  clamp(44px, 6vw, 52px);
+  height: clamp(44px, 6vw, 52px);
+  background: var(--color-bg);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  transition: background var(--duration-fast) var(--ease-out),
+              transform  var(--duration-fast) var(--ease-spring);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.navview-zoom-controls .navview-zoom-btn:hover  { background: var(--color-surface); }
+.navview-zoom-controls .navview-zoom-btn:active {
+  transform: scale(0.9);
+  background: var(--color-primary-light);
+}
+
+.navview-zoom-controls .navview-zoom-btn .material-icons {
+  font-size: clamp(20px, 2.5vw, 24px);
+}
+
+.navview-zoom-controls .navview-zoom-reset .material-icons {
+  font-size: clamp(18px, 2.2vw, 22px);
+  color: var(--color-primary);
+}
+
+.navview-zoom-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+/* Touch-friendly: make the svg-map-container grab cursor on touch */
+.svg-map-container {
+  touch-action: none;   /* let JS handle all touch events */
+  cursor: grab;
+  user-select: none;
+}
+
+.svg-map-container.is-dragging {
+  cursor: grabbing;
+}
+
+/* ── In-map Controls (zoom + rotate) ─────────────────────── */
+/* Positioned inside .svg-map-container, bottom-right corner  */
+
+.map-controls {
+  position: absolute;
+  bottom: clamp(12px, 2vh, 20px);
+  right: clamp(12px, 2vw, 20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  z-index: 30;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+  /* Ensure it sits on top of the SVG */
+  pointer-events: all;
+}
+
+.map-ctrl-btn {
+  width:  clamp(40px, 5.5vw, 48px);
+  height: clamp(40px, 5.5vw, 48px);
+  background: var(--color-bg);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  transition: background var(--duration-fast) var(--ease-out),
+              transform  var(--duration-fast) var(--ease-spring);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  /* Override global button min-height so the panel stays compact */
+  min-height: unset;
+  min-width:  unset;
+}
+
+.map-ctrl-btn:hover  { background: var(--color-surface); }
+.map-ctrl-btn:active {
+  transform: scale(0.88);
+  background: var(--color-primary-light);
+}
+
+.map-ctrl-btn .material-icons {
+  font-size: clamp(18px, 2.2vw, 22px);
+  color: var(--color-text-primary);
+}
+
+/* Reset button — orange icon to stand out */
+.map-ctrl-reset .material-icons {
+  color: var(--color-primary);
+}
+
+/* Thin divider between buttons */
+.map-ctrl-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+/* Dark mode */
+body.dark-mode .map-controls {
+  border-color: var(--color-border);
+}
+
+body.dark-mode .map-ctrl-btn {
+  background: var(--color-surface);
+}
+
+body.dark-mode .map-ctrl-btn:hover {
+  background: var(--color-surface-2);
 }

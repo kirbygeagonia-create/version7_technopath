@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from django.db.models import Count, Avg, Q
 from django.utils import timezone
 from datetime import timedelta
+import os
 import re
 from collections import Counter
 
@@ -79,6 +80,28 @@ class FAQSuggestionDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = FAQSuggestion.objects.all()
     serializer_class = FAQSuggestionSerializer
     permission_classes = [ReadOnlyOrSuperAdmin]
+
+
+class ChatLogCreateView(APIView):
+    """Receives chat logs from Flask chatbot — no auth required (server-to-server)."""
+    permission_classes = []
+
+    def post(self, request):
+        user_query = request.data.get('user_query', '').strip()
+        ai_response = request.data.get('ai_response', '').strip()
+        mode = request.data.get('mode', 'online')
+        is_successful = request.data.get('is_successful', True)
+
+        if not user_query:
+            return Response({'error': 'user_query is required'}, status=400)
+
+        AIChatLog.objects.create(
+            user_query=user_query,
+            ai_response=ai_response,
+            mode=mode,
+            is_successful=is_successful
+        )
+        return Response({'status': 'logged'}, status=201)
 
 
 class FAQMakerAnalyzeView(APIView):
@@ -232,15 +255,29 @@ class FAQMakerAnalyzeView(APIView):
             return 'general'
     
     def _generate_answer_template(self, category, question):
-        """Generate answer template based on category"""
-        templates = {
-            'location': f"The location you're asking about can be found on the campus map. Please check the map in the app or ask for specific directions to navigate there.\n\n[Admin: Please verify the exact location and provide specific directions]",
-            'schedule': f"Please check the official schedule or contact the relevant office for the most up-to-date timing information.\n\n[Admin: Please add specific schedule details]",
-            'academic': f"For academic-related inquiries, please contact the Registrar's Office or your program coordinator.\n\n[Admin: Please provide specific academic information]",
-            'services': f"This service-related inquiry should be directed to the appropriate campus office.\n\n[Admin: Please specify which office handles this service]",
-            'general': f"Thank you for your question. Please contact the campus information desk for assistance.\n\n[Admin: Please provide a complete answer]"
-        }
-        return templates.get(category, templates['general'])
+        """Generate answer using OpenAI instead of placeholder templates"""
+        openai_key = os.getenv('OPENAI_API_KEY', '')
+        if not openai_key:
+            return f"[Please write an answer for: {question}]"
+        try:
+            from openai import OpenAI
+            ai = OpenAI(api_key=openai_key)
+            ctx = """You write FAQ answers for TechnoPath, a campus guide app for SEAIT (South East Asian Institute of Technology), Tupi, South Cotabato.
+Campus facts: MST Building (4F, center) — CL1-CL10 labs on 3F. JST Building (4F, back). RST Building (3F, left of gate) — Registrar on 1F, Guidance/HR/Safety on 2F, IT on 3F. Library: ground floor left wing, Mon-Fri 8AM-6PM, Sat 8AM-12PM. Cafeteria between MST and Gymnasium, open 7AM-6PM.
+Write a clear, specific 2-3 sentence answer. No placeholders. No [Admin:...] text. Write a complete, usable answer."""
+            resp = ai.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": ctx},
+                    {"role": "user", "content": f"Write an FAQ answer for this student question: {question}"}
+                ],
+                max_tokens=120,
+                temperature=0.4
+            )
+            return resp.choices[0].message.content.strip()
+        except Exception as e:
+            print(f"[FAQMaker] OpenAI error: {e}")
+            return f"[Please write an answer for: {question}]"
 
 
 class FAQSuggestionApproveView(APIView):

@@ -20,51 +20,83 @@
         No paths created yet. Click "Create New Path" to start.
       </div>
 
-      <div v-else class="admin-path-list">
+      <div v-else class="admin-path-list-grouped">
         <div 
-          v-for="path in paths" 
-          :key="path.id"
-          class="admin-path-item"
-          :class="{ 'is-editing': editingPathId === path.id }"
-          @click="editPath(path.id)"
+          v-for="(group, fromLocation) in groupedPaths" 
+          :key="fromLocation"
+          class="path-group"
         >
-          <div class="admin-path-info">
-            <h4>{{ path.name }}</h4>
-            <p v-if="path.description">{{ path.description }}</p>
-            <div class="admin-path-route" v-if="path.elementIds && path.elementIds.length > 0 && path.elementIds[0]">
-              <span class="route-from">FROM: {{ path.elementIds[0] }}</span>
-              <span class="route-arrow">→</span>
-              <span class="route-to" v-if="path.elementIds.length > 1 && path.elementIds[path.elementIds.length - 1]">
-                TO: {{ path.elementIds[path.elementIds.length - 1] }}
+          <!-- Group Header - Click to expand/collapse -->
+          <div 
+            class="path-group-header"
+            @click="toggleGroup(fromLocation)"
+            :class="{ 'expanded': expandedGroups[fromLocation] }"
+          >
+            <div class="path-group-header-left">
+              <span class="material-icons expand-icon">
+                {{ expandedGroups[fromLocation] ? 'expand_less' : 'expand_more' }}
               </span>
-              <span class="route-to" v-else>No destination</span>
+              <span class="route-from-label">FROM:</span>
+              <span class="route-from-value">{{ fromLocation }}</span>
+              <span class="path-count">({{ group.paths.length }} path{{ group.paths.length > 1 ? 's' : '' }})</span>
             </div>
-            <div class="admin-path-route" v-else-if="path.from && path.to">
-              <span class="route-from">FROM: {{ path.from }}</span>
-              <span class="route-arrow">→</span>
-              <span class="route-to">TO: {{ path.to }}</span>
-            </div>
-            <div class="admin-path-meta">
-              <span>{{ path.elementIds.length }} stops</span>
-              <span v-if="path.facility">{{ path.facility }}</span>
-              <span v-if="path.room">Room: {{ path.room }}</span>
-              <span v-if="path.floor">Floor: {{ path.floor }}</span>
-              <span>Updated: {{ formatDate(path.updatedAt) }}</span>
+            <div class="path-group-header-actions">
+              <button 
+                class="admin-icon-btn-small add-btn" 
+                @click.stop="createPathFrom(fromLocation)"
+                title="Add new path from this location"
+              >
+                <span class="material-icons">add</span>
+              </button>
+              <button 
+                class="admin-icon-btn-small delete-group-btn" 
+                @click.stop="deleteAllPathsInGroup(fromLocation, group.paths.length)"
+                title="Delete all paths from this location"
+              >
+                <span class="material-icons">delete_sweep</span>
+              </button>
             </div>
           </div>
-          <div class="admin-path-actions">
-            <button class="admin-icon-btn" @click.stop="navigateToPath(path.id)" title="Navigate">
-              <span class="material-icons">navigation</span>
-            </button>
-            <button class="admin-icon-btn" @click.stop="previewPath(path.id)" title="Preview">
-              <span class="material-icons">visibility</span>
-            </button>
-            <button class="admin-icon-btn" @click.stop="duplicatePath(path.id)" title="Duplicate">
-              <span class="material-icons">content_copy</span>
-            </button>
-            <button class="admin-icon-btn admin-icon-btn-danger" @click.stop="deletePath(path.id)" title="Delete">
-              <span class="material-icons">delete</span>
-            </button>
+          
+          <!-- Group Content - Destinations -->
+          <div v-show="expandedGroups[fromLocation]" class="path-group-content">
+            <div 
+              v-for="path in group.paths" 
+              :key="path.id"
+              class="admin-path-item"
+              :class="{ 'is-editing': editingPathId === path.id }"
+            >
+              <div class="admin-path-info" @click="editPath(path.id)">
+                <h4>{{ path.name }}</h4>
+                <p v-if="path.description">{{ path.description }}</p>
+                <div class="admin-path-route">
+                  <span class="route-arrow">→</span>
+                  <span class="route-to" v-if="getDestination(path)">
+                    TO: {{ getDestination(path) }}
+                  </span>
+                  <span class="route-to" v-else>No destination</span>
+                </div>
+                <div class="admin-path-meta">
+                  <span>{{ path.elementIds?.length || 0 }} stops</span>
+                  <span v-if="path.floor">Floor: {{ path.floor }}</span>
+                  <span>Updated: {{ formatDate(path.updatedAt) }}</span>
+                </div>
+              </div>
+              <div class="admin-path-actions">
+                <button class="admin-icon-btn" @click.stop="navigateToPath(path.id)" title="Navigate">
+                  <span class="material-icons">navigation</span>
+                </button>
+                <button class="admin-icon-btn" @click.stop="previewPath(path.id)" title="Preview">
+                  <span class="material-icons">visibility</span>
+                </button>
+                <button class="admin-icon-btn" @click.stop="duplicatePath(path.id)" title="Duplicate">
+                  <span class="material-icons">content_copy</span>
+                </button>
+                <button class="admin-icon-btn admin-icon-btn-danger" @click.stop="deletePath(path.id)" title="Delete">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -101,37 +133,15 @@
           ></textarea>
         </div>
 
-        <div class="admin-form-row">
-          <div class="admin-form-group">
-            <label>Facility</label>
-            <input 
-              v-model="editForm.facility" 
-              type="text" 
-              placeholder="e.g., SEAIT Building"
-              class="admin-input"
-            >
-          </div>
-
-          <div class="admin-form-group">
-            <label>Room</label>
-            <input 
-              v-model="editForm.room" 
-              type="text" 
-              placeholder="e.g., Room 101"
-              class="admin-input"
-            >
-          </div>
-
-          <div class="admin-form-group">
-            <label>Floor</label>
-            <input 
-              v-model.number="editForm.floor" 
-              type="number" 
-              placeholder="e.g., 1"
-              min="1"
-              class="admin-input"
-            >
-          </div>
+        <div class="admin-form-group">
+          <label>Floor</label>
+          <input 
+            v-model.number="editForm.floor" 
+            type="number" 
+            placeholder="e.g., 1"
+            min="1"
+            class="admin-input"
+          >
         </div>
 
         <div class="admin-form-group">
@@ -578,6 +588,7 @@ import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import pathManager from '../../services/pathManager.js'
 import api from '../../services/api.js'
+import { showToast } from '../../services/toast.js'
 
 const router = useRouter()
 
@@ -616,23 +627,47 @@ const viewBoxY = ref(0)
 const viewBoxWidth = ref(3306)
 const viewBoxHeight = ref(7159)
 
-// Facility/Room Data for Path Stops
-const facilities = ref([])
-const rooms = ref([])
-
 // Edit form
 const editForm = ref({
   name: '',
   description: '',
-  facility: '',
-  room: '',
   floor: 1,
   elementIds: []
 })
 
+// Grouped paths state - track which From groups are expanded
+const expandedGroups = ref({})
+
 // Computed
 const isEditing = computed(() => editingPathId.value !== null)
 const previewPositions = ref([])
+
+// Group paths by their From location
+const groupedPaths = computed(() => {
+  const groups = {}
+  
+  paths.value.forEach(path => {
+    const fromLocation = getFromLocation(path)
+    if (!groups[fromLocation]) {
+      groups[fromLocation] = {
+        from: fromLocation,
+        paths: []
+      }
+    }
+    groups[fromLocation].paths.push(path)
+  })
+  
+  // Sort paths within each group by destination
+  Object.values(groups).forEach(group => {
+    group.paths.sort((a, b) => {
+      const destA = getDestination(a) || ''
+      const destB = getDestination(b) || ''
+      return destA.localeCompare(destB)
+    })
+  })
+  
+  return groups
+})
 
 // Calculate connecting lines between consecutive points
 const connectingLines = computed(() => {
@@ -658,6 +693,75 @@ const previewPathPoints = computed(() => {
     .join(' ')
 })
 
+// Helper functions for grouped path view
+function getFromLocation(path) {
+  if (path.elementIds && path.elementIds.length > 0 && path.elementIds[0]) {
+    return path.elementIds[0]
+  }
+  if (path.from) {
+    return path.from
+  }
+  return 'Unknown'
+}
+
+function getDestination(path) {
+  if (path.elementIds && path.elementIds.length > 1) {
+    return path.elementIds[path.elementIds.length - 1]
+  }
+  if (path.to) {
+    return path.to
+  }
+  return null
+}
+
+function toggleGroup(fromLocation) {
+  expandedGroups.value[fromLocation] = !expandedGroups.value[fromLocation]
+}
+
+function createPathFrom(fromLocation) {
+  // Pre-fill the from location when creating a new path
+  isCreatingNew.value = true
+  editingPathId.value = 'new'
+  editForm.value = {
+    name: '',
+    description: '',
+    floor: 1,
+    elementIds: [fromLocation] // Pre-fill the starting point
+  }
+  // Auto-expand visual points
+  visualPoints.value = [{ x: 0, y: 0, id: fromLocation }]
+  nextTick(() => {
+    renderPathPreview()
+  })
+}
+
+// Delete all paths in a group
+async function deleteAllPathsInGroup(fromLocation, pathCount) {
+  const confirmMsg = pathCount === 1 
+    ? `Delete the 1 path from "${fromLocation}"?` 
+    : `Delete all ${pathCount} paths from "${fromLocation}"?\n\nThis action cannot be undone.`
+  
+  if (!confirm(confirmMsg)) return
+  
+  try {
+    const group = groupedPaths.value[fromLocation]
+    if (!group) return
+    
+    // Delete all paths in the group
+    for (const path of group.paths) {
+      await pathManager.deletePath(path.id)
+    }
+    
+    // Reload paths
+    await loadPaths()
+    
+    showToast(`Deleted ${pathCount} path${pathCount > 1 ? 's' : ''} from "${fromLocation}"`, 'success')
+  } catch (error) {
+    console.error('[AdminPathManager] Error deleting paths:', error)
+    showToast('Failed to delete paths', 'error')
+  }
+}
+
 // Load data
 const loadPaths = async () => {
   try {
@@ -674,8 +778,10 @@ const loadPaths = async () => {
 
 const loadMap = async () => {
   try {
-    const response = await fetch('SEAITMAP.svg')
-    if (!response.ok) throw new Error('Failed to load map')
+    const base = import.meta.env.BASE_URL || '/'
+    const svgUrl = base.endsWith('/') ? `${base}Map_labeled.svg` : `${base}/Map_labeled.svg`
+    const response = await fetch(svgUrl)
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
     
     const svgText = await response.text()
     const parser = new DOMParser()
@@ -694,31 +800,6 @@ const loadMap = async () => {
     console.error('Error loading map:', error)
   }
 }
-
-// Load facilities for path stop selection
-const loadFacilities = async () => {
-  try {
-    const response = await api.get('/facilities/')
-    facilities.value = response.data || []
-    console.log('[AdminPathManager] Loaded', facilities.value.length, 'facilities')
-  } catch (error) {
-    console.error('Error loading facilities:', error)
-    facilities.value = []
-  }
-}
-
-// Load rooms for path stop selection
-const loadRooms = async () => {
-  try {
-    const response = await api.get('/rooms/')
-    rooms.value = response.data || []
-    console.log('[AdminPathManager] Loaded', rooms.value.length, 'rooms')
-  } catch (error) {
-    console.error('Error loading rooms:', error)
-    rooms.value = []
-  }
-}
-
 
 // Update preview positions
 const updatePreview = () => {
@@ -909,8 +990,6 @@ const createNewPath = () => {
   editForm.value = {
     name: '',
     description: '',
-    facility: '',
-    room: '',
     floor: 1,
     elementIds: ['']
   }
@@ -928,8 +1007,6 @@ const editPath = (id) => {
   editForm.value = {
     name: path.name,
     description: path.description,
-    facility: path.facility || '',
-    room: path.room || '',
     floor: path.floor || 1,
     elementIds: [...(path.elementIds || [])]
   }
@@ -1002,8 +1079,6 @@ const savePath = async (stayOpen = false) => {
     const pathData = {
       name: editForm.value.name || 'Unnamed Path',
       description: editForm.value.description,
-      facility: editForm.value.facility,
-      room: editForm.value.room,
       floor: editForm.value.floor,
       from: elementIds[0] || '',
       to: elementIds[elementIds.length - 1] || '',
@@ -1027,12 +1102,12 @@ const savePath = async (stayOpen = false) => {
     console.log('[AdminPathManager] Paths reloaded, count:', paths.value.length)
     
     if (!stayOpen) {
+      showToast('Path saved successfully!', 'success')
       cancelEdit()
-      alert('Path saved successfully!')
     }
   } catch (error) {
     console.error('[AdminPathManager] Failed to save path:', error)
-    alert('Failed to save path: ' + error.message)
+    showToast('Failed to save path: ' + error.message, 'error')
   }
 }
 
@@ -1054,8 +1129,6 @@ const saveAndAddAnother = async () => {
   editForm.value = {
     name: '',
     description: '',
-    facility: '',
-    room: '',
     floor: 1,
     elementIds: fromLocation ? [fromLocation] : ['']
   }
@@ -1110,7 +1183,7 @@ const duplicatePath = async (id) => {
 const cancelEdit = () => {
   editingPathId.value = null
   isCreatingNew.value = false
-  editForm.value = { name: '', description: '', facility: '', room: '', floor: 1, elementIds: [] }
+  editForm.value = { name: '', description: '', floor: 1, elementIds: [] }
   previewPositions.value = []
   visualPoints.value = []
 }
@@ -1341,8 +1414,6 @@ onMounted(async () => {
   await loadGridSettings()
   await loadPaths()
   await loadMap()
-  await loadFacilities()
-  await loadRooms()
 })
 </script>
 
@@ -2050,5 +2121,151 @@ onMounted(async () => {
 
 .admin-interactive-preview:active {
   cursor: grabbing;
+}
+
+/* Grouped Path View Styles */
+.admin-path-list-grouped {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.path-group {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.path-group:hover {
+  border-color: #FF9800;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.1);
+}
+
+.path-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.path-group-header:hover {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+}
+
+.path-group-header.expanded {
+  border-bottom-color: #FF9800;
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+}
+
+.path-group-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.expand-icon {
+  font-size: 24px;
+  color: #666;
+  transition: transform 0.2s ease;
+}
+
+.path-group-header.expanded .expand-icon {
+  color: #FF9800;
+}
+
+.route-from-label {
+  font-size: 12px;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.route-from-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+}
+
+.path-count {
+  font-size: 13px;
+  color: #666;
+  background: #fff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+}
+
+.path-group-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.path-group-header-actions .admin-icon-btn-small {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.path-group-header-actions .admin-icon-btn-small:hover {
+  transform: scale(1.1);
+}
+
+.path-group-header-actions .add-btn {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.path-group-header-actions .add-btn:hover {
+  background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.path-group-header-actions .delete-group-btn {
+  background: linear-gradient(135deg, #ff5722 0%, #f44336 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+
+.path-group-header-actions .delete-group-btn:hover {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+}
+
+.path-group-header-actions .admin-icon-btn-small .material-icons {
+  font-size: 18px;
+}
+
+.path-group-content {
+  background: #fff;
+}
+
+.path-group-content .admin-path-item {
+  border-bottom: 1px solid #f0f0f0;
+  margin: 0;
+  border-radius: 0;
+}
+
+.path-group-content .admin-path-item:last-child {
+  border-bottom: none;
+}
+
+.path-group-content .admin-path-item:hover {
+  background: #fafafa;
 }
 </style>

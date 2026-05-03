@@ -1,4 +1,4 @@
-/* InfoView External Styles */
+/* InfoView External Styles — Redesigned */
 .infoview-view {
   height: 100%;
   display: flex;
@@ -8,14 +8,16 @@
 .infoview-top-bar {
   display: flex;
   align-items: center;
-  padding: 16px;
-  background: #FF9800;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 60%, #E65100 100%);
   color: white;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .infoview-back-btn {
-  background: rgba(255, 255, 255, 0.25);
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
   color: white;
   cursor: pointer;
   display: flex;
@@ -23,37 +25,28 @@
   justify-content: center;
   padding: 8px;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  transition: all 0.2s;
+  width: 40px; height: 40px;
+  transition: background var(--duration-fast);
 }
 
-.infoview-back-btn:hover {
-  background: rgba(255, 255, 255, 0.4);
-  border-color: rgba(255, 255, 255, 0.6);
-  transform: scale(1.05);
-}
-
-.infoview-back-btn .material-icons {
-  font-size: 22px;
-}
+.infoview-back-btn:hover { background: rgba(255,255,255,0.3); }
+.infoview-back-btn .material-icons { font-size: 22px; }
 
 .infoview-top-bar h1 {
   flex: 1;
   text-align: center;
   font-size: 18px;
+  font-weight: 700;
   margin: 0;
 }
 
-.infoview-spacer {
-  width: 40px;
-}
+.infoview-spacer { width: 40px; }
 
 .infoview-content {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-  background: #f5f5f5;
+  background: var(--color-surface);
 }
 
 .infoview-loading {
@@ -62,178 +55,199 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+  gap: 16px;
+  color: var(--color-text-secondary);
 }
 
 .infoview-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #ddd;
-  border-top-color: #FF9800;
+  width: 36px; height: 36px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .infoview-empty {
   text-align: center;
-  padding: 32px;
-  color: #999;
+  padding: 40px 20px;
+  color: var(--color-text-hint);
+  font-size: 14px;
 }
 
 .infoview-items-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .infoview-item-card {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 16px;
-  background: white;
-  border-radius: 12px;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xs);
+  transition: all var(--duration-fast);
+}
+
+.infoview-item-card:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: rgba(255,152,0,0.3);
+  transform: translateY(-1px);
 }
 
 .infoview-item-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #FFF3E0;
+  width: 46px; height: 46px;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-light);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.infoview-item-icon .material-icons {
-  font-size: 24px;
-  color: #FF9800;
-}
+.infoview-item-icon .material-icons { font-size: 22px; color: var(--color-primary); }
 
-.infoview-item-info {
-  flex: 1;
-}
+.infoview-item-info { flex: 1; min-width: 0; }
 
 .infoview-item-info h3 {
-  margin: 0 0 4px 0;
-  font-size: 16px;
+  margin: 0 0 3px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .infoview-item-code {
-  color: #FF9800;
+  color: var(--color-primary);
   font-size: 12px;
-  font-weight: 500;
-  margin: 0 0 4px 0;
+  font-weight: 600;
+  margin: 0 0 3px 0;
 }
 
 .infoview-item-description {
-  color: #666;
-  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
   margin: 0;
   line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .infoview-item-arrow {
-  color: #ccc;
+  color: var(--color-border);
   font-size: 20px;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 40px; min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
+/* Modal */
 .infoview-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 16px;
+  backdrop-filter: blur(2px);
 }
 
 .infoview-detail-modal {
-  background: white;
-  border-radius: 16px;
+  background: var(--color-bg);
+  border-radius: var(--radius-xl);
   width: 100%;
-  max-width: 400px;
-  max-height: 80vh;
+  max-width: 420px;
+  max-height: 82vh;
   overflow-y: auto;
+  box-shadow: var(--shadow-xl);
 }
 
 .infoview-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
-  border-bottom: 1px solid #eee;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .infoview-modal-header h2 {
   margin: 0;
   font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
 }
 
 .infoview-close-btn {
-  background: none;
+  background: var(--color-surface);
   border: none;
   cursor: pointer;
-  color: #666;
+  color: var(--color-text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4px;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 36px; min-height: 36px;
+  border-radius: var(--radius-full);
+  transition: background var(--duration-fast);
 }
 
-.infoview-close-btn .material-icons {
-  font-size: 24px;
-}
+.infoview-close-btn:hover { background: var(--color-surface-2); }
+.infoview-close-btn .material-icons { font-size: 22px; }
 
-.infoview-modal-body {
-  padding: 16px;
-}
+.infoview-modal-body { padding: 16px 20px; }
 
-.infoview-detail-section {
-  margin-bottom: 16px;
-}
+.infoview-detail-section { margin-bottom: 16px; }
 
 .infoview-detail-section h4 {
-  margin: 0 0 8px 0;
-  color: #FF9800;
-  font-size: 14px;
+  margin: 0 0 6px 0;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .infoview-detail-section p {
   margin: 0 0 4px 0;
-  color: #666;
+  color: var(--color-text-secondary);
   font-size: 14px;
+  line-height: 1.5;
 }
 
 .infoview-modal-footer {
-  padding: 16px;
-  border-top: 1px solid #eee;
+  padding: 14px 20px;
+  border-top: 1px solid var(--color-border);
 }
 
 .infoview-navigate-btn {
   width: 100%;
-  padding: 12px;
-  min-height: 44px;
-  background: #FF9800;
+  padding: 13px;
+  min-height: 48px;
+  background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
+  transition: background var(--duration-fast);
+  font-family: var(--font-primary);
+  box-shadow: 0 2px 8px rgba(255,152,0,0.3);
 }
+
+.infoview-navigate-btn:hover { background: var(--color-primary-dark); }

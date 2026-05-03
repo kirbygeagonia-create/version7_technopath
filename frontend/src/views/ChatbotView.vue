@@ -1,8 +1,8 @@
 <template>
-  <div class="chatbot-view">
+  <div class="chatbot-view" :class="{ embedded: props.embedded }">
     <!-- Header -->
     <header class="chatbot-header">
-      <button class="chatbot-back-btn" @click="goBack">
+      <button v-if="!props.embedded" class="chatbot-back-btn" @click="goBack">
         <span class="material-icons">arrow_back</span>
       </button>
       <div class="chatbot-header-content">
@@ -27,6 +27,9 @@
           </p>
         </div>
       </div>
+      <button class="chatbot-reset-btn" @click="resetChat" title="Reset conversation">
+        <span class="material-icons">refresh</span>
+      </button>
     </header>
 
     <!-- FAQ Skeleton -->
@@ -125,6 +128,7 @@ import { ref, onMounted, nextTick, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import aiChatbot from '../services/aiChatbot.js'
 import { isOnline } from '../services/sync.js'
+import { showToast } from '../services/toast.js'
 import { getFAQEntries } from '../services/offlineData.js'
 import { registerBones } from 'boneyard-js'
 import AppSkeleton from '../components/AppSkeleton.vue'
@@ -143,20 +147,64 @@ registerBones({
   }
 })
 
+const props = defineProps({ embedded: { type: Boolean, default: false } })
+const emit  = defineEmits(['close'])
+
 const chatLoading = ref(true)
 const isBotTyping = ref(false)
 const chatbotChecked = ref(false)
 
 const router = useRouter()
 
-const messages = ref([
-  { 
-    type: 'bot', 
-    text: "Hello! I'm your SEAIT Campus Assistant. I can help you find buildings, rooms, navigate the campus, and answer questions about SEAIT. What would you like to know?",
-    timestamp: new Date(),
-    source: ''
+// Load messages from localStorage or use default welcome message
+const STORAGE_KEY = 'technopath_chat_messages'
+const savedMessages = localStorage.getItem(STORAGE_KEY)
+
+// Initialize messages from localStorage or use default
+function getInitialMessages() {
+  if (savedMessages) {
+    try {
+      const parsed = JSON.parse(savedMessages)
+      // Convert timestamp strings back to Date objects
+      return parsed.map(msg => ({
+        ...msg,
+        timestamp: new Date(msg.timestamp)
+      }))
+    } catch (e) {
+      console.error('Error loading chat history:', e)
+    }
   }
-])
+  return [
+    { 
+      type: 'bot', 
+      text: "Hello! I'm your SEAIT Campus Assistant. I can help you find buildings, rooms, navigate the campus, and answer questions about SEAIT. What would you like to know?",
+      timestamp: new Date(),
+      source: ''
+    }
+  ]
+}
+
+const messages = ref(getInitialMessages())
+
+// Save messages to localStorage whenever they change
+function saveMessages() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.value))
+}
+
+// Reset chat to initial state
+function resetChat() {
+  messages.value = [
+    { 
+      type: 'bot', 
+      text: "Hello! I'm your SEAIT Campus Assistant. I can help you find buildings, rooms, navigate the campus, and answer questions about SEAIT. What would you like to know?",
+      timestamp: new Date(),
+      source: ''
+    }
+  ]
+  localStorage.removeItem(STORAGE_KEY)
+  aiChatbot.clearHistory()
+  showToast('Chat history cleared', 'info')
+}
 const userInput = ref('')
 const isTyping = ref(false)
 const showFAQ = ref(true)
@@ -217,7 +265,8 @@ function toggleFAQ() {
 }
 
 function goBack() {
-  router.back()
+  if (props.embedded) { emit('close') }
+  else { router.back() }
 }
 
 function askQuestion(question) {
@@ -264,6 +313,7 @@ async function sendMessage() {
     text: userMessage,
     timestamp: new Date()
   })
+  saveMessages() // Persist to localStorage
   
   userInput.value = ''
   isTyping.value = true
@@ -294,6 +344,7 @@ async function sendMessage() {
       timestamp: new Date(),
       source: sourceLabel
     })
+    saveMessages() // Persist to localStorage
   } catch (err) {
     isTyping.value = false
     isBotTyping.value = false

@@ -5,13 +5,29 @@
     @mouseup="stopDragPathInfo"
     @mouseleave="stopDragPathInfo"
   >
-    <!-- Top bar -->
-    <header class="svg-nav-header">
-      <button class="svg-nav-back-btn" @click="$router.back()">
-        <span class="material-icons">arrow_back</span>
-      </button>
-      <h1 class="svg-nav-title">Navigate</h1>
-    </header>
+    <!-- Navigate Header -->
+    <div class="settings-header nav-header-bar">
+      <div class="nav-header-left">
+        <div class="settings-header-icon">
+          <span class="material-icons">navigation</span>
+        </div>
+        <div class="settings-header-text">
+          <h1>Navigate</h1>
+          <p>Find your way around campus</p>
+        </div>
+      </div>
+      <div class="nav-header-actions">
+        <button class="nav-icon-btn" @click="$router.push('/chatbot')" title="Chatbot">
+          <span class="material-icons">smart_toy</span>
+        </button>
+        <button class="nav-icon-btn" @click="$router.push('/notifications')" title="Notifications">
+          <span class="material-icons">notifications</span>
+        </button>
+        <button class="nav-icon-btn" @click="$router.push('/feedback')" title="Rate App">
+          <span class="material-icons">star</span>
+        </button>
+      </div>
+    </div>
 
     <!-- Location Selection Panel -->
     <div class="svg-nav-panel" v-if="!isNavigating">
@@ -176,24 +192,26 @@
       </div>
     </div>
 
-    <!-- SVG Map Container -->
-    <div 
-      class="svg-map-container" 
-      ref="mapContainer" 
-      @wheel="handleWheelZoom"
-      @mousedown="startDrag"
-      @mousemove="drag"
-      @mouseup="endDrag"
-      @mouseleave="endDrag"
-      @touchstart="startDrag"
-      @touchmove="drag"
-      @touchend="endDrag"
-      :class="{ 'is-dragging': isDragging }"
-    >
+    <!-- SVG Map + Controls wrapper — controls overlay the map -->
+    <div class="svg-map-outer">
+      <!-- SVG Map Container -->
+      <div 
+        class="svg-map-container" 
+        ref="mapContainer" 
+        @mousedown="startDrag"
+        @mousemove="drag"
+        @mouseup="endDrag"
+        @mouseleave="endDrag"
+        @touchstart.passive="startDrag"
+        @touchmove.passive="drag"
+        @touchend="endDrag"
+        :class="{ 'is-dragging': isDragging }"
+      >
       <svg 
         ref="svgMap"
         class="svg-map"
         :viewBox="viewBoxString"
+        :style="{ transform: `rotate(${mapRotation}deg)`, transition: 'transform 0.3s ease' }"
         preserveAspectRatio="xMidYMid meet"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -294,17 +312,33 @@
         <p>{{ mapError }}</p>
       </div>
     </div>
+    <!-- end svg-map-container -->
 
-    <!-- Chatbot Button -->
-    <div class="nav-fab-container">
-      <button 
-        class="nav-fab-btn nav-chatbot-btn" 
-        @click="$router.push('/chatbot')"
-        title="Chatbot"
-      >
-        <span class="material-icons">smart_toy</span>
-      </button>
+      <!-- Map Controls — overlaid on map, bottom-right -->
+      <div class="map-controls">
+        <button class="map-ctrl-btn" @click="zoomIn" title="Zoom in" aria-label="Zoom in">
+          <span class="material-icons">add</span>
+        </button>
+        <div class="map-ctrl-divider"></div>
+        <button class="map-ctrl-btn" @click="zoomOut" title="Zoom out" aria-label="Zoom out">
+          <span class="material-icons">remove</span>
+        </button>
+        <div class="map-ctrl-divider"></div>
+        <button class="map-ctrl-btn" @click="rotateLeft" title="Rotate left" aria-label="Rotate map left">
+          <span class="material-icons">rotate_left</span>
+        </button>
+        <div class="map-ctrl-divider"></div>
+        <button class="map-ctrl-btn" @click="rotateRight" title="Rotate right" aria-label="Rotate map right">
+          <span class="material-icons">rotate_right</span>
+        </button>
+        <div class="map-ctrl-divider"></div>
+        <button class="map-ctrl-btn map-ctrl-reset" @click="resetView" title="Reset view" aria-label="Reset map view">
+          <span class="material-icons">center_focus_strong</span>
+        </button>
+      </div>
+
     </div>
+    <!-- end svg-map-outer -->
   </div>
 </template>
 
@@ -312,22 +346,8 @@
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import pathManager from '../services/pathManager.js'
 import { useLocations } from '../composables/useLocations.js'
-import { registerBones } from 'boneyard-js'
 import AppSkeleton from '../components/AppSkeleton.vue'
 import CometSpinner from '../components/CometSpinner.vue'
-
-registerBones({
-  'navigate-map': {
-    width: 390, height: 520,
-    bones: [
-      { x: 0, y: 0,   w: 100, h: 48,  r: 24 },
-      { x: 0, y: 56,  w: 100, h: 340, r: 16 },
-      { x: 0, y: 404, w: 100, h: 72,  r: 16 },
-      { x: 4, y: 420, w: 50,  h: 16,  r: 6  },
-      { x: 4, y: 442, w: 32,  h: 12,  r: 5  },
-    ]
-  }
-})
 
 // DOM References
 const mapContainer = ref(null)
@@ -394,6 +414,10 @@ const isDragging = ref(false)
 const dragStart = ref({ x: 0, y: 0 })
 const viewBoxStart = ref({ x: 0, y: 0 })
 
+// Pinch-to-zoom state
+const pinchStartDist = ref(0)
+const pinchStartZoom = ref(1)
+
 // Get path manager state
 const isNavigating = computed(() => pathManager.isNavigating.value)
 const currentPath = computed(() => pathManager.currentPath.value)
@@ -455,50 +479,45 @@ const endpointLabels = computed(() => {
   return labels
 })
 
-// Load SVG map
+// Load SVG map — uses the Vite base URL so it works in both dev and production
 const loadMap = async () => {
-  console.log('[NavigateView] Starting to load map...')
   try {
-    // Load SVG file
-    const response = await fetch('SEAITMAP.svg')
-    console.log('[NavigateView] Map response:', response.status, response.ok)
-    if (!response.ok) throw new Error(`Failed to load map: ${response.status}`)
-    
+    // Build the correct URL regardless of base path (e.g. /seait-technopath/)
+    const base = import.meta.env.BASE_URL || '/'
+    const svgUrl = base.endsWith('/') ? `${base}Map_labeled.svg` : `${base}/Map_labeled.svg`
+
+    const response = await fetch(svgUrl)
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
     const svgText = await response.text()
-    
-    // Extract inner content from SVG
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(svgText, 'image/svg+xml')
-    const svg = doc.querySelector('svg')
-    
-    if (svg) {
-      // Get viewBox from original SVG
-      const originalViewBox = svg.getAttribute('viewBox')
-      if (originalViewBox) {
-        const [x, y, width, height] = originalViewBox.split(' ').map(Number)
+    const parser  = new DOMParser()
+    const doc     = parser.parseFromString(svgText, 'image/svg+xml')
+    const svg     = doc.querySelector('svg')
+
+    if (!svg) throw new Error('SVG element not found in file')
+
+    // Preserve original viewBox dimensions
+    const originalViewBox = svg.getAttribute('viewBox')
+    if (originalViewBox) {
+      const [x, y, width, height] = originalViewBox.split(/\s+/).map(Number)
+      if (!isNaN(width) && !isNaN(height)) {
         viewBox.value = { x, y, width, height }
       }
-      
-      // Extract inner content
-      svgContent.value = svg.innerHTML
-      mapLoaded.value = true
-      
-      // Don't extract locations from SVG elements - use only path locations
-      // await extractFromSVG(svgText)
-      
-      // Wait for DOM update then calculate positions
-      await nextTick()
-      
-      if (isNavigating.value && currentPath.value) {
-        calculatePathPositions()
-      }
+    }
+
+    svgContent.value = svg.innerHTML
+    mapLoaded.value  = true
+
+    await nextTick()
+    if (isNavigating.value && currentPath.value) {
+      calculatePathPositions()
     }
   } catch (error) {
-    console.error('[NavigateView] Error loading map:', error)
-    mapError.value = error.message || 'Failed to load map'
-    // Use inline fallback SVG
-    svgContent.value = getFallbackSvgContent()
-    mapLoaded.value = true
+    console.error('[NavigateView] Map load failed:', error)
+    // Show the error state — do NOT leave mapLoaded=false (that causes infinite spinner)
+    mapError.value  = `Could not load campus map (${error.message})`
+    mapLoaded.value = true   // stop the spinner; error UI will show instead
+    svgContent.value = ''
   }
 }
 
@@ -788,40 +807,62 @@ const updateViewToCurrentStep = () => {
 
 // Drag/Grab handlers
 const startDrag = (e) => {
-  // Only drag with left mouse button or touch
+  // Only drag with left mouse button or single touch
   if (e.type === 'mousedown' && e.button !== 0) return
-  
+  if (e.touches && e.touches.length === 2) {
+    // Two-finger pinch start
+    isDragging.value = false
+    pinchStartDist.value = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    )
+    pinchStartZoom.value = zoomLevel.value
+    return
+  }
+
   isDragging.value = true
-  const clientX = e.clientX || (e.touches?.[0]?.clientX)
-  const clientY = e.clientY || (e.touches?.[0]?.clientY)
-  
+  const clientX = e.clientX ?? e.touches?.[0]?.clientX
+  const clientY = e.clientY ?? e.touches?.[0]?.clientY
+
   dragStart.value = { x: clientX, y: clientY }
-  viewBoxStart.value = { 
-    x: viewBox.value.x, 
-    y: viewBox.value.y 
+  viewBoxStart.value = {
+    x: viewBox.value.x,
+    y: viewBox.value.y
   }
 }
 
 const drag = (e) => {
+  // Two-finger pinch-to-zoom
+  if (e.touches && e.touches.length === 2) {
+    const dist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    )
+    if (pinchStartDist.value > 0) {
+      const rawRatio = dist / pinchStartDist.value
+      const dampened = 1 + (rawRatio - 1) * 0.55
+      const newZoom  = Math.max(0.3, Math.min(5, pinchStartZoom.value * dampened))
+      applyZoom(newZoom)
+    }
+    return
+  }
+
   if (!isDragging.value) return
-  e.preventDefault()
-  
-  const clientX = e.clientX || (e.touches?.[0]?.clientX)
-  const clientY = e.clientY || (e.touches?.[0]?.clientY)
-  
-  // Calculate the drag delta in screen pixels
+
+  const clientX = e.clientX ?? e.touches?.[0]?.clientX
+  const clientY = e.clientY ?? e.touches?.[0]?.clientY
+  if (clientX == null) return
+
   const deltaX = clientX - dragStart.value.x
   const deltaY = clientY - dragStart.value.y
-  
-  // Convert screen pixels to SVG viewBox units
+
   const container = mapContainer.value
   if (!container) return
-  
+
   const rect = container.getBoundingClientRect()
-  const svgUnitsPerPixelX = viewBox.value.width / rect.width
+  const svgUnitsPerPixelX = viewBox.value.width  / rect.width
   const svgUnitsPerPixelY = viewBox.value.height / rect.height
-  
-  // Update viewBox (inverse direction for natural panning)
+
   viewBox.value = {
     ...viewBox.value,
     x: viewBoxStart.value.x - deltaX * svgUnitsPerPixelX,
@@ -829,67 +870,58 @@ const drag = (e) => {
   }
 }
 
-const endDrag = () => {
+const endDrag = (e) => {
   isDragging.value = false
+  if (e?.touches?.length === 0) {
+    pinchStartDist.value = 0
+  }
 }
 
-// Handle mouse wheel zoom - zooms toward mouse cursor position
-const handleWheelZoom = (event) => {
-  event.preventDefault()
-  
-  if (!svgMap.value) return
-  
-  // Get mouse position in SVG coordinates
-  const pt = svgMap.value.createSVGPoint()
-  pt.x = event.clientX
-  pt.y = event.clientY
-  const svgP = pt.matrixTransform(svgMap.value.getScreenCTM().inverse())
-  
-  // Calculate zoom factor
-  const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1
+// applyZoom — shared by buttons and pinch
+const applyZoom = (newZoom, centerX, centerY) => {
+  const container = mapContainer.value
+  const rect = container?.getBoundingClientRect()
+
+  // Default center: middle of the current viewBox
+  const cx = centerX ?? (viewBox.value.x + viewBox.value.width  / 2)
+  const cy = centerY ?? (viewBox.value.y + viewBox.value.height / 2)
+
   const oldZoom = zoomLevel.value
-  const newZoom = Math.max(0.3, Math.min(5, oldZoom * zoomFactor))
-  
-  // Calculate new viewBox to zoom toward mouse position
-  const zoomRatio = oldZoom / newZoom
-  const newWidth = viewBox.value.width * zoomRatio
-  const newHeight = viewBox.value.height * zoomRatio
-  
-  // Calculate offset to keep mouse point stable
-  const mouseOffsetX = svgP.x - viewBox.value.x
-  const mouseOffsetY = svgP.y - viewBox.value.y
-  
-  const newX = svgP.x - (mouseOffsetX * zoomRatio)
-  const newY = svgP.y - (mouseOffsetY * zoomRatio)
-  
-  // Update viewBox and zoom level
+  const ratio   = oldZoom / newZoom
+
   viewBox.value = {
-    x: newX,
-    y: newY,
-    width: newWidth,
-    height: newHeight
+    x:      cx - (cx - viewBox.value.x) * ratio,
+    y:      cy - (cy - viewBox.value.y) * ratio,
+    width:  viewBox.value.width  * ratio,
+    height: viewBox.value.height * ratio
   }
   zoomLevel.value = newZoom
 }
 
-// Zoom controls
+// Zoom controls — button-only (wheel disabled)
 const zoomIn = () => {
-  const centerX = viewBox.value.x + viewBox.value.width / 2
-  const centerY = viewBox.value.y + viewBox.value.height / 2
-  zoomLevel.value = Math.min(zoomLevel.value * 1.3, 5)
-  centerOnPoint(centerX, centerY, zoomLevel.value)
+  applyZoom(Math.min(zoomLevel.value * 1.25, 5))
 }
 
 const zoomOut = () => {
-  const centerX = viewBox.value.x + viewBox.value.width / 2
-  const centerY = viewBox.value.y + viewBox.value.height / 2
-  zoomLevel.value = Math.max(zoomLevel.value / 1.3, 0.3)
-  centerOnPoint(centerX, centerY, zoomLevel.value)
+  applyZoom(Math.max(zoomLevel.value / 1.25, 0.3))
+}
+
+// Rotation
+const mapRotation = ref(0)
+
+const rotateLeft = () => {
+  mapRotation.value = (mapRotation.value - 90 + 360) % 360
+}
+
+const rotateRight = () => {
+  mapRotation.value = (mapRotation.value + 90) % 360
 }
 
 const resetView = () => {
   viewBox.value = { x: 0, y: 0, width: 3306, height: 7159 }
   zoomLevel.value = 1
+  mapRotation.value = 0
 }
 
 // Fallback SVG content
@@ -988,11 +1020,71 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@import '../assets/settings.css';
+
+/* ── Navigate header bar with icon buttons ── */
+.nav-header-bar,
+.settings-header.nav-header-bar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100 !important;
+  padding: 12px 14px !important;
+  overflow: hidden !important;
+}
+
+.nav-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-icon-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.18);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+  min-height: unset;
+  min-width: unset;
+}
+
+.nav-icon-btn:hover  { background: rgba(255,255,255,0.32); }
+.nav-icon-btn:active { transform: scale(0.90); }
+.nav-icon-btn .material-icons { font-size: 20px; color: white; }
+
 .svg-navigate-view {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f5f5f5;
+  height: 100dvh;
+  background: var(--color-surface);
+  overflow: auto;
+  padding-top: 70px;
 }
 
 /* Header */
@@ -1031,8 +1123,8 @@ onUnmounted(() => {
 /* Panel */
 .svg-nav-panel {
   padding: 16px;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .svg-nav-field {
@@ -1121,21 +1213,22 @@ onUnmounted(() => {
 /* Empty state */
 .svg-nav-empty {
   text-align: center;
-  padding: 40px 20px;
+  padding: 20px 16px;
   color: #666;
 }
 
 .svg-nav-empty .material-icons {
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+  font-size: 36px;
 }
 
 .svg-nav-empty p {
-  margin: 0 0 8px 0;
-  font-size: 16px;
+  margin: 0 0 4px 0;
+  font-size: 14px;
 }
 
 .svg-nav-hint {
-  font-size: 14px;
+  font-size: 12px;
   color: #999;
   font-style: italic;
 }
@@ -1143,10 +1236,11 @@ onUnmounted(() => {
 .svg-nav-select {
   flex: 1;
   padding: 12px 16px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   font-size: 16px;
-  background: white;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
   cursor: pointer;
 }
 
@@ -1162,45 +1256,52 @@ onUnmounted(() => {
   justify-content: center;
   gap: 8px;
   padding: 14px 24px;
-  background: #4CAF50;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background var(--duration-fast), transform var(--duration-fast);
+  box-shadow: 0 2px 8px rgba(255,152,0,0.3);
 }
 
 .svg-nav-start-btn:hover:not(:disabled) {
-  background: #45a049;
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
 }
 
 .svg-nav-start-btn:disabled {
-  background: #ccc;
+  background: var(--color-border);
+  color: var(--color-text-hint);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* Path Preview */
 .svg-nav-preview {
   margin-top: 16px;
   padding: 12px;
-  background: #f5f5f5;
-  border-radius: 8px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
 }
 
 .svg-nav-preview h4 {
   margin: 0 0 8px 0;
-  font-size: 16px;
-  color: #333;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
 }
 
 .svg-nav-full-route {
   margin-bottom: 12px;
   padding: 8px 12px;
-  background: white;
-  border-radius: 6px;
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
   font-size: 13px;
+  border: 1px solid var(--color-border);
 }
 
 .route-line {
@@ -1210,23 +1311,10 @@ onUnmounted(() => {
   gap: 4px;
 }
 
-.route-from {
-  color: #4caf50;
-  font-weight: 600;
-}
-
-.route-arrow {
-  color: #999;
-}
-
-.route-stop {
-  color: #ff9800;
-}
-
-.route-to {
-  color: #2196f3;
-  font-weight: 600;
-}
+.route-from { color: var(--color-primary); font-weight: 600; }
+.route-arrow { color: var(--color-text-hint); }
+.route-stop  { color: var(--color-primary-dark); }
+.route-to    { color: var(--color-primary-dark); font-weight: 600; }
 
 .svg-nav-stops {
   display: flex;
@@ -1263,11 +1351,11 @@ onUnmounted(() => {
 }
 
 .svg-nav-path-card {
-  background: white;
-  border-radius: 8px;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
   padding: 12px;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xs);
 }
 
 .path-card-header {
@@ -1276,12 +1364,12 @@ onUnmounted(() => {
   gap: 8px;
   margin-bottom: 8px;
   padding-bottom: 8px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .path-card-number {
-  background: #2196F3;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -1294,7 +1382,7 @@ onUnmounted(() => {
 
 .path-card-destination {
   font-weight: 600;
-  color: #333;
+  color: var(--color-text-primary);
   font-size: 14px;
 }
 
@@ -1309,40 +1397,38 @@ onUnmounted(() => {
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .path-detail-item .material-icons {
   font-size: 14px;
-  color: #2196F3;
+  color: var(--color-primary);
 }
 
 .path-card-no-path {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #ff9800;
+  color: var(--color-warning);
   font-size: 12px;
   padding: 8px;
-  background: #fff3e0;
-  border-radius: 4px;
+  background: var(--color-warning-bg);
+  border-radius: var(--radius-sm);
 }
 
-.path-card-no-path .material-icons {
-  font-size: 16px;
-}
+.path-card-no-path .material-icons { font-size: 16px; }
 
 /* Floating Draggable Path Info Panel */
 .svg-nav-path-info {
   position: absolute;
-  background: rgba(255, 165, 0, 0.85);
-  border-radius: 10px;
+  background: var(--color-primary);
+  border-radius: var(--radius-lg);
   padding: 12px;
-  color: #333;
+  color: var(--color-text-inverse);
   font-size: 12px;
   width: 220px;
   z-index: 100;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-xl);
   cursor: move;
   user-select: none;
 }
@@ -1353,18 +1439,15 @@ onUnmounted(() => {
   gap: 8px;
   margin-bottom: 10px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.3);
 }
 
-.svg-nav-drag-icon {
-  font-size: 18px;
-  color: #333;
-}
+.svg-nav-drag-icon { font-size: 18px; color: rgba(255,255,255,0.8); }
 
 .svg-nav-path-info-title {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
-  color: #333;
+  color: var(--color-text-inverse);
 }
 
 .svg-nav-path-info-row {
@@ -1373,13 +1456,11 @@ onUnmounted(() => {
   margin-bottom: 8px;
 }
 
-.svg-nav-path-info-row:last-child {
-  margin-bottom: 0;
-}
+.svg-nav-path-info-row:last-child { margin-bottom: 0; }
 
 .svg-nav-path-info-field {
-  background: rgba(224, 224, 224, 0.95);
-  border-radius: 6px;
+  background: rgba(255,255,255,0.2);
+  border-radius: var(--radius-sm);
   padding: 6px 10px;
   flex: 1;
   display: flex;
@@ -1388,14 +1469,17 @@ onUnmounted(() => {
 }
 
 .svg-nav-path-label {
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: rgba(255,255,255,0.75);
   font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 
 .svg-nav-path-value {
-  color: #555;
-  font-size: 11px;
+  color: var(--color-text-inverse);
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .svg-nav-path-description .svg-nav-path-value {
@@ -1408,8 +1492,9 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.95);
-  border-top: 1px solid #e0e0e0;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+  gap: 10px;
 }
 
 .svg-nav-progress {
@@ -1441,32 +1526,42 @@ onUnmounted(() => {
   justify-content: center;
   gap: 6px;
   padding: 12px 16px;
-  background: #FF9800;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  border: 1.5px solid rgba(255,152,0,0.25);
+  border-radius: var(--radius-md);
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-out);
+  font-family: var(--font-primary);
 }
 
 .svg-nav-btn:hover:not(:disabled) {
-  background: #F57C00;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255,152,0,0.4);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255,152,0,0.35);
 }
 
 .svg-nav-btn:disabled {
-  background: #ccc;
+  background: var(--color-surface);
+  color: var(--color-text-hint);
+  border-color: var(--color-border);
   cursor: not-allowed;
 }
 
-.svg-nav-stop-btn {
-  background: #f44336;
+.svg-nav-stop {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-color: rgba(211,47,47,0.2);
 }
 
-.svg-nav-stop-btn:hover {
-  background: #d32f2f;
+.svg-nav-stop:hover:not(:disabled) {
+  background: var(--color-danger);
+  color: white;
+  border-color: var(--color-danger);
 }
 
 /* Multi-stop navigation styles */
@@ -1493,6 +1588,15 @@ onUnmounted(() => {
 
 .svg-nav-next-dest:hover:not(:disabled) {
   background: #1976D2;
+}
+
+/* Map Outer Wrapper — holds map container + overlaid controls */
+.svg-map-outer {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 /* Map Container */
@@ -1751,19 +1855,85 @@ onUnmounted(() => {
   background: var(--color-surface, #fff); color: #F44336;
 }
 
+/* ── Outer wrapper: fills remaining height, holds map + controls ── */
+.svg-map-outer {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Map container fills the outer wrapper ── */
+.svg-map-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  min-height: 200px;
+}
+
+.svg-map-container.is-dragging { cursor: grabbing; }
+
+/* ── Zoom + Rotate controls — bottom-right of outer wrapper ── */
+.map-controls {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 50;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.map-ctrl-btn {
+  width: 46px;
+  height: 46px;
+  background: var(--color-bg);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  transition: background var(--duration-fast) var(--ease-out),
+              transform  var(--duration-fast) var(--ease-spring);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  min-height: unset;
+  min-width: unset;
+}
+
+.map-ctrl-btn:hover  { background: var(--color-surface); }
+.map-ctrl-btn:active {
+  transform: scale(0.88);
+  background: var(--color-primary-light);
+}
+
+.map-ctrl-btn .material-icons {
+  font-size: 22px;
+  color: var(--color-text-secondary);
+}
+
+.map-ctrl-reset .material-icons { color: var(--color-primary); }
+
+.map-ctrl-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
-  .nav-fab-container {
-    bottom: 12px;
-    left: 12px;
-  }
-
-  .nav-fab-btn {
-    width: 48px;
-    height: 48px;
-  }
-
-  .nav-fab-btn .material-icons {
-    font-size: 20px;
-  }
+  .map-controls { bottom: 12px; right: 12px; }
+  .map-ctrl-btn { width: 44px; height: 44px; }
 }
 </style>

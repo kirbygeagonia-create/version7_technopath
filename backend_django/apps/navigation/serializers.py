@@ -38,8 +38,8 @@ class PathSerializer(serializers.ModelSerializer):
         model = Path
         fields = ['id', 'name', 'description', 'facility', 'facility_name', 'room', 'room_name',
                   'floor', 'created_by', 'from_location', 'to_location', 'points', 'element_ids',
-                  'is_deleted', 'created_at', 'updated_at']
-        read_only_fields = ['created_by']
+                  'points_input', 'is_deleted', 'created_at', 'updated_at']
+        read_only_fields = ['created_by', 'from_location', 'to_location']
     
     def create(self, validated_data):
         element_ids = validated_data.pop('element_ids', [])

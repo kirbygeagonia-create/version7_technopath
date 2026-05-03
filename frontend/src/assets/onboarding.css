@@ -201,10 +201,11 @@
 
 /* Feature highlight pulse */
 .onboarding-highlight {
-  position: absolute;
+  position: fixed;   /* Must match getBoundingClientRect() viewport coords */
   border-radius: 12px;
   pointer-events: none;
-  z-index: 999;
+  z-index: 1002;     /* Above overlay (1000) and card (1001) */
+  transition: all 0.3s ease;
 }
 
 .highlight-pulse {

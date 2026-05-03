@@ -361,7 +361,18 @@
           </div>
           <div class="form-group">
             <label>Answer</label>
-            <textarea v-model="form.answer" rows="5" placeholder="Enter the answer"></textarea>
+            <div class="ai-generate-wrapper">
+              <textarea v-model="form.answer" rows="5" placeholder="Enter the answer or click AI Generate"></textarea>
+              <button 
+                v-if="form.question && !showEditModal" 
+                class="btn-ai-generate" 
+                @click="generateAiAnswer"
+                :disabled="isGeneratingAnswer"
+              >
+                <span class="material-icons">auto_fix_high</span>
+                {{ isGeneratingAnswer ? 'Generating...' : 'AI Generate Answer' }}
+              </button>
+            </div>
           </div>
           <div class="form-group checkbox-group">
             <label class="checkbox-label">
@@ -451,6 +462,7 @@ const loadingSuggestions = ref(false)
 const isAnalyzing = ref(false)
 const expandedSuggestion = ref(null)
 const analysisResult = ref(null)
+const isGeneratingAnswer = ref(false)
 
 // Analysis controls
 const analyzeDays = ref(7)
@@ -716,6 +728,41 @@ async function confirmReject() {
   }
 }
 
+// AI Generate Answer for new FAQs
+async function generateAiAnswer() {
+  if (!form.value.question) {
+    showToast('Please enter a question first', 'error')
+    return
+  }
+  
+  isGeneratingAnswer.value = true
+  
+  try {
+    // Call the chatbot API to generate an answer
+    const res = await fetch('/chatbot-api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: form.value.question,
+        campus_context: true,
+        system_prompt: 'You are a helpful SEAIT campus guide. Provide a clear, concise, and accurate answer. Keep it under 150 words and be friendly.'
+      })
+    })
+    
+    if (!res.ok) throw new Error('Failed to generate answer')
+    
+    const data = await res.json()
+    form.value.answer = data.reply || data.response || 'Could not generate answer. Please try again.'
+    
+    showToast('✨ AI answer generated! I learn from campus data to give you the best responses.', 'success')
+  } catch (error) {
+    console.error('Error generating AI answer:', error)
+    showToast('Failed to generate AI answer. Please try again.', 'error')
+  } finally {
+    isGeneratingAnswer.value = false
+  }
+}
+
 // Watch for tab changes
 watch(suggestionTab, () => {
   loadSuggestions()
@@ -950,8 +997,42 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid var(--color-border);
+}
+
+/* AI Generate Button Styles */
+.ai-generate-wrapper {
+  position: relative;
+}
+
+.btn-ai-generate {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark, #f57c00) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ai-generate:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.btn-ai-generate:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-ai-generate .material-icons {
+  font-size: 18px;
 }
 
 .status-badge {

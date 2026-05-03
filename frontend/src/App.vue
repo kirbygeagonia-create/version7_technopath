@@ -21,6 +21,7 @@
             :to="item.path"
             class="app-side-nav-item"
             :class="{ 'app-active': currentRoute === item.path }"
+            :data-label="item.label"
           >
             <span class="material-icons">
               {{ item.icon }}
@@ -138,15 +139,11 @@
             <span v-if="item.path === '/notifications' && unreadCount > 0" class="nav-dot"></span>
           </span>
           <span class="app-nav-label">{{ item.label }}</span>
-<<<<<<< HEAD
-          <!-- Notification badge -->
-=======
-          <!-- Badge only on /notifications — feedback ≠ notifications -->
->>>>>>> 2120b5cc5792784b71f56272822728812e4d775e
+          <!-- Notification badge on bell icon -->
           <span v-if="item.path === '/notifications' && unreadCount > 0" class="nav-badge">
             {{ unreadCount > 9 ? '9+' : unreadCount }}
           </span>
-          <!-- Notification badge for feedback -->
+          <!-- Notification badge for ratings/feedback -->
           <span v-if="item.path === '/feedback' && unreadFeedbackCount > 0" class="nav-badge feedback-badge">
             {{ unreadFeedbackCount > 9 ? '9+' : unreadFeedbackCount }}
           </span>
@@ -176,12 +173,15 @@ const themeStore = useThemeStore()
 
 const windowWidth = ref(window.innerWidth)
 
-const isDesktop = computed(() => windowWidth.value >= 1024)
+const isDesktop = computed(() => windowWidth.value >= 768)
 const currentRoute = computed(() => route.path)
 
 const isActiveRoute = (path) => {
   if (path === '/navigate') {
     return route.path === '/navigate' || route.path === '/map'
+  }
+  if (path === '/feedback') {
+    return route.path === '/feedback'
   }
   return route.path === path
 }
@@ -196,11 +196,10 @@ const menuItems = [
   { path: '/settings', label: 'Settings', icon: 'settings' },
 ]
 
-// Simplified menu for mobile bottom nav
+// Simplified menu for mobile bottom nav — 3 items only
 const mobileMenuItems = [
   { path: '/', label: 'Home', icon: 'home' },
   { path: '/navigate', label: 'Navigate', icon: 'directions' },
-  { path: '/feedback', label: 'Feedback', icon: 'star' },
   { path: '/settings', label: 'Settings', icon: 'settings' },
 ]
 

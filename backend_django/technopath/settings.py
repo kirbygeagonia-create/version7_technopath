@@ -44,7 +44,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -110,8 +109,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '30/minute',
-        'user': '120/minute',
+        'anon': '100/minute',
+        'user': '300/minute',
     },
 }
 
@@ -124,6 +123,8 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     o for o in [
         'http://localhost:5173',
+        'http://localhost:5174',
+        'http://localhost:5175',
         'http://localhost:3000',
         'http://127.0.0.1:5173',
         'http://localhost:4173',
@@ -138,7 +139,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

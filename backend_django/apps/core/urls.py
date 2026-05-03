@@ -33,4 +33,7 @@ urlpatterns = [
     
     # Dashboard
     path('dashboard/stats/', views.dashboard_stats, name='dashboard-stats'),
+    
+    # App Ratings
+    path('ratings/', views.AppRatingView.as_view(), name='app-rating'),
 ]

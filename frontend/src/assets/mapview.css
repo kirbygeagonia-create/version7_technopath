@@ -162,20 +162,21 @@ body.dark-mode .mapview-marker-label {
 .mapview-zoom {
   position: absolute;
   right: var(--space-4);
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: clamp(80px, 12vh, 120px);   /* above bottom sheet / nav */
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  z-index: 10;
-  border-radius: var(--radius-md);
+  align-items: center;
+  gap: 0;
+  z-index: 20;
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
 }
 
 .mapview-zoom-btn {
-  width: 44px;
-  height: 44px;
+  width:  clamp(44px, 6vw, 52px);
+  height: clamp(44px, 6vw, 52px);
   background: var(--color-bg);
   border: none;
   display: flex;
@@ -183,15 +184,30 @@ body.dark-mode .mapview-marker-label {
   justify-content: center;
   cursor: pointer;
   color: var(--color-text-primary);
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-fast) var(--ease-out),
+              transform  var(--duration-fast) var(--ease-spring);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
-.mapview-zoom-btn:hover {
-  background: var(--color-surface);
+.mapview-zoom-btn:hover  { background: var(--color-surface); }
+.mapview-zoom-btn:active { transform: scale(0.9); background: var(--color-primary-light); }
+
+.mapview-zoom-btn .material-icons {
+  font-size: clamp(20px, 2.5vw, 24px);
+  color: var(--color-text-primary);
 }
 
-.mapview-zoom-btn:first-child {
-  border-bottom: 1px solid var(--color-border);
+.mapview-zoom-reset .material-icons {
+  font-size: clamp(18px, 2.2vw, 22px);
+  color: var(--color-primary);
+}
+
+.mapview-zoom-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--color-border);
+  flex-shrink: 0;
 }
 
 /* ── Filter Chips ─────────────────────────────────────────── */

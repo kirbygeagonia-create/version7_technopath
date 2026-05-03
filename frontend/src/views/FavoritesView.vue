@@ -28,7 +28,7 @@
             </div>
             <div class="favorites-item-text">
               <div class="favorites-item-title">{{ favorite.name }}</div>
-              <div class="favorites-item-subtitle">{{ favorite.description || favorite.type }}</div>
+              <div class="favorites-item-subtitle">{{ favorite.description || formatFavoriteType(favorite.type) }}</div>
               <div class="favorites-item-date">Added {{ formatDate(favorite.addedAt) }}</div>
             </div>
           </div>
@@ -88,9 +88,24 @@ const confirmRemove = () => {
   pendingDeleteId.value = null
 }
 
-const goToLocation = (favorite) => {
-  sessionStorage.setItem('tp_selected_location', JSON.stringify({ type: favorite.type, name: favorite.name }))
-  router.push('/')
+function formatFavoriteType(type) {
+  const labels = { facility: 'Building / Facility', room: 'Room', building: 'Building' }
+  return labels[type] || type || 'Location'
+}
+
+const goToLocation = (item) => {
+  // Handles composite IDs saved as "facility_123" or "room_456"
+  // Also handles legacy 'building' type for backward compatibility
+  if (item.type === 'facility' || item.type === 'building') {
+    // Navigate to map and highlight the facility by its svg_id or name
+    const target = item.map_svg_id || item.svgId || item.name || ''
+    router.push({ path: '/map', query: { highlight: target } })
+  } else if (item.type === 'room') {
+    router.push({ path: '/navigate', query: { to: item.map_svg_id || item.name || item.id } })
+  } else {
+    // Fallback: go to map
+    router.push('/map')
+  }
 }
 
 const formatDate = (dateString) => {

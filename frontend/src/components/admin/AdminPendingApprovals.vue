@@ -1,9 +1,9 @@
 <template>
   <div class="adminpendingapprovals-section">
-    <h1>Pending Approvals</h1>
+    <h1>Notifications</h1>
     
     <div v-if="pending.length === 0" class="tp-empty">
-      No pending announcements to approve.
+      No notifications to approve.
     </div>
     
     <div v-for="a in pending" :key="a.id" class="adminpendingapprovals-card">

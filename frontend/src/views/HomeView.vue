@@ -1,102 +1,33 @@
 <template>
+  <div class="home-view-wrapper">
+    <div class="home-view">
 
-  <div class="home-view">
-
-    <!-- Onboarding Tutorial -->
-
-    <OnboardingTutorial 
-
-      v-if="showOnboarding" 
-
-      ref="onboardingRef" 
-
-      @complete="onOnboardingComplete" 
-
-      @skip="onOnboardingSkip" 
-
-    />
-
-
-
-    <!-- Unified Top Search & Filter Area -->
-
-    <div class="home-top-overlay">
-
-      <!-- Primary Search Bar -->
-
-      <div class="unified-search-container">
-
-        <div class="unified-search-input-wrapper">
-
-          <span class="material-icons search-icon">search</span>
-
-          <input
-
-            v-model="searchText"
-
-            type="text"
-
-            placeholder="Search locations, facilities..."
-
-            @keyup.enter="performSearch"
-
-            @input="debouncedSearch"
-
-            class="unified-search-input"
-
-          />
-
-          <button v-if="searchText" class="clear-btn" @click="searchText = ''">
-
-            <span class="material-icons">close</span>
-
-          </button>
-
-        </div>
-
-
-
-        <!-- Search Autocomplete Suggestions -->
-
-        <div v-if="searchSuggestions.length > 0 && searchText" class="search-suggestions unified-suggestions">
-
-          <div
-
-            v-for="suggestion in searchSuggestions.slice(0, 6)"
-
-            :key="suggestion.name"
-
-            class="suggestion-item"
-
-            @click="selectSuggestion(suggestion)"
-
-          >
-
-            <span class="material-icons">
-
-              {{ suggestion.type === 'Facility' ? 'business' : 'meeting_room' }}
-
-            </span>
-
-            <div class="suggestion-info">
-
-              <span class="suggestion-name">{{ suggestion.name }}</span>
-
-              <span class="suggestion-type">{{ suggestion.info }}</span>
-
-            </div>
-
+      <!-- Home Header — icon + title on left, search + action icons on right -->
+      <div class="settings-header home-header">
+        <div class="home-header-left">
+          <div class="settings-header-icon">
+            <span class="material-icons">home</span>
           </div>
-
+          <div class="settings-header-text">
+            <h1>Home</h1>
+            <p>Explore SEAIT campus and facilities</p>
+          </div>
         </div>
-
       </div>
+
+      <!-- Onboarding Tutorial -->
+      <OnboardingTutorial
+        v-if="showOnboarding"
+        ref="onboardingRef"
+        @complete="onOnboardingComplete"
+        @skip="onOnboardingSkip"
+      />
 
     <!-- SEAIT Information Section -->
 
     <div class="seait-info-section">
 
-      <div class="seait-header">
+      <div class="seait-header reveal">
 
         <h1 class="seait-title">SEAIT</h1>
 
@@ -156,57 +87,32 @@
 
       </div>
 
-
-
-      <!-- Interactive Campus Map -->
-
-      <div class="seait-map-section">
-
-        <h2 class="seait-map-title">Interactive Campus Map</h2>
-
-        <div class="map-wrapper seait-embedded-map">
-
-          <div 
-
-            class="map-container"
-
-            ref="mapContainer"
-
-            @wheel.prevent="handleZoom"
-
-            @mousedown="startPan"
-
-            @mousemove="handlePan"
-
-            @mouseup="endPan"
-
-            @mouseleave="endPan"
-
-            @touchstart="startTouchPan"
-
-            @touchmove="handleTouchPan"
-
-            @touchend="endPan"
-          >
-      <!-- Scrollable Filter Chips -->
-      <div class="filter-chips-container">
-        <button 
-          class="filter-chip" 
-          :class="{ active: !selectedFacility && !selectedRoom }"
-          @click="clearFilters"
-        >
-          All
-        </button>
-        <button 
-          v-for="facility in facilities"
-          :key="facility.id"
-          class="filter-chip"
-          :class="{ active: selectedFacility === facility.name }"
-          @click="selectFacility(facility.name)"
-        >
-          {{ facility.name }}
-        </button>
+      <!-- Announcements Feed -->
+      <div v-if="announcementsLoading" class="home-announcement-sk-wrap">
+        <AppSkeleton :loading="announcementsLoading" />
       </div>
+      <div class="home-announcements" v-else-if="announcementsRef.length > 0">
+        <h2 class="home-section-title">
+          <span class="material-icons">campaign</span>
+          Announcements
+        </h2>
+        <div
+          v-for="ann in announcementsRef"
+          :key="ann.id"
+          class="announcement-card"
+        >
+          <div class="announcement-header">
+            <span
+              class="announcement-dept-chip"
+              :style="{ background: getDeptColor(ann.department_color) }"
+            >{{ ann.department_label || 'Campus' }}</span>
+            <span class="announcement-date">{{ formatDate(ann.published_at || ann.created_at) }}</span>
+          </div>
+          <h3 class="announcement-title">{{ ann.title }}</h3>
+          <p class="announcement-body" v-if="ann.body">{{ ann.body.substring(0, 120) }}{{ ann.body.length > 120 ? '…' : '' }}</p>
+        </div>
+      </div>
+
 
       <!-- Course Filter Row — highlight rooms by academic program -->
       <div v-if="courses.length > 0" class="course-filter-row">
@@ -235,47 +141,63 @@
     </div>
 
     <!-- Map container with markers -->
-    <div class="map-wrapper">
-      <div 
-        class="map-container"
-        ref="mapContainer"
-        @wheel.prevent="handleZoom"
-        @mousedown="startPan"
-        @mousemove="handlePan"
-        @mouseup="endPan"
-        @mouseleave="endPan"
-        @touchstart="startTouchPan"
-        @touchmove="handleTouchPan"
-        @touchend="endPan"
-      >
+    <div class="home-map-outer">
+      <div class="map-wrapper">
         <div 
-          class="map-content"
-          :style="mapTransformStyle"
+          class="map-container"
+          ref="mapContainer"
+          @mousedown="startPan"
+          @mousemove="handlePan"
+          @mouseup="endPan"
+          @mouseleave="endPan"
+          @touchstart.passive="startTouchPan"
+          @touchmove.passive="handleTouchPan"
+          @touchend="endTouchPan"
         >
-          <!-- SEAIT Campus Map SVG -->
-          <div class="seait-map-wrapper">
-            <img 
-              src="../assets/SEAIT_Map.svg" 
-              class="seait-map-image"
-              alt="SEAIT Campus Map"
-              draggable="false"
-            />
-          </div>
-          
-          <!-- Map markers overlay -->
-          <div
-            v-for="marker in filteredMarkers"
-            :key="marker.id"
-            class="map-marker"
-            :style="[getMarkerStyle(marker), markerCourseStyle(marker)]"
-            @click.stop="showMarkerInfo(marker)"
+          <div 
+            class="map-content"
+            :style="mapTransformStyle"
           >
+            <!-- SEAIT Campus Map SVG -->
+            <div class="seait-map-wrapper">
+              <img 
+                src="../assets/Map_labeled.svg" 
+                class="seait-map-image"
+                alt="SEAIT Campus Map"
+                draggable="false"
+              />
+            </div>
+            
+            <!-- Map markers overlay -->
+            <div
+              v-for="marker in filteredMarkers"
+              :key="marker.id"
+              class="map-marker"
+              :style="[getMarkerStyle(marker), markerCourseStyle(marker)]"
+              @click.stop="showMarkerInfo(marker)"
+            >
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Map zoom controls — outside overflow:hidden, overlaid via outer wrapper -->
+      <div class="home-map-controls">
+        <button class="map-ctrl-btn" @click="zoomIn" title="Zoom in" aria-label="Zoom in">
+          <span class="material-icons">add</span>
+        </button>
+        <div class="map-ctrl-divider"></div>
+        <button class="map-ctrl-btn" @click="zoomOut" title="Zoom out" aria-label="Zoom out">
+          <span class="material-icons">remove</span>
+        </button>
+        <div class="map-ctrl-divider"></div>
+        <button class="map-ctrl-btn map-ctrl-reset" @click="resetTransform" title="Reset view" aria-label="Reset map view">
+          <span class="material-icons">center_focus_strong</span>
+        </button>
+      </div>
     </div>
-  </div>
-  <!-- Campus Image Gallery -->
+
+    <!-- Campus Image Gallery -->
 
       <div class="seait-gallery">
 
@@ -317,28 +239,88 @@
 
       </div>
 
-    </div>
-
 
 
     <!-- Bottom controls - MOBILE ONLY -->
-
     <div class="bottom-controls mobile-only">
-
-      <!-- Menu and action buttons -->
-
+      <!-- Menu button, Chatbot, Search, Notifications, Star -->
       <div class="action-row">
-
+        <!-- Hamburger menu -->
         <button class="menu-btn" @click="showMenu = true">
-
           <span class="material-icons">menu</span>
-
         </button>
 
-        
+        <!-- Chatbot button (next to hamburger) -->
+        <button
+          class="bottom-action-btn"
+          @click="goToChatbot"
+          title="Chatbot"
+          aria-label="Open chatbot"
+        >
+          <span class="material-icons">smart_toy</span>
+        </button>
 
+        <!-- Search bar -->
+        <div class="bottom-search-bar">
+          <div class="bottom-search-inner" :class="{ 'is-focused': searchFocused }">
+            <span class="material-icons bottom-search-icon">search</span>
+            <input
+              v-model="searchText"
+              type="text"
+              placeholder="Search locations..."
+              @keyup.enter="performSearch"
+              @input="debouncedSearch"
+              @focus="searchFocused = true"
+              @blur="searchFocused = false"
+              class="bottom-search-input"
+            />
+            <button v-if="searchText" class="bottom-search-clear" @click="searchText = ''; searchSuggestions = []">
+              <span class="material-icons">close</span>
+            </button>
+          </div>
+
+          <!-- Autocomplete dropdown -->
+          <div v-if="searchSuggestions.length > 0 && searchText" class="bottom-search-suggestions">
+            <div
+              v-for="suggestion in searchSuggestions.slice(0, 6)"
+              :key="suggestion.name"
+              class="suggestion-item"
+              @click="selectSuggestion(suggestion)"
+            >
+              <span class="material-icons">
+                {{ suggestion.type === 'Facility' ? 'business' : 'meeting_room' }}
+              </span>
+              <div class="suggestion-info">
+                <span class="suggestion-name">{{ suggestion.name }}</span>
+                <span class="suggestion-type">{{ suggestion.info }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications button -->
+        <button
+          class="bottom-action-btn"
+          @click="goToNotifications"
+          title="Notifications"
+          aria-label="Notifications"
+        >
+          <span class="material-icons">notifications</span>
+          <span v-if="unreadNotifications > 0" class="bottom-action-badge">
+            {{ unreadNotifications > 9 ? '9+' : unreadNotifications }}
+          </span>
+        </button>
+
+        <!-- Star/Ratings button -->
+        <button
+          class="bottom-action-btn"
+          @click="showRatingDialog"
+          title="Rate App"
+          aria-label="Rate app"
+        >
+          <span class="material-icons">star</span>
+        </button>
       </div>
-
     </div>
 
 
@@ -380,20 +362,6 @@
             </div>
 
             <span>Rooms Info</span>
-
-          </div>
-
-          <div class="menu-divider"></div>
-
-          <div class="menu-item" @click="openRateApp">
-
-            <div class="menu-item-icon">
-
-              <span class="material-icons">star</span>
-
-            </div>
-
-            <span>Rate App</span>
 
           </div>
 
@@ -449,57 +417,32 @@
 
 
 
-    <!-- Rating Dialog -->
-
-    <div v-if="showRating" class="modal-overlay" @click="showRating = false">
-
-      <div class="dialog" @click.stop>
-
-        <h3>Rate this App</h3>
-
+    <!-- Rating Sheet -->
+    <BottomSheetOverlay v-model="showRating" max-height="60vh">
+      <div class="rating-sheet-content">
+        <h3 class="rating-sheet-title">Rate TechnoPath</h3>
         <div class="star-rating">
-
           <span
-
             v-for="n in 5"
-
             :key="n"
-
             class="star material-icons"
-
             :class="{ filled: n <= rating }"
-
             @click="rating = n"
-
-          >
-
-            {{ n <= rating ? 'star' : 'star_border' }}
-
-          </span>
-
+          >{{ n <= rating ? 'star' : 'star_border' }}</span>
         </div>
-
+        <p class="rating-hint">{{ ratingHint }}</p>
         <textarea
-
           v-model="ratingComment"
-
+          class="rating-textarea"
           placeholder="Leave a comment (optional)"
-
           rows="3"
-
         ></textarea>
-
-        <div class="dialog-actions">
-
-          <button @click="showRating = false">Cancel</button>
-
-          <button class="primary" @click="submitRating">Submit</button>
-
+        <div class="rating-actions">
+          <button class="rating-cancel-btn" @click="showRating = false">Cancel</button>
+          <button class="rating-submit-btn" @click="submitRating">Submit</button>
         </div>
-
       </div>
-
-    </div>
+    </BottomSheetOverlay>
 
 
 
@@ -553,6 +496,32 @@
 
     </div>
 
+    <!-- Floating Action Buttons — chatbot only (notifications + ratings now in bottom nav) -->
+    <div class="home-fab-stack">
+      <button class="home-fab home-fab-chatbot" @click="goToChatbot" title="Open Chatbot" aria-label="Open chatbot">
+        <span class="material-icons">smart_toy</span>
+      </button>
+      <!-- Desktop-only extras since desktop has sidebar nav instead of bottom nav -->
+      <button class="home-fab home-fab-notifications desktop-only" @click="goToNotifications" title="Notifications" aria-label="Notifications">
+        <span class="material-icons">notifications</span>
+        <span v-if="unreadNotifications > 0" class="fab-badge">{{ unreadNotifications }}</span>
+      </button>
+      <button class="home-fab home-fab-ratings desktop-only" @click="showRatingDialog" title="Rate App" aria-label="Rate app">
+        <span class="material-icons">star</span>
+      </button>
+    </div>
+
+    <!-- Chatbot Overlay Sheet -->
+    <BottomSheetOverlay v-model="showChatbotSheet" max-height="90vh">
+      <ChatbotView :embedded="true" @close="showChatbotSheet = false" />
+    </BottomSheetOverlay>
+
+    <!-- Notifications Overlay Sheet -->
+    <BottomSheetOverlay v-model="showNotificationsSheet" max-height="88vh">
+      <NotificationsView :embedded="true" @close="showNotificationsSheet = false" />
+    </BottomSheetOverlay>
+
+  </div>
   </div>
 
 </template>
@@ -568,25 +537,13 @@ import { useSyncStore } from '../stores/syncStore.js'
 import { useAuthStore } from '../stores/authStore.js'
 import { showToast } from '../services/toast.js'
 import OnboardingTutorial from '../components/OnboardingTutorial.vue'
+import useMapPanZoom from '../composables/useMapPanZoom.js'
+import AppSkeleton from '../components/AppSkeleton.vue'
 import { isOnline } from '../services/sync.js'
 import api from '../services/api.js'
-import useMapPanZoom from '../composables/useMapPanZoom.js'
-import { registerBones } from 'boneyard-js'
-import AppSkeleton from '../components/AppSkeleton.vue'
-
-registerBones({
-  'home-announcement': {
-    width: 400, height: 90,
-    bones: [
-      { x: 0, y: 0,  w: 22, h: 18, r: 9 },
-      { x: 0, y: 26, w: 68, h: 16, r: 6 },
-      { x: 0, y: 50, w: 90, h: 12, r: 5 },
-      { x: 0, y: 68, w: 72, h: 12, r: 5 },
-    ]
-  }
-})
-
-
+import BottomSheetOverlay from '../components/BottomSheetOverlay.vue'
+import ChatbotView        from './ChatbotView.vue'
+import NotificationsView  from './NotificationsView.vue'
 
 const router = useRouter()
 
@@ -604,7 +561,7 @@ const facilities = ref([])
 
 const rooms = ref([])
 
-// const mapMarkers = ref([]) // Disabled - markers removed from map
+const mapMarkers = ref([])
 
 const selectedFacility = ref('')
 
@@ -617,6 +574,7 @@ const isFacilitiesExpanded = ref(false)
 const isRoomsExpanded = ref(false)
 
 const searchText = ref('')
+const searchFocused = ref(false)
 
 const currentLocation = ref('')
 
@@ -642,6 +600,44 @@ const searchSuggestions = ref([])
 
 let searchDebounceTimer = null
 
+// Announcements
+const announcementsRef = ref([])
+const announcementsLoading = ref(false)
+async function loadAnnouncements() {
+  const now = Date.now()
+  if (now - lastFetchTime.announcements < CACHE_DURATION) return
+  lastFetchTime.announcements = now
+
+  announcementsLoading.value = true
+  try {
+    const res = await api.get('/announcements/')
+    announcementsRef.value = (res.data || [])
+      .filter(a => a.status === 'published')
+      .slice(0, 3) // Show max 3 on home
+  } catch (e) {
+    if (e.response?.status !== 429) {
+      console.error('Error loading announcements:', e)
+    }
+  }
+  announcementsLoading.value = false
+}
+
+function getDeptColor(colorName) {
+  const colors = {
+    orange: '#FF9800', teal: '#009688', blue: '#2196F3',
+    green: '#4CAF50', red: '#F44336', purple: '#9C27B0',
+    amber: '#FFC107', charcoal: '#607D8B', dark_blue: '#1565C0',
+    brown: '#795548', indigo: '#3F51B5', dark_green: '#2E7D32',
+  }
+  return colors[colorName] || '#FF9800'
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
 const selectedMarker = ref(null)
 
 const isMarkerInfoVisible = ref(false)
@@ -658,7 +654,7 @@ const {
 
   transformStyle: mapTransformStyle,
 
-  zoomIn, zoomOut,
+  zoomIn, zoomOut, resetTransform,
 
   onPointerDown: startPan,
 
@@ -671,6 +667,8 @@ const {
   onTouchStart: startTouchPan,
 
   onTouchMove: handleTouchPan,
+
+  onTouchEnd: endTouchPan,
 
   initTransform
 
@@ -767,22 +765,20 @@ const loadData = async () => {
       }
     }
 
-    // Try to load search history from API if online
-
+    // Try to load search history from API if online (with cache)
     if (isOnline()) {
-
-      try {
-
-        const searchRes = await api.get('/core/search-history/')
-
-        recentSearches.value = searchRes.data.slice(0, 10)
-
-      } catch {
-
-        // Silently fail for search history
-
+      const now = Date.now()
+      if (now - lastFetchTime.searchHistory >= CACHE_DURATION) {
+        lastFetchTime.searchHistory = now
+        try {
+          const searchRes = await api.get('/core/search-history/')
+          recentSearches.value = searchRes.data.slice(0, 10)
+        } catch (e) {
+          if (e.response?.status !== 429) {
+            console.error('Error loading search history:', e)
+          }
+        }
       }
-
     }
 
   } catch (error) {
@@ -893,20 +889,27 @@ watch(() => route.query, () => {
 
 
 
+// Cache for API requests to prevent 429 errors
+const lastFetchTime = {
+  notifications: 0,
+  announcements: 0,
+  searchHistory: 0
+}
+const CACHE_DURATION = 30000 // 30 seconds
+
 const loadNotificationCount = async () => {
+  const now = Date.now()
+  if (now - lastFetchTime.notifications < CACHE_DURATION) return
+  lastFetchTime.notifications = now
 
   try {
-
     const res = await api.get('/notifications/')
-
     unreadNotifications.value = res.data.filter(n => !n.is_read).length
-
   } catch (error) {
-
-    console.error('Error loading notifications:', error)
-
+    if (error.response?.status !== 429) {
+      console.error('Error loading notifications:', error)
+    }
   }
-
 }
 
 
@@ -1367,11 +1370,13 @@ const selectSearchResult = (result) => {
 
 
 
-// Navigation
+// Navigation - Using overlay sheets instead of full page navigation
+const showChatbotSheet       = ref(false)
+const showNotificationsSheet = ref(false)
 
-const goToNotifications = () => router.push('/notifications')
+const goToNotifications = () => { showNotificationsSheet.value = true }
 
-const goToChatbot = () => router.push('/chatbot')
+const goToChatbot       = () => { showChatbotSheet.value       = true }
 
 const goToBuildingInfo = () => { showMenu.value = false; router.push('/building-info') }
 
@@ -1425,6 +1430,8 @@ onMounted(async () => {
 
   await loadData()
 
+  loadAnnouncements()
+
   handleDeepLink()
 
   loadNotificationCount()
@@ -1462,6 +1469,7 @@ onMounted(async () => {
 /* Styles moved to external file: src/assets/homeview.css */
 
 @import '../assets/homeview.css';
+@import '../assets/settings.css';
 
 /* Desktop Floating Action Buttons - Aligned to the right */
 .desktop-fab-container {
@@ -1530,6 +1538,14 @@ onMounted(async () => {
     bottom: 20px;
     right: 20px;
     left: auto;
+  }
+  .home-fab-stack,
+  .home-fab-chatbot,
+  .home-fab-notifications.desktop-only,
+  .home-fab-ratings.desktop-only {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
   }
 }
 

@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 
 const emit = defineEmits(['complete', 'skip'])
 
@@ -67,84 +67,90 @@ const transitionName = ref('slide-left')
 const steps = [
   {
     icon: 'map',
-    title: 'Welcome to Technopath',
-    description: 'Your interactive campus guide. Navigate SEAIT with ease and discover campus facilities.',
+    title: 'Welcome to TechnoPath',
+    description: 'Your interactive SEAIT campus guide. Navigate buildings, find rooms, and explore the campus with ease.',
     highlight: null
   },
   {
     icon: 'search',
     title: 'Quick Search',
-    description: 'Find any building, room, or facility instantly. Use the search bar at the top to locate your destination.',
+    description: 'Type any building, room, or facility name in the search bar above to find it instantly.',
     highlight: 'search'
   },
   {
-    icon: 'touch_app',
+    icon: 'explore',
     title: 'Interactive Map',
-    description: 'Tap on markers to see details. Zoom and pan to explore. Tap markers to add favorites or navigate.',
+    description: 'The embedded map lets you zoom and pan across the full SEAIT campus. Tap a marker to get details.',
     highlight: 'map'
   },
   {
-    icon: 'favorite',
-    title: 'Save Favorites',
-    description: 'Save frequently visited locations for quick access. Your favorites sync across sessions.',
-    highlight: 'favorites'
+    icon: 'directions',
+    title: 'Turn-by-Turn Navigation',
+    description: 'Use the Navigate tab in the bottom bar to get step-by-step directions between any two campus points.',
+    highlight: 'navigate'
   },
   {
     icon: 'chat',
-    title: 'AI Assistant',
-    description: 'Have questions? Our chatbot can help you find locations, hours, and answer campus FAQs.',
+    title: 'AI Campus Assistant',
+    description: 'Have a question about campus? Tap the chatbot button to ask our AI assistant — it works offline too.',
     highlight: 'chatbot'
   },
   {
-    icon: 'navigation',
-    title: 'Get Directions',
-    description: 'Use the navigate feature to find the best route between any two points on campus.',
-    highlight: 'navigate'
+    icon: 'campaign',
+    title: 'Campus Announcements',
+    description: 'Stay updated with announcements from departments and administrators right on your home screen.',
+    highlight: null
   }
 ]
 
 const isLastStep = computed(() => currentStep.value === steps.length - 1)
 
+// Re-calculate highlight position after DOM settles on step change
+watch(currentStep, async () => {
+  await nextTick()
+  // Force re-render of highlight by touching a reactive value
+  // (getHighlightStyle is called reactively in the template)
+})
+
 const getHighlightStyle = () => {
-  // Return responsive positioning styles based on current step
-  // Uses viewport-relative units and safe-area insets for better mobile support
-  const styles = {
-    search: { 
-      top: 'calc(var(--safe-top, 0px) + 80px)', 
-      left: '50%', 
-      transform: 'translateX(-50%)', 
-      width: 'min(90%, 400px)', 
-      height: '60px' 
-    },
-    map: { 
-      top: '50%', 
-      left: '50%', 
-      transform: 'translate(-50%, -50%)', 
-      width: 'min(200px, 50vw)', 
-      height: 'min(200px, 30vh)' 
-    },
-    favorites: { 
-      bottom: 'calc(120px + var(--safe-bottom, 0px))', 
-      right: '20px', 
-      width: '56px', 
-      height: '56px' 
-    },
-    chatbot: { 
-      bottom: 'calc(140px + var(--safe-bottom, 0px))', 
-      left: '50%', 
-      transform: 'translateX(-50%)', 
-      width: '56px', 
-      height: '56px' 
-    },
-    navigate: { 
-      bottom: 'calc(140px + var(--safe-bottom, 0px))', 
-      left: '50%', 
-      transform: 'translateX(-50%)', 
-      width: '56px', 
-      height: '56px' 
-    }
+  const key = steps[currentStep.value].highlight
+  if (!key) return {}
+
+  // Map each step key to a CSS selector that targets the actual DOM element
+  const selectors = {
+    search:    '.home-search-input-wrapper, .unified-search-input-wrapper',
+    map:       '.seait-embedded-map, .map-container',
+    favorites: '.desktop-fab-btn.desktop-ratings-btn, .favorites-view, [href="/favorites"]',
+    chatbot:   '.desktop-fab-btn.desktop-chatbot-btn, [href="/chatbot"]',
+    navigate:  '[href="/navigate"], .app-nav-item[to="/navigate"]',
   }
-  return styles[steps[currentStep.value].highlight] || {}
+
+  const selector = selectors[key]
+  if (!selector) return {}
+
+  // Try each comma-separated selector until one matches
+  const candidates = selector.split(',').map(s => s.trim())
+  let el = null
+  for (const s of candidates) {
+    el = document.querySelector(s)
+    if (el) break
+  }
+
+  if (!el) {
+    // Element not found: hide the highlight gracefully instead of misplacing it
+    return { display: 'none' }
+  }
+
+  const rect = el.getBoundingClientRect()
+  const padding = 8
+
+  return {
+    position: 'fixed',
+    top:    `${rect.top    - padding}px`,
+    left:   `${rect.left   - padding}px`,
+    width:  `${rect.width  + padding * 2}px`,
+    height: `${rect.height + padding * 2}px`,
+  }
 }
 
 const nextStep = () => {

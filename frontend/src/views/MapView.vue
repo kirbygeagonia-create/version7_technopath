@@ -4,19 +4,18 @@
 
     <!-- Map container with pan/zoom -->
     <div class="mapview-canvas" ref="canvasRef"
-      @wheel.prevent="onWheel"
       @mousedown="onPointerDown"
       @mousemove="onPointerMove"
       @mouseup="onPointerUp"
       @mouseleave="onPointerUp"
-      @touchstart.prevent="onTouchStart"
-      @touchmove.prevent="onTouchMove"
-      @touchend="onPointerUp"
+      @touchstart.passive="onTouchStart"
+      @touchmove.passive="onTouchMove"
+      @touchend="onTouchEnd"
     >
       <div class="mapview-transform" :style="transformStyle">
         <!-- SVG Map -->
         <img 
-          src="../assets/SEAITMAP.svg" 
+          src="../assets/Map_labeled.svg" 
           class="mapview-svg" 
           alt="Campus Map" 
           draggable="false"
@@ -49,11 +48,16 @@
 
     <!-- Zoom Controls -->
     <div class="mapview-zoom">
-      <button @click="zoomIn" class="mapview-zoom-btn" title="Zoom In">
+      <button @click="zoomIn" class="mapview-zoom-btn" title="Zoom In" aria-label="Zoom in">
         <span class="material-icons">add</span>
       </button>
-      <button @click="zoomOut" class="mapview-zoom-btn" title="Zoom Out">
+      <div class="mapview-zoom-divider"></div>
+      <button @click="zoomOut" class="mapview-zoom-btn" title="Zoom Out" aria-label="Zoom out">
         <span class="material-icons">remove</span>
+      </button>
+      <div class="mapview-zoom-divider"></div>
+      <button @click="resetTransform" class="mapview-zoom-btn mapview-zoom-reset" title="Reset view" aria-label="Reset map view">
+        <span class="material-icons">center_focus_strong</span>
       </button>
     </div>
 
@@ -184,8 +188,8 @@ const lastSync = ref(null)
 const canvasRef = ref(null)
 const {
   scale, translateX: tx, translateY: ty, isPanning, transformStyle: transformStylePanZoom,
-  zoomIn, zoomOut, onPointerDown, onPointerMove, onPointerUp, onWheel,
-  onTouchStart, onTouchMove, initTransform
+  zoomIn, zoomOut, resetTransform, onPointerDown, onPointerMove, onPointerUp, onWheel,
+  onTouchStart, onTouchMove, onTouchEnd, initTransform
 } = useMapPanZoom()
 
 // panStart: declared here to prevent ReferenceError if any residual touch handler references it.

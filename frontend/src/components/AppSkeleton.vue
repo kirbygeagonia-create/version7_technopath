@@ -1,23 +1,14 @@
 <template>
-  <Skeleton
-    :loading="loading"
-    :name="name"
-    :animate="animate"
-    :transition="220"
-    :stagger="55"
-    :color="skColor"
-    dark-color="#252525"
-    :class="wrapClass"
-  >
-    <slot />
-  </Skeleton>
+  <div class="skeleton-wrapper" :class="wrapClass">
+    <div v-if="loading" class="skeleton-loader" :class="[animate, { dark }]">
+      <div class="skeleton-bone" v-for="i in 5" :key="i" :style="{ animationDelay: `${(i-1) * 100}ms` }"></div>
+    </div>
+    <slot v-else />
+  </div>
 </template>
 
 <script setup>
-import { Skeleton } from 'boneyard-js'
-import { computed } from 'vue'
-
-const props = defineProps({
+defineProps({
   loading:   { type: Boolean, required: true },
   name:      { type: String,  default: undefined },
   animate:   { type: String,  default: 'shimmer' },
@@ -25,5 +16,42 @@ const props = defineProps({
   dark:      { type: Boolean, default: false },
 })
 
-const skColor = computed(() => props.dark ? '#252525' : '#e6e6e6')
+defineOptions({
+  inheritAttrs: false
+})
 </script>
+
+<style scoped>
+.skeleton-loader {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.skeleton-bone {
+  height: 72px;
+  background: #e6e6e6;
+  border-radius: 12px;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-loader.dark .skeleton-bone {
+  background: #252525;
+}
+
+@keyframes shimmer {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.skeleton-loader.pulse .skeleton-bone {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.02); opacity: 1; }
+}
+</style>

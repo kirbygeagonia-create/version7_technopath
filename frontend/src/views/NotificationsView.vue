@@ -1,7 +1,7 @@
 <template>
-  <div class="notifications-view">
+  <div class="notifications-view" :class="{ embedded: props.embedded }">
     <header class="notifications-top-bar">
-      <button class="notifications-back-btn" @click="goBack">
+      <button v-if="!props.embedded" class="notifications-back-btn" @click="goBack">
         <span class="material-icons">arrow_back</span>
       </button>
       <div class="notifications-header-title">
@@ -68,6 +68,9 @@ import api from '../services/api.js'
 import { isOnline } from '../services/sync.js'
 import { showToast } from '../services/toast.js'
 
+const props = defineProps({ embedded: { type: Boolean, default: false } })
+const emit  = defineEmits(['close'])
+
 const router        = useRouter()
 const notifications = ref([])
 
@@ -75,7 +78,10 @@ const unreadCount = computed(() =>
   notifications.value.filter(n => !n.is_read).length
 )
 
-const goBack = () => router.back()
+const goBack = () => {
+  if (props.embedded) { emit('close') }
+  else { router.back() }
+}
 
 onMounted(async () => {
   try {

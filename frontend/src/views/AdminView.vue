@@ -66,8 +66,8 @@
 
           <button v-if="auth.canApproveAnnouncements"
                   :class="navCls('pending')" @click="go('pending')">
-            <span class="material-icons tp-nav-icon">pending_actions</span>
-            <span>Pending Approvals</span>
+            <span class="material-icons tp-nav-icon">notifications</span>
+            <span>Notifications</span>
             <span v-if="pendingCount > 0" class="tp-nav-badge tp-badge-urgent">{{ pendingCount }}</span>
           </button>
 

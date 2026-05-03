@@ -377,7 +377,7 @@
                 <img 
                   :src="getFullMapUrl(map.url)" 
                   :alt="map.filename"
-                  @error="$event.target.src = '/assets/SEAITMAP.svg'"
+                  @error="$event.target.src = '/assets/Map_labeled.svg'"
                 />
                 <div v-if="map.is_active" class="active-badge">
                   <span class="material-icons">check_circle</span>
@@ -473,8 +473,8 @@ const loadingMaps = ref(false)
 const viewingMap = ref(null)
 
 // Map selector for canvas background
-const selectedMap = ref('/SEAITMAP.svg')
-const availableMaps = ref([{ filename: 'SEAITMAP.svg', url: '/SEAITMAP.svg', is_active: true }])
+const selectedMap = ref(`${import.meta.env.BASE_URL}Map_labeled.svg`)
+const availableMaps = ref([{ filename: 'Map_labeled.svg', url: `${import.meta.env.BASE_URL}Map_labeled.svg`, is_active: true }])
 const canvasWrapper = ref(null)
 
 // Canvas zoom/pan state
@@ -504,19 +504,19 @@ async function loadAvailableMaps() {
     if (!selectedMap.value && availableMaps.value.length > 0) {
       selectedMap.value = availableMaps.value[0].url
     }
-    // Fallback to SEAITMAP.svg if no maps loaded
+    // Fallback to Map_labeled.svg if no maps loaded
     if (availableMaps.value.length === 0) {
-      availableMaps.value = [{ filename: 'SEAITMAP.svg', url: '/SEAITMAP.svg', is_active: true }]
+      availableMaps.value = [{ filename: 'Map_labeled.svg', url: `${import.meta.env.BASE_URL}Map_labeled.svg`, is_active: true }]
       if (!selectedMap.value) {
-        selectedMap.value = '/SEAITMAP.svg'
+        selectedMap.value = `${import.meta.env.BASE_URL}Map_labeled.svg`
       }
     }
   } catch (error) {
     console.error('Failed to load maps for selector:', error)
-    // Fallback to SEAITMAP.svg on error
-    availableMaps.value = [{ filename: 'SEAITMAP.svg', url: '/SEAITMAP.svg', is_active: true }]
+    // Fallback to Map_labeled.svg on error
+    availableMaps.value = [{ filename: 'Map_labeled.svg', url: `${import.meta.env.BASE_URL}Map_labeled.svg`, is_active: true }]
     if (!selectedMap.value) {
-      selectedMap.value = '/SEAITMAP.svg'
+      selectedMap.value = `${import.meta.env.BASE_URL}Map_labeled.svg`
     }
   }
 }

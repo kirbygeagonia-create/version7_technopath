@@ -1,0 +1,629 @@
+/* ============================================================
+   FLUID RESPONSIVE LAYER — technopath-fluid.css
+   Replaces all hard breakpoints with clamp() / fluid values.
+   Works on: 320px phones ? 430px phones ? 768px tablets ?
+             1024px iPad Pro ? 1280px+ desktops
+   ============================================================ */
+
+/* -- 1. Fluid CSS custom properties ------------------------ */
+/*
+   clamp(MIN, PREFERRED, MAX)
+   PREFERRED uses viewport-relative calc so it scales linearly
+   between MIN and MAX across the full width range.
+
+   Formula: calc(MIN + (MAX - MIN) * (100vw - 320px) / (1280 - 320))
+   Simplified with vw: MIN + (MAX-MIN)/960 * 100vw
+*/
+
+:root {
+  /* Fluid font sizes — scale from mobile to desktop */
+  --fluid-xs:   clamp(10px, 0.6rem + 0.3vw, 12px);
+  --fluid-sm:   clamp(12px, 0.7rem + 0.4vw, 14px);
+  --fluid-base: clamp(14px, 0.8rem + 0.4vw, 16px);
+  --fluid-md:   clamp(15px, 0.85rem + 0.5vw, 17px);
+  --fluid-lg:   clamp(16px, 0.9rem + 0.6vw, 20px);
+  --fluid-xl:   clamp(18px, 1rem + 0.8vw, 24px);
+  --fluid-2xl:  clamp(20px, 1.1rem + 1.2vw, 30px);
+  --fluid-3xl:  clamp(24px, 1.3rem + 2vw, 40px);
+  --fluid-hero: clamp(28px, 2rem + 3vw, 56px);
+
+  /* Fluid spacing — scale from mobile to desktop */
+  --fluid-1:  clamp(3px,  0.2rem + 0.2vw, 5px);
+  --fluid-2:  clamp(6px,  0.3rem + 0.4vw, 10px);
+  --fluid-3:  clamp(10px, 0.5rem + 0.5vw, 14px);
+  --fluid-4:  clamp(14px, 0.7rem + 0.7vw, 20px);
+  --fluid-5:  clamp(18px, 0.9rem + 0.9vw, 26px);
+  --fluid-6:  clamp(20px, 1rem + 1vw, 32px);
+  --fluid-8:  clamp(28px, 1.4rem + 1.5vw, 48px);
+  --fluid-10: clamp(36px, 1.8rem + 2vw, 64px);
+
+  /* Fluid layout */
+  --fluid-sidebar:      clamp(200px, 18vw, 260px);
+  --fluid-content-max:  clamp(600px, 90vw, 1100px);
+  --fluid-card-gap:     clamp(10px, 1.2vw, 20px);
+  --fluid-page-pad:     clamp(12px, 3vw, 40px);
+  --fluid-header-pad:   clamp(16px, 3.5vw, 36px);
+  --fluid-bottom-nav:   clamp(56px, 7vh, 68px);
+  --fluid-top-bar:      clamp(52px, 7vh, 68px);
+
+  /* Fluid border radius */
+  --fluid-radius-sm:  clamp(4px,  0.4vw, 8px);
+  --fluid-radius-md:  clamp(8px,  0.8vw, 12px);
+  --fluid-radius-lg:  clamp(12px, 1.2vw, 18px);
+  --fluid-radius-xl:  clamp(16px, 1.8vw, 24px);
+  --fluid-radius-2xl: clamp(20px, 2.5vw, 32px);
+}
+
+/* -- 2. Override base tokens with fluid values -------------- */
+/* These override the fixed px values in main.css */
+
+:root {
+  --text-xs:   var(--fluid-xs);
+  --text-sm:   var(--fluid-sm);
+  --text-base: var(--fluid-base);
+  --text-md:   var(--fluid-md);
+  --text-lg:   var(--fluid-lg);
+  --text-xl:   var(--fluid-xl);
+  --text-2xl:  var(--fluid-2xl);
+  --text-3xl:  var(--fluid-3xl);
+
+  --space-1:  var(--fluid-1);
+  --space-2:  var(--fluid-2);
+  --space-3:  var(--fluid-3);
+  --space-4:  var(--fluid-4);
+  --space-5:  var(--fluid-5);
+  --space-6:  var(--fluid-6);
+  --space-8:  var(--fluid-8);
+  --space-10: var(--fluid-10);
+
+  --sidebar-width:     var(--fluid-sidebar);
+  --bottom-nav-height: var(--fluid-bottom-nav);
+  --top-bar-height:    var(--fluid-top-bar);
+
+  --radius-sm:  var(--fluid-radius-sm);
+  --radius-md:  var(--fluid-radius-md);
+  --radius-lg:  var(--fluid-radius-lg);
+  --radius-xl:  var(--fluid-radius-xl);
+  --radius-2xl: var(--fluid-radius-2xl);
+}
+
+/* -- 3. Fluid HTML base font -------------------------------- */
+html {
+  font-size: clamp(14px, 0.875rem + 0.25vw, 16px);
+}
+
+/* -- 4. Fluid page headers ---------------------------------- */
+.settings-header,
+.chatbot-header,
+.navview-header,
+.notifications-top-bar,
+.feedback-top-bar,
+.favorites-header,
+.infoview-top-bar,
+.profile-header {
+  padding: var(--fluid-4) var(--fluid-page-pad);
+}
+
+.settings-header-text h1,
+.notifications-header-title h1,
+.favorites-header h1,
+.profile-header h1 {
+  font-size: var(--fluid-xl);
+}
+
+.settings-header-text p,
+.chatbot-header-text p {
+  font-size: var(--fluid-sm);
+}
+
+.settings-header-icon,
+.chatbot-header-icon {
+  width:  clamp(40px, 5vw, 56px);
+  height: clamp(40px, 5vw, 56px);
+}
+
+/* -- 5. Fluid bottom navigation ----------------------------- */
+.app-bottom-nav {
+  height: calc(var(--fluid-bottom-nav) + env(safe-area-inset-bottom));
+}
+
+.app-nav-item .material-icons {
+  font-size: clamp(20px, 2.5vw, 26px);
+}
+
+.app-nav-label {
+  font-size: clamp(9px, 0.6rem + 0.2vw, 12px);
+}
+
+/* -- 6. Fluid sidebar --------------------------------------- */
+.app-side-nav {
+  width: var(--fluid-sidebar);
+}
+
+.app-main-area.app-with-sidebar {
+  margin-left: var(--fluid-sidebar);
+}
+
+.app-logo-text {
+  font-size: clamp(15px, 1.2vw, 20px);
+}
+
+.app-side-nav-item {
+  font-size: clamp(13px, 1vw, 15px);
+  padding: clamp(9px, 0.8vw, 13px) clamp(12px, 1.2vw, 16px);
+}
+
+/* -- 7. Fluid home page ------------------------------------- */
+.home-top-overlay {
+  padding: var(--fluid-4) var(--fluid-page-pad) 0;
+  max-width: min(680px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.seait-info-section {
+  padding: var(--fluid-8) var(--fluid-page-pad) var(--fluid-10);
+}
+
+.seait-title {
+  font-size: clamp(1.6rem, 4vw + 0.5rem, 3.2rem);
+  letter-spacing: clamp(1px, 0.3vw, 4px);
+}
+
+.seait-subtitle {
+  font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+}
+
+/* Fluid highlight grid — auto-fit so it fills any width */
+.seait-highlights {
+  grid-template-columns: repeat(auto-fit, minmax(clamp(140px, 20vw, 220px), 1fr));
+  gap: var(--fluid-card-gap);
+  max-width: var(--fluid-content-max);
+}
+
+.highlight-card {
+  padding: clamp(14px, 2vw, 24px) clamp(12px, 1.5vw, 20px);
+}
+
+.highlight-icon {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+}
+
+.highlight-card h3 {
+  font-size: clamp(0.78rem, 1.1vw, 0.95rem);
+}
+
+.highlight-card p {
+  font-size: clamp(0.72rem, 0.9vw, 0.85rem);
+}
+
+/* Fluid map */
+.map-wrapper {
+  height: clamp(260px, 45vw, 520px);
+  min-height: unset;
+  max-height: unset;
+}
+
+.map-wrapper.seait-embedded-map {
+  height: clamp(240px, 40vw, 480px);
+}
+
+/* Fluid announcements */
+.home-announcements,
+.seait-map-section,
+.seait-gallery {
+  max-width: var(--fluid-content-max);
+}
+
+.announcement-card {
+  padding: clamp(12px, 1.5vw, 20px);
+}
+
+.announcement-title {
+  font-size: clamp(13px, 1.2vw, 16px);
+}
+
+.announcement-body {
+  font-size: clamp(12px, 1vw, 14px);
+}
+
+/* Fluid gallery */
+.gallery-grid {
+  grid-template-columns: repeat(auto-fit, minmax(clamp(140px, 22vw, 280px), 1fr));
+  gap: var(--fluid-card-gap);
+}
+
+.gallery-item img {
+  height: clamp(120px, 18vw, 220px);
+}
+
+.gallery-item-wide img {
+  height: clamp(160px, 22vw, 280px);
+}
+
+/* -- 8. Fluid search bar ------------------------------------ */
+.unified-search-input-wrapper {
+  padding: clamp(10px, 1.2vw, 14px) clamp(14px, 1.8vw, 20px);
+}
+
+.unified-search-input {
+  font-size: clamp(14px, 1.1vw, 16px);
+}
+
+/* -- 9. Fluid cards (settings, profile, info) --------------- */
+.settings-content,
+.profile-content,
+.infoview-content,
+.favorites-content,
+.feedback-main-content,
+.notifications-main-content {
+  padding: var(--fluid-4) var(--fluid-page-pad);
+  max-width: var(--fluid-content-max);
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.settings-card,
+.profile-card {
+  border-radius: var(--fluid-radius-lg);
+}
+
+.settings-item,
+.profile-item {
+  padding: clamp(12px, 1.4vw, 18px) clamp(14px, 1.8vw, 20px);
+}
+
+.settings-item-title,
+.profile-item-title {
+  font-size: clamp(14px, 1.1vw, 16px);
+}
+
+.settings-item-subtitle,
+.profile-item-subtitle {
+  font-size: clamp(11px, 0.9vw, 13px);
+}
+
+.settings-item-icon,
+.profile-item-icon {
+  width:  clamp(34px, 3.5vw, 44px);
+  height: clamp(34px, 3.5vw, 44px);
+}
+
+/* -- 10. Fluid info/favorites/notifications lists ----------- */
+.infoview-items-list,
+.favorites-list,
+.notifications-list {
+  max-width: var(--fluid-content-max);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.infoview-item-card,
+.favorites-item,
+.notifications-card {
+  padding: clamp(12px, 1.4vw, 18px) clamp(14px, 1.8vw, 20px);
+  border-radius: var(--fluid-radius-lg);
+}
+
+.infoview-item-info h3,
+.favorites-item-title {
+  font-size: clamp(14px, 1.1vw, 16px);
+}
+
+/* -- 11. Fluid chatbot -------------------------------------- */
+.chatbot-view {
+  max-width: min(900px, 100%);
+  margin: 0 auto;
+}
+
+.chatbot-messages-container {
+  padding: clamp(14px, 2vw, 28px) clamp(12px, 2.5vw, 32px);
+}
+
+.chatbot-message {
+  padding: clamp(10px, 1.2vw, 16px) clamp(14px, 1.8vw, 20px);
+}
+
+.chatbot-message-content {
+  font-size: clamp(13px, 1vw, 15px);
+}
+
+.chatbot-input-area {
+  padding: clamp(8px, 1vw, 14px) clamp(12px, 2vw, 24px);
+  padding-bottom: calc(clamp(8px, 1vw, 14px) + env(safe-area-inset-bottom, 0px));
+}
+
+/* -- 12. Fluid navigate view -------------------------------- */
+.navview-panel {
+  padding: var(--fluid-4);
+}
+
+.navview-find-btn {
+  min-height: clamp(42px, 5vw, 52px);
+  font-size: clamp(14px, 1.1vw, 16px);
+}
+
+/* -- 13. Fluid modals & dialogs ----------------------------- */
+.dialog,
+.profile-dialog,
+.infoview-detail-modal {
+  border-radius: var(--fluid-radius-xl);
+  padding: clamp(18px, 2.5vw, 28px);
+  max-width: min(420px, 92vw);
+}
+
+.menu-sheet {
+  border-radius: var(--fluid-radius-xl) var(--fluid-radius-xl) 0 0;
+}
+
+/* -- 14. Fluid FABs ----------------------------------------- */
+.desktop-fab-btn {
+  width:  clamp(46px, 4vw, 56px);
+  height: clamp(46px, 4vw, 56px);
+}
+
+.desktop-fab-btn .material-icons {
+  font-size: clamp(20px, 1.8vw, 24px);
+}
+
+/* -- 15. Tablet-specific layout (768–1023px) ---------------- */
+/*
+   On tablets we show a COMPACT sidebar (icon-only) instead of
+   hiding it entirely. This gives iPad users proper navigation.
+*/
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Compact icon-only sidebar */
+  .app-side-nav {
+    width: 64px;
+    overflow: visible;
+  }
+
+  .app-main-area.app-with-sidebar {
+    margin-left: 64px;
+  }
+
+  .app-logo-text,
+  .app-nav-text,
+  .app-dropdown-chevron,
+  .app-username {
+    display: none;
+  }
+
+  .app-side-nav-header {
+    padding: 14px 12px;
+    justify-content: center;
+  }
+
+  .app-logo-img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .app-side-nav-menu {
+    padding: 8px 6px;
+    align-items: center;
+  }
+
+  .app-side-nav-item {
+    padding: 12px;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    width: 100%;
+  }
+
+  .app-side-nav-item .material-icons {
+    font-size: 22px;
+  }
+
+  /* Tooltip on hover for icon-only sidebar */
+  .app-side-nav-item {
+    position: relative;
+  }
+
+  .app-side-nav-item::after {
+    content: attr(data-label);
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--color-text-primary);
+    color: var(--color-bg);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: var(--radius-md);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-fast);
+    z-index: 200;
+    box-shadow: var(--shadow-md);
+  }
+
+  .app-side-nav-item:hover::after {
+    opacity: 1;
+  }
+
+  .app-info-section,
+  .app-admin-section,
+  .app-side-nav-footer {
+    padding: 6px;
+  }
+
+  .app-info-dropdown-header {
+    padding: 12px;
+    justify-content: center;
+  }
+
+  .app-admin-link {
+    padding: 12px;
+    justify-content: center;
+  }
+
+  .app-user-info {
+    justify-content: center;
+    padding: 10px 8px;
+  }
+
+  /* Hide bottom nav on tablet since we have sidebar */
+  .app-bottom-nav {
+    display: none;
+  }
+
+  /* Remove bottom padding since no bottom nav */
+  #app-root.app-mobile .app-content-area {
+    padding-bottom: 0;
+  }
+
+  /* Tablet content gets more breathing room */
+  .seait-highlights {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+
+  .home-top-overlay {
+    max-width: 560px;
+  }
+}
+
+/* -- 16. Large tablet / small desktop (1024–1279px) -------- */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  :root {
+    --fluid-sidebar: clamp(220px, 20vw, 250px);
+    --fluid-content-max: clamp(700px, 85vw, 960px);
+  }
+
+  .seait-highlights {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* -- 17. Wide desktop (1280px+) ----------------------------- */
+@media (min-width: 1280px) {
+  :root {
+    --fluid-sidebar: 260px;
+    --fluid-content-max: 1100px;
+    --fluid-page-pad: 40px;
+  }
+
+  .seait-highlights {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .gallery-item-wide {
+    grid-column: span 2;
+  }
+}
+
+/* -- 18. Small phone (< 360px) ------------------------------ */
+@media (max-width: 359px) {
+  :root {
+    --fluid-page-pad: 10px;
+  }
+
+  .seait-highlights {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .highlight-card {
+    padding: 12px 8px;
+  }
+
+  .app-nav-label {
+    font-size: 9px;
+  }
+
+  .settings-header-text h1 {
+    font-size: 18px;
+  }
+}
+
+/* -- 19. Fluid feedback form -------------------------------- */
+.feedback-form {
+  max-width: var(--fluid-content-max);
+  margin: 0 auto;
+  padding: var(--fluid-4);
+  gap: var(--fluid-5);
+}
+
+.feedback-chip {
+  height: clamp(32px, 4vw, 40px);
+  padding: 0 clamp(12px, 1.5vw, 20px);
+  font-size: clamp(12px, 1vw, 14px);
+}
+
+.feedback-btn {
+  min-height: clamp(44px, 5.5vw, 54px);
+  font-size: clamp(14px, 1.1vw, 16px);
+  border-radius: var(--fluid-radius-md);
+}
+
+/* -- 20. Fluid navigate panel ------------------------------- */
+@media (min-width: 768px) {
+  .navview-panel {
+    position: absolute;
+    top: clamp(70px, 8vw, 100px);
+    left: clamp(16px, 2.5vw, 28px);
+    width: clamp(300px, 32vw, 400px);
+    border-radius: var(--fluid-radius-xl);
+    z-index: 15;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .navview-route-info {
+    left: auto;
+    right: clamp(16px, 2.5vw, 28px);
+    bottom: clamp(16px, 2.5vw, 28px);
+    width: clamp(300px, 32vw, 400px);
+    border-radius: var(--fluid-radius-xl);
+    max-height: 70vh;
+  }
+}
+
+/* -- 21. Fluid splash screen -------------------------------- */
+.splash-logo-container {
+  width:  clamp(120px, 18vw, 180px);
+  height: clamp(120px, 18vw, 180px);
+}
+
+.splash-logo-img {
+  width:  clamp(90px, 13vw, 130px);
+  height: clamp(90px, 13vw, 130px);
+}
+
+.splash-title {
+  font-size: clamp(20px, 3vw + 0.5rem, 30px);
+}
+
+.splash-subtitle {
+  font-size: clamp(13px, 1.5vw, 17px);
+}
+
+/* -- 22. Fluid admin login ---------------------------------- */
+.admin-login-card {
+  width: clamp(300px, 90vw, 440px);
+  padding: clamp(24px, 4vw, 48px);
+  border-radius: var(--fluid-radius-xl);
+}
+
+/* -- 23. Touch target safety net --------------------------- */
+/* Ensure all interactive elements stay at least 44px on small screens */
+@media (max-width: 480px) {
+  button,
+  [role="button"],
+  .app-nav-item,
+  .settings-item,
+  .profile-item,
+  .infoview-item-card,
+  .favorites-item,
+  .notifications-card,
+  .suggestion-item,
+  .recent-search-item {
+    min-height: 44px;
+  }
+}

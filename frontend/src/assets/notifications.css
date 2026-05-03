@@ -1,61 +1,64 @@
-/* ── Notifications View ─────────────────────────────────────── */
-/* FIX: chip styles moved here from NotificationsView.vue inline <style> block */
+/* Notifications View � Redesigned */
 
 .notifications-view {
   display: flex;
   flex-direction: column;
   height: 100dvh;
-  background: var(--color-bg);
+  background: var(--color-surface);
 }
 
 .notifications-top-bar {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 0 var(--space-4);
-  height: var(--top-bar-height);
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
+  padding: 16px 20px;
   position: sticky;
   top: 0;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .notifications-back-btn {
-  background: none;
-  border: none;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
   cursor: pointer;
   padding: var(--space-2);
   border-radius: var(--radius-full);
-  color: var(--color-text-primary);
+  color: white;
   display: flex;
   align-items: center;
+  width: 40px; height: 40px;
+  justify-content: center;
+  transition: background var(--duration-fast);
 }
 
-.notifications-header-title {
-  flex: 1;
-}
+.notifications-back-btn:hover { background: rgba(255,255,255,0.3); }
+
+.notifications-header-title { flex: 1; }
 
 .notifications-header-title h1 {
-  font-size: var(--text-lg);
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
 }
 
 .notifications-read-btn {
-  background: none;
-  border: none;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
   cursor: pointer;
   padding: var(--space-2);
   border-radius: var(--radius-full);
-  color: var(--color-text-secondary);
+  color: white;
   display: flex;
   align-items: center;
-  transition: color 0.2s;
+  width: 40px; height: 40px;
+  justify-content: center;
+  transition: background var(--duration-fast);
 }
 
-.notifications-read-btn:hover {
-  color: var(--color-primary);
-}
+.notifications-read-btn:hover { background: rgba(255,255,255,0.3); }
 
 .notifications-spacer { width: 40px; }
 
@@ -69,6 +72,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .notifications-empty-state {
@@ -82,62 +87,54 @@
 }
 
 .notifications-empty-icon {
-  width: 72px;
-  height: 72px;
+  width: 72px; height: 72px;
   border-radius: var(--radius-full);
   background: var(--color-surface);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: var(--space-2);
+  border: 1px solid var(--color-border);
 }
 
-.notifications-empty-icon .material-icons {
-  font-size: 36px;
-  color: var(--color-text-hint);
-}
+.notifications-empty-icon .material-icons { font-size: 36px; color: var(--color-text-hint); }
 
-.notifications-empty-state h2 {
-  font-size: var(--text-xl);
-  font-weight: 600;
-}
-
-.notifications-empty-state p {
-  color: var(--color-text-secondary);
-  font-size: var(--text-sm);
-}
+.notifications-empty-state h2 { font-size: var(--text-xl); font-weight: 600; }
+.notifications-empty-state p { color: var(--color-text-secondary); font-size: var(--text-sm); }
 
 .notifications-card {
-  background: var(--color-surface);
+  background: var(--color-bg);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: all var(--duration-fast);
+  border: 1px solid var(--color-border);
   border-left: 4px solid transparent;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: var(--space-3);
+  box-shadow: var(--shadow-xs);
 }
 
 .notifications-card:hover {
-  background: var(--color-surface-2);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-border);
 }
 
 .notifications-card.notifications-unread {
   background: var(--color-primary-light);
   border-left-color: var(--color-primary);
+  border-color: rgba(255,152,0,0.2);
 }
 
-.notifications-card-content {
-  flex: 1;
-  min-width: 0;
-}
+.notifications-card-content { flex: 1; min-width: 0; }
 
 .notifications-card h3 {
   font-size: var(--text-base);
   font-weight: 600;
   margin: var(--space-1) 0;
+  color: var(--color-text-primary);
 }
 
 .notifications-card p {
@@ -156,34 +153,28 @@
 
 /* Delete button */
 .notifications-delete-btn {
-  background: var(--color-surface-2, rgba(255,255,255,0.1));
-  border: 1px solid var(--color-border, rgba(255,255,255,0.2));
+  background: transparent;
+  border: 1px solid var(--color-border);
   padding: var(--space-2);
   cursor: pointer;
-  color: var(--color-text-secondary, #888);
+  color: var(--color-text-hint);
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast);
   flex-shrink: 0;
-  min-width: 36px;
-  min-height: 36px;
+  min-width: 34px; min-height: 34px;
 }
 
 .notifications-delete-btn:hover {
-  background: var(--color-danger, #F44336);
-  color: white;
-  border-color: var(--color-danger, #F44336);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-color: var(--color-danger);
 }
 
-.notifications-delete-btn:active {
-  transform: scale(0.9);
-}
-
-.notifications-delete-btn .material-icons {
-  font-size: 20px;
-}
+.notifications-delete-btn:active { transform: scale(0.9); }
+.notifications-delete-btn .material-icons { font-size: 18px; }
 
 .notifications-badge {
   font-size: var(--text-xs);
@@ -201,7 +192,7 @@
   margin-left: auto;
 }
 
-/* ── Department source chips (moved from inline style) ─────── */
+/* Department source chips */
 .source-chip {
   display: inline-block;
   font-size: var(--text-xs);

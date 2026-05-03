@@ -151,3 +151,26 @@ def dashboard_stats(request):
         'audit_logs_count': AdminAuditLog.objects.count(),
     }
     return Response(stats)
+
+
+from rest_framework.views import APIView
+from rest_framework import status as http_status
+
+class AppRatingView(APIView):
+    """Public endpoint for app ratings submitted from HomeView."""
+    permission_classes = []
+
+    def post(self, request):
+        rating  = request.data.get('rating')
+        comment = request.data.get('comment', '')
+        if not rating or not isinstance(rating, int) or not (1 <= rating <= 5):
+            return Response({'error': 'rating must be an integer 1–5'},
+                            status=http_status.HTTP_400_BAD_REQUEST)
+        # Store as a Feedback entry so it appears in the admin Feedback panel
+        from apps.feedback.models import Feedback
+        Feedback.objects.create(
+            rating   = rating,
+            comment  = comment,
+            category = 'general',
+        )
+        return Response({'message': 'Rating submitted. Thank you!'}, status=http_status.HTTP_201_CREATED)

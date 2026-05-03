@@ -1,12 +1,9 @@
 /* ============================================================
    App.vue External Styles — Desktop & Mobile Layouts
-   Dark mode aware (uses CSS custom properties from main.css)
+   Redesigned for clean, modern UI — May 2026
    ============================================================ */
 
-/* Global styles */
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -21,21 +18,13 @@ body {
   width: 100vw;
 }
 
-html, body {
-  height: 100%;
-  width: 100%;
-}
+html, body { height: 100%; width: 100%; }
 
-#app-root {
-  height: 100%;
-  width: 100%;
-}
+#app-root { height: 100%; width: 100%; }
 
 /* ── Desktop Layout ───────────────────────────────────────── */
 
-#app-root.app-desktop {
-  display: flex;
-}
+#app-root.app-desktop { display: flex; }
 
 /* ── Side Navigation ──────────────────────────────────────── */
 
@@ -48,19 +37,20 @@ html, body {
   flex-direction: column;
   position: fixed;
   left: 0;
-  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
   top: 0;
   z-index: 100;
+  box-shadow: 2px 0 16px rgba(0,0,0,0.06);
   transition: background-color var(--duration-normal) var(--ease-out),
               border-color var(--duration-normal) var(--ease-out);
 }
 
 .app-side-nav-header {
-  padding: 20px;
+  padding: 20px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
   border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
 }
 
 .app-logo-img {
@@ -68,8 +58,9 @@ html, body {
   height: 40px;
   border-radius: var(--radius-md);
   object-fit: contain;
-  background: var(--color-primary-light);
+  background: rgba(255,255,255,0.95);
   padding: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .app-logo-fallback {
@@ -78,25 +69,24 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-primary-light);
+  background: rgba(255,255,255,0.2);
   border-radius: var(--radius-md);
-  color: var(--color-primary);
+  color: white;
 }
 
-.app-logo-fallback .material-icons {
-  font-size: 24px;
-}
+.app-logo-fallback .material-icons { font-size: 24px; }
 
 .app-logo-text {
   font-size: 18px;
   font-weight: 700;
-  color: var(--color-primary);
+  color: white;
   letter-spacing: -0.3px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
 
 .app-side-nav-menu {
   flex: 1;
-  padding: 12px 10px;
+  padding: 10px 8px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -107,7 +97,7 @@ html, body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 16px;
+  padding: 11px 14px;
   border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--color-text-secondary);
@@ -125,7 +115,7 @@ html, body {
 
 .app-side-nav-item.app-active {
   background: var(--color-primary-light);
-  color: var(--color-primary);
+  color: var(--color-primary-dark);
   font-weight: 600;
 }
 
@@ -140,27 +130,22 @@ html, body {
   background: var(--color-primary);
 }
 
-.app-side-nav-item .material-icons {
-  font-size: 21px;
-}
+.app-side-nav-item .material-icons { font-size: 21px; }
 
-.app-nav-text {
-  font-size: 14px;
-  font-weight: inherit;
-}
+.app-nav-text { font-size: 14px; font-weight: inherit; }
 
 /* ── Info Dropdown Section ─────────────────────────────────── */
 
 .app-info-section {
   border-top: 1px solid var(--color-border);
-  padding: 6px 10px;
+  padding: 6px 8px;
 }
 
 .app-info-dropdown-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 16px;
+  padding: 11px 14px;
   border-radius: var(--radius-md);
   cursor: pointer;
   color: var(--color-text-secondary);
@@ -173,9 +158,7 @@ html, body {
   color: var(--color-text-primary);
 }
 
-.app-info-dropdown-header .material-icons {
-  font-size: 21px;
-}
+.app-info-dropdown-header .material-icons { font-size: 21px; }
 
 .app-info-dropdown-header .app-dropdown-chevron {
   margin-left: auto;
@@ -192,7 +175,7 @@ html, body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 16px 9px 48px;
+  padding: 9px 14px 9px 46px;
   border-radius: var(--radius-sm);
   text-decoration: none;
   color: var(--color-text-secondary);
@@ -206,9 +189,7 @@ html, body {
   color: var(--color-text-primary);
 }
 
-.app-info-item .material-icons {
-  font-size: 18px;
-}
+.app-info-item .material-icons { font-size: 18px; }
 
 .app-info-item.router-link-active {
   background: var(--color-primary-light);
@@ -218,7 +199,7 @@ html, body {
 /* ── Admin Section ─────────────────────────────────────────── */
 
 .app-admin-section {
-  padding: 6px 10px;
+  padding: 6px 8px;
   border-top: 1px solid var(--color-border);
 }
 
@@ -226,28 +207,26 @@ html, body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 16px;
+  padding: 11px 14px;
   border-radius: var(--radius-md);
   text-decoration: none;
-  color: var(--color-text-secondary);
+  color: var(--color-primary-dark);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  background: var(--color-primary-light);
   transition: all var(--duration-fast) var(--ease-out);
 }
 
 .app-admin-link:hover {
-  background: var(--color-surface);
-  color: var(--color-text-primary);
+  background: rgba(255,152,0,0.2);
 }
 
-.app-admin-link .material-icons {
-  font-size: 21px;
-}
+.app-admin-link .material-icons { font-size: 21px; }
 
 /* ── Sidebar Footer ───────────────────────────────────────── */
 
 .app-side-nav-footer {
-  padding: 12px 10px;
+  padding: 10px 8px;
   border-top: 1px solid var(--color-border);
 }
 
@@ -263,7 +242,7 @@ html, body {
 
 .app-user-info .material-icons {
   font-size: 20px;
-  color: var(--color-text-hint);
+  color: var(--color-primary);
 }
 
 .app-username {
@@ -280,17 +259,13 @@ html, body {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  justify-content: flex-start;
-  align-items: stretch;
 }
 
 .app-main-area.app-with-sidebar {
   margin-left: var(--sidebar-width, 240px);
 }
 
-.app-main-area.app-full-width {
-  margin-left: 0;
-}
+.app-main-area.app-full-width { margin-left: 0; }
 
 .app-main-content {
   flex: 1;
@@ -318,7 +293,7 @@ html, body {
 }
 
 .app-status-banner.app-offline {
-  background: #424242;
+  background: #37474F;
   color: white;
 }
 
@@ -327,9 +302,7 @@ html, body {
   color: white;
 }
 
-.app-status-banner .material-icons {
-  font-size: 16px;
-}
+.app-status-banner .material-icons { font-size: 16px; }
 
 /* ── Mobile Layout ────────────────────────────────────────── */
 
@@ -337,8 +310,7 @@ html, body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  justify-content: flex-start;
-  align-items: stretch;
+  height: 100dvh;
 }
 
 #app-root.app-mobile .app-content-area {
@@ -346,7 +318,7 @@ html, body {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 72px;
+  padding-bottom: calc(var(--fluid-bottom-nav, 60px) + env(safe-area-inset-bottom));
   display: block;
 }
 
@@ -357,15 +329,15 @@ html, body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: calc(64px + env(safe-area-inset-bottom));
+  height: calc(60px + env(safe-area-inset-bottom));
   background: var(--color-bg);
   border-top: 1px solid var(--color-border);
   display: flex;
   justify-content: space-around;
-  align-items: center;
+  align-items: stretch;
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 100;
-  box-shadow: 0 -1px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
   transition: background-color var(--duration-normal) var(--ease-out),
               border-color var(--duration-normal) var(--ease-out);
 }
@@ -381,35 +353,51 @@ html, body {
   text-decoration: none;
   color: var(--color-text-hint);
   transition: color var(--duration-fast) var(--ease-out);
+  position: relative;
+  padding: 6px 4px;
 }
 
-.app-nav-item .material-icons {
-  font-size: 24px;
-}
+.app-nav-item .material-icons { font-size: 23px; }
 
 .app-nav-label {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 600;
   font-family: var(--font-primary);
+  letter-spacing: 0.2px;
 }
 
 .app-nav-item.app-active {
   color: var(--color-primary);
 }
 
-.app-nav-item:active {
-  transform: scale(0.93);
+.app-nav-item.app-active .material-icons {
+  animation: navBounce 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.app-nav-item:active { transform: scale(0.93); }
+
+/* Active indicator pill */
+.app-nav-item.app-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  background: var(--color-primary);
+  border-radius: 0 0 3px 3px;
 }
 
 /* Notification badge on nav items */
 .nav-badge {
   position: absolute;
-  top: 2px;
-  right: calc(50% - 20px);
+  top: 4px;
+  right: calc(50% - 22px);
   background: var(--color-danger, #F44336);
   color: white;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 9px;
+  font-weight: 700;
   min-width: 16px;
   height: 16px;
   border-radius: 8px;
@@ -417,6 +405,11 @@ html, body {
   align-items: center;
   justify-content: center;
   padding: 0 4px;
+  border: 2px solid var(--color-bg);
+}
+
+.nav-badge.feedback-badge {
+  background: var(--color-primary);
 }
 
 /* Desktop side nav badge */
@@ -429,7 +422,6 @@ html, body {
   height: 14px;
 }
 
-/* Alternative badge position for side nav */
 .nav-badge-alt {
   margin-left: auto;
   background: var(--color-danger, #F44336);
@@ -445,7 +437,6 @@ html, body {
   padding: 0 5px;
 }
 
-/* Notification dot for bell icon (subtle indicator) */
 .nav-dot {
   position: absolute;
   top: -2px;
@@ -457,7 +448,6 @@ html, body {
   border: 2px solid var(--color-bg);
 }
 
-/* Make material-icons wrapper relative for badge positioning */
 .app-nav-item .material-icons,
 .app-side-nav-item .material-icons {
   position: relative;
@@ -465,30 +455,24 @@ html, body {
 
 /* ── Responsive ───────────────────────────────────────────── */
 
-@media (max-width: 1023px) {
-  .app-side-nav {
-    display: none;
-  }
-  .app-main-area {
-    margin-left: 0;
-  }
+@media (max-width: 767px) {
+  .app-side-nav { display: none; }
+  .app-main-area { margin-left: 0; }
 }
 
-@media (min-width: 1024px) {
-  .app-bottom-nav {
-    display: none;
-  }
+@media (min-width: 768px) {
+  .app-bottom-nav { display: none; }
 }
 
 /* ── Keyframes ────────────────────────────────────────────── */
 
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes navBounce {
+  0%   { transform: scale(1)   translateY(0);    }
+  45%  { transform: scale(1.3) translateY(-3px); }
+  100% { transform: scale(1)   translateY(0);    }
 }

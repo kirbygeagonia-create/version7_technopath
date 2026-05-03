@@ -57,7 +57,7 @@ async function generateFlaskResponse(userMessage) {
   })
   if (!response.ok) throw new Error(`Flask chatbot error: ${response.status}`)
   const data = await response.json()
-  return data.reply
+  return { reply: data.reply, messageId: data.message_id }
 }
 
 /**
@@ -107,11 +107,14 @@ export async function sendMessage(userMessage) {
   await saveToHistory('user', userMessage)
 
   let response
+  let messageId = null
   let source = 'flask'
 
   if (isOnline()) {
     try {
-      response = await generateFlaskResponse(userMessage)
+      const result = await generateFlaskResponse(userMessage)
+      response = result.reply
+      messageId = result.messageId
     } catch (flaskErr) {
       console.warn('[Chatbot] Flask unavailable, using rule-based fallback:', flaskErr.message)
       response = await generateRuleBasedResponse(userMessage)
@@ -129,7 +132,7 @@ export async function sendMessage(userMessage) {
     conversationHistory.splice(0, conversationHistory.length - MAX_HISTORY * 2)
   }
 
-  return { reply: response, source, isOffline: !isOnline() }
+  return { reply: response, messageId, source, isOffline: !isOnline() }
 }
 
 export function clearHistory() {
@@ -146,4 +149,20 @@ export function getStatus() {
   }
 }
 
-export default { sendMessage, clearHistory, getStatus, initChatHistory }
+/**
+ * Rate a chatbot response (up/down) — server-side learning
+ */
+export async function rateMessage(messageId, rating) {
+  if (!messageId || !['up', 'down'].includes(rating)) {
+    throw new Error('messageId and rating (up/down) required')
+  }
+  const response = await fetch(`${FLASK_CHATBOT_URL}/rate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message_id: messageId, rating })
+  })
+  if (!response.ok) throw new Error(`Rating failed: ${response.status}`)
+  return response.json()
+}
+
+export default { sendMessage, clearHistory, getStatus, initChatHistory, rateMessage }
