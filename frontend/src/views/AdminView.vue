@@ -106,6 +106,21 @@
           </button>
         </div>
 
+        <!-- ── Analytics group ──────────────── -->
+        <div v-if="!isMobile" class="tp-nav-group-label clickable" @click="toggleSection('analytics')">
+          <span class="tp-group-icon"><span class="material-icons">analytics</span></span>
+          <span>ANALYTICS</span>
+          <span class="material-icons tp-collapse-icon">{{ collapsedSections.analytics ? 'expand_more' : 'expand_less' }}</span>
+        </div>
+
+        <div v-show="!collapsedSections.analytics" class="tp-nav-group-items">
+          <button v-if="!isMobile"
+                  :class="navCls('bargraph')" @click="go('bargraph')">
+            <span class="material-icons tp-nav-icon">bar_chart</span>
+            <span>Database Analytics</span>
+          </button>
+        </div>
+
         <!-- ── System group ──────────────── -->
         <div v-if="!isMobile" class="tp-nav-group-label">
           <span class="tp-group-icon"><span class="material-icons">dns</span></span>
@@ -164,6 +179,7 @@
       <AdminAccounts         v-else-if="section === 'admins'      && auth.canManageAdminAccounts" />
       <AdminFeedback         v-else-if="section === 'feedback'    && (auth.canViewAllFeedback || auth.canViewDeptFeedback)" />
       <AdminAuditLog         v-else-if="section === 'auditlog'    && auth.canViewAuditLog" />
+      <AdminBarGraph         v-else-if="section === 'bargraph'" />
 
       <div v-else class="tp-access-denied">
         <span class="material-icons">lock</span>
@@ -197,6 +213,7 @@ import { useAuthStore } from '../stores/authStore.js'
 import api from '../services/api.js'
 
 import AdminDashboard        from '../components/admin/AdminDashboard.vue'
+import AdminBarGraph         from '../components/admin/AdminBarGraph.vue'
 import AdminFacilities       from '../components/admin/AdminFacilities.vue'
 import AdminRooms            from '../components/admin/AdminRooms.vue'
 import AdminPathManager      from '../components/admin/AdminPathManager.vue'
@@ -222,6 +239,7 @@ const collapsedSections = ref({
   map: true,
   communications: true,
   administration: true,
+  analytics: true,
   system: true
 })
 
