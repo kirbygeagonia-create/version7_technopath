@@ -288,9 +288,9 @@
           </div>
         </div>
 
-        <!-- Success Message -->
-        <div v-if="saveSuccess" class="admin-success-message">
-          <span class="material-icons">check_circle</span>
+        <!-- Success/Error Message -->
+        <div v-if="saveSuccess" class="admin-success-message" :class="{ error: saveSuccessMessage.includes('❌') }">
+          <span class="material-icons">{{ saveSuccessMessage.includes('❌') ? 'error' : 'check_circle' }}</span>
           <span>{{ saveSuccessMessage }}</span>
         </div>
 
@@ -1055,6 +1055,16 @@ const savePath = async (stayOpen = false) => {
   isSaving.value = true
   saveSuccess.value = false
   
+  // Timeout wrapper for API calls
+  const withTimeout = (promise, timeoutMs = 10000) => {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
+      )
+    ])
+  }
+  
   try {
     console.log('[AdminPathManager] Saving path...')
     
@@ -1077,7 +1087,7 @@ const savePath = async (stayOpen = false) => {
       })
     }
 
-    // Build points array from visualPoints (only for non-empty elementIds)
+    // Build points array from visualPoints
     const points = elementIds.map((id, index) => {
       const vp = visualPoints.value[index]
       if (vp && (vp.x !== 0 || vp.y !== 0)) {
@@ -1097,29 +1107,28 @@ const savePath = async (stayOpen = false) => {
       visualPoints: visualPoints.value
     }
 
+    // Save with timeout
     if (isCreatingNew.value) {
-      await pathManager.createPath(pathData)
+      await withTimeout(pathManager.createPath(pathData), 8000)
     } else {
-      await pathManager.updatePath(editingPathId.value, pathData)
+      await withTimeout(pathManager.updatePath(editingPathId.value, pathData), 8000)
     }
 
     await loadPaths()
     
     if (!stayOpen) {
-      // Show success message in component
+      // Show success message
       const pathName = editForm.value.name || 'Unnamed Path'
-      saveSuccessMessage.value = `Path "${pathName}" saved successfully!`
+      saveSuccessMessage.value = `✅ Path "${pathName}" saved successfully!`
       saveSuccess.value = true
-      showToast(`✅ Path "${pathName}" saved!`, 'success')
+      showToast(`Path "${pathName}" saved!`, 'success')
       
-      // Wait for user to see success message
+      // Wait then navigate back
       await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // Navigate back to path list
       saveSuccess.value = false
       cancelEdit()
       
-      // Ensure the group containing the saved path is expanded
+      // Expand the group
       const fromLocation = elementIds[0] || ''
       if (fromLocation) {
         expandedGroups.value[fromLocation] = true
@@ -1127,10 +1136,10 @@ const savePath = async (stayOpen = false) => {
     }
   } catch (error) {
     console.error('[AdminPathManager] Failed to save path:', error)
-    saveSuccessMessage.value = 'Failed to save: ' + error.message
+    saveSuccessMessage.value = '❌ Failed to save: ' + (error.message || 'Network error')
     saveSuccess.value = true
-    showToast('Failed to save path: ' + error.message, 'error')
-    setTimeout(() => saveSuccess.value = false, 3000)
+    showToast('Failed to save: ' + (error.message || 'Network error'), 'error')
+    setTimeout(() => saveSuccess.value = false, 5000)
   } finally {
     isSaving.value = false
   }
@@ -2308,6 +2317,11 @@ onMounted(async () => {
   font-size: 16px;
   box-shadow: 0 4px 16px rgba(76, 175, 80, 0.4);
   animation: slideIn 0.3s ease-out;
+}
+
+.admin-success-message.error {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  box-shadow: 0 4px 16px rgba(244, 67, 54, 0.4);
 }
 
 .admin-success-message .material-icons {
