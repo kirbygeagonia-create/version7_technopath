@@ -497,9 +497,9 @@ class HybridAIEngine:
                 source = 'ml_fallback'
 
         else:
-            # Low confidence - try GPT with clarification, then generic fallback
+            # Low confidence - try GPT with clarification, but still use detected intent for fallback
             context = {
-                'intent': 'unclear',
+                'intent': intent,  # Use actual detected intent, not 'unclear'
                 'confidence': confidence,
                 **entities
             }
@@ -511,8 +511,9 @@ class HybridAIEngine:
                 response_text = f"{clarification_msg}{gpt_response}"
                 source = 'clarification'
             else:
-                response_text = self._generate_fallback_response('general', entities, query)
-                source = 'general_fallback'
+                # Always use the detected intent for fallback, even if confidence is low
+                response_text = self._generate_fallback_response(intent, entities, query)
+                source = 'ml_fallback'
 
         # Step 4: Generate follow-up suggestions
         followups = self._generate_followups(intent, entities)
