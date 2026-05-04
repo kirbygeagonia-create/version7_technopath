@@ -102,6 +102,7 @@
       <h2>
         <span class="material-icons">analytics</span>
         System Data Overview
+        <span class="chart-total-badge">Total: {{ totalDataCount }}</span>
       </h2>
       <div class="chart-container">
         <div class="bar-chart">
@@ -119,6 +120,10 @@
         <div v-for="(item, index) in chartData" :key="index" class="legend-item">
           <span class="legend-color" :style="{ background: item.color }"></span>
           <span class="legend-label">{{ item.label }}</span>
+        </div>
+        <div class="legend-item legend-total">
+          <span class="legend-total-label">Total Records:</span>
+          <span class="legend-total-value">{{ totalDataCount }}</span>
         </div>
       </div>
     </div>
@@ -471,6 +476,18 @@ const chartData = computed(() => {
   ]
 })
 
+// Total data count
+const totalDataCount = computed(() => {
+  return stats.value.totalUsers +
+    stats.value.totalBuildings +
+    stats.value.totalRooms +
+    stats.value.totalPaths +
+    stats.value.totalAnnouncements +
+    stats.value.newFeedback +
+    stats.value.totalChatLogs +
+    stats.value.totalFAQs
+})
+
 onMounted(loadDashboardData)
 </script>
 
@@ -656,6 +673,16 @@ onMounted(loadDashboardData)
 .panel-card h2 .material-icons {
   font-size: 22px;
   color: var(--color-primary);
+}
+
+.chart-total-badge {
+  margin-left: auto;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
 }
 
 .quick-actions {
@@ -1044,6 +1071,27 @@ onMounted(loadDashboardData)
 .legend-label {
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
+}
+
+.legend-total {
+  margin-left: auto;
+  padding: 4px 12px;
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.legend-total-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.legend-total-value {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  font-weight: 700;
+  margin-left: 4px;
 }
 
 @media (max-width: 768px) {
