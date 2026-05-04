@@ -128,3 +128,43 @@ class ChatRating(models.Model):
 
     def __str__(self):
         return f"{self.rating} on [{self.intent_detected}]"
+
+
+class ChatCorrection(models.Model):
+    """Stores user corrections when chatbot gives wrong answers.
+    Admin can review and approve to create new FAQ entries."""
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    # Original chatbot interaction
+    query_text = models.TextField(help_text="User's original question")
+    wrong_response = models.TextField(help_text="Chatbot's wrong answer")
+    intent_detected = models.CharField(max_length=50, blank=True, null=True)
+    session_id = models.CharField(max_length=100, blank=True, null=True)
+
+    # User's correction
+    correct_answer = models.TextField(help_text="User-provided correct answer")
+    user_note = models.TextField(blank=True, null=True, help_text="Optional explanation")
+
+    # Review status
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    reviewed_by = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True, blank=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    review_note = models.TextField(blank=True, null=True)
+
+    # Converted to FAQ (if approved)
+    faq_entry = models.ForeignKey(FAQEntry, on_delete=models.SET_NULL, null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'chat_corrections'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Correction: {self.query_text[:50]}... ({self.status})"

@@ -8,6 +8,8 @@ from .views import (
     # Hybrid AI endpoints
     TrainingDataListCreateView, TrainingDataBatchCreateView,
     ChatRatingCreateView, ChatRatingListView,
+    # User correction learning
+    ChatCorrectionCreateView, ChatCorrectionListView, ChatCorrectionApproveView,
     RetrainTriggerView
 )
 
@@ -36,6 +38,11 @@ urlpatterns = [
     # Chat ratings for continuous learning
     path('ratings/', ChatRatingCreateView.as_view(), name='chat-rating-create'),
     path('ratings/list/', ChatRatingListView.as_view(), name='chat-rating-list'),
+
+    # User corrections - teach chatbot when it's wrong
+    path('corrections/', ChatCorrectionCreateView.as_view(), name='chat-correction-create'),
+    path('corrections/list/', ChatCorrectionListView.as_view(), name='chat-correction-list'),
+    path('corrections/<int:pk>/approve/', ChatCorrectionApproveView.as_view(), name='chat-correction-approve'),
 
     # Manual retrain trigger
     path('retrain/', RetrainTriggerView.as_view(), name='chatbot-retrain'),

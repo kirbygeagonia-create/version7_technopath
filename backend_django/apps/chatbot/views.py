@@ -9,9 +9,10 @@ import os
 import re
 from collections import Counter
 
-from .models import FAQEntry, AIChatLog, FAQSuggestion, TrainingData, ChatRating
-from .serializers import FAQEntrySerializer, AIChatLogSerializer, FAQSuggestionSerializer, TrainingDataSerializer, ChatRatingSerializer
-from apps.users.permissions import ReadOnlyOrSuperAdmin
+from .models import FAQEntry, AIChatLog, FAQSuggestion, TrainingData, ChatRating, ChatCorrection
+from .serializers import FAQEntrySerializer, AIChatLogSerializer, FAQSuggestionSerializer, TrainingDataSerializer, ChatRatingSerializer, ChatCorrectionSerializer
+from apps.users.permissions import ReadOnlyOrSuperAdmin, IsSuperAdmin
+from rest_framework.permissions import AllowAny
 
 
 class FAQListView(generics.ListCreateAPIView):
@@ -538,6 +539,114 @@ class ChatRatingListView(generics.ListAPIView):
             queryset = queryset.filter(created_at__gte=start_date)
 
         return queryset.order_by('-created_at')
+
+
+class ChatCorrectionCreateView(APIView):
+    """
+    Create chat correction when user provides correct answer.
+    Called by frontend when user says chatbot was wrong and gives correct info.
+    """
+    permission_classes = [AllowAny]  # Public endpoint - no auth required
+
+    def post(self, request):
+        data = request.data
+
+        # Validate required fields
+        query_text = data.get('query_text', '').strip()
+        wrong_response = data.get('wrong_response', '').strip()
+        correct_answer = data.get('correct_answer', '').strip()
+
+        if not query_text or not wrong_response or not correct_answer:
+            return Response({
+                'error': 'query_text, wrong_response, and correct_answer are required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create the correction
+        correction = ChatCorrection.objects.create(
+            query_text=query_text,
+            wrong_response=wrong_response,
+            intent_detected=data.get('intent_detected'),
+            session_id=data.get('session_id'),
+            correct_answer=correct_answer,
+            user_note=data.get('user_note', '')
+        )
+
+        return Response({
+            'success': True,
+            'message': 'Thank you! Your correction has been submitted for review.',
+            'correction_id': correction.id,
+            'status': correction.status
+        }, status=status.HTTP_201_CREATED)
+
+
+class ChatCorrectionListView(generics.ListAPIView):
+    """List chat corrections with filtering - for admin review"""
+    queryset = ChatCorrection.objects.all()
+    serializer_class = ChatCorrectionSerializer
+    permission_classes = [ReadOnlyOrSuperAdmin]
+
+    def get_queryset(self):
+        queryset = ChatCorrection.objects.all()
+        status_filter = self.request.query_params.get('status', None)
+        intent = self.request.query_params.get('intent', None)
+
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        if intent:
+            queryset = queryset.filter(intent_detected=intent)
+
+        return queryset.order_by('-created_at')
+
+
+class ChatCorrectionApproveView(APIView):
+    """
+    Admin endpoint to approve a correction and convert to FAQ.
+    Only superadmins can approve corrections.
+    """
+    permission_classes = [IsSuperAdmin]
+
+    def post(self, request, pk):
+        try:
+            correction = ChatCorrection.objects.get(pk=pk)
+        except ChatCorrection.DoesNotExist:
+            return Response({
+                'error': 'Correction not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        if correction.status == 'approved':
+            return Response({
+                'error': 'Correction already approved'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create FAQ entry from correction
+        faq_entry = FAQEntry.objects.create(
+            question=correction.query_text,
+            answer=correction.correct_answer,
+            category='learned',  # Mark as learned from user
+            is_active=True,
+            created_by=request.user
+        )
+
+        # Update correction
+        correction.status = 'approved'
+        correction.faq_entry = faq_entry
+        correction.reviewed_by = request.user
+        correction.reviewed_at = timezone.now()
+        correction.review_note = request.data.get('review_note', 'Approved as new FAQ')
+        correction.save()
+
+        # Also add to training data for ML improvement
+        TrainingData.objects.create(
+            query_text=correction.query_text,
+            intent_label=correction.intent_detected or 'general',
+            source='rating'
+        )
+
+        return Response({
+            'success': True,
+            'message': 'Correction approved and converted to FAQ',
+            'faq_id': faq_entry.id
+        })
 
 
 class RetrainTriggerView(APIView):
