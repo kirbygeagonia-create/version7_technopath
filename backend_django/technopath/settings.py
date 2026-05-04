@@ -132,6 +132,8 @@ CORS_ALLOWED_ORIGINS = [
         'http://localhost:4175',
         'http://localhost:4176',
         'http://localhost:4177',
+        'https://techno-path-frontend.onrender.com',
+        'https://technopath-frontend.onrender.com',
         config('CORS_EXTRA_ORIGIN', default=''),
     ] if o
 ]
