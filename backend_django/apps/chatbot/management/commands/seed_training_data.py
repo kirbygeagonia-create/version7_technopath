@@ -96,14 +96,64 @@ class Command(BaseCommand):
             {"query_text": "Campus safety", "intent_label": "safety_security"},
             {"query_text": "Where is the guard house?", "intent_label": "safety_security"},
 
+            # About SEAIT intent
+            {"query_text": "Tell me about SEAIT", "intent_label": "about_seait"},
+            {"query_text": "What is SEAIT?", "intent_label": "about_seait"},
+            {"query_text": "SEAIT background", "intent_label": "about_seait"},
+            {"query_text": "History of SEAIT", "intent_label": "about_seait"},
+            {"query_text": "About this school", "intent_label": "about_seait"},
+            {"query_text": "What does SEAIT stand for?", "intent_label": "about_seait"},
+            {"query_text": "School information", "intent_label": "about_seait"},
+            {"query_text": "SEAIT history", "intent_label": "about_seait"},
+
+            # Free Tuition intent
+            {"query_text": "Is SEAIT free?", "intent_label": "free_tuition"},
+            {"query_text": "Free tuition", "intent_label": "free_tuition"},
+            {"query_text": "How much is the tuition?", "intent_label": "free_tuition"},
+            {"query_text": "Tuition fee", "intent_label": "free_tuition"},
+            {"query_text": "Is college free here?", "intent_label": "free_tuition"},
+            {"query_text": "Do I pay tuition?", "intent_label": "free_tuition"},
+            {"query_text": "Tuition cost", "intent_label": "free_tuition"},
+            {"query_text": "Is education free at SEAIT?", "intent_label": "free_tuition"},
+
+            # Founders intent
+            {"query_text": "Who founded SEAIT?", "intent_label": "founders"},
+            {"query_text": "Who owns SEAIT?", "intent_label": "founders"},
+            {"query_text": "Who started this school?", "intent_label": "founders"},
+            {"query_text": "Tell me about the founder", "intent_label": "founders"},
+            {"query_text": "Who is the owner?", "intent_label": "founders"},
+            {"query_text": "Tamayo family", "intent_label": "founders"},
+            {"query_text": "School founder", "intent_label": "founders"},
+            {"query_text": "Who established SEAIT?", "intent_label": "founders"},
+
+            # Courses intent
+            {"query_text": "What courses do you offer?", "intent_label": "courses"},
+            {"query_text": "Available programs", "intent_label": "courses"},
+            {"query_text": "Degree programs", "intent_label": "courses"},
+            {"query_text": "What can I study here?", "intent_label": "courses"},
+            {"query_text": "List of courses", "intent_label": "courses"},
+            {"query_text": "BSIT", "intent_label": "courses"},
+            {"query_text": "Criminology program", "intent_label": "courses"},
+            {"query_text": "Hospitality management", "intent_label": "courses"},
+            {"query_text": "Senior high school tracks", "intent_label": "courses"},
+
+            # Contact intent
+            {"query_text": "How to contact SEAIT?", "intent_label": "contact"},
+            {"query_text": "SEAIT contact number", "intent_label": "contact"},
+            {"query_text": "Email address", "intent_label": "contact"},
+            {"query_text": "Phone number", "intent_label": "contact"},
+            {"query_text": "Where is SEAIT located?", "intent_label": "contact"},
+            {"query_text": "School address", "intent_label": "contact"},
+            {"query_text": "How to reach SEAIT?", "intent_label": "contact"},
+            {"query_text": "Contact information", "intent_label": "contact"},
+
             # General intent (catch-all)
-            {"query_text": "Tell me about SEAIT", "intent_label": "general"},
-            {"query_text": "What courses do you offer?", "intent_label": "general"},
-            {"query_text": "Campus map", "intent_label": "general"},
-            {"query_text": "Contact information", "intent_label": "general"},
             {"query_text": "Hello", "intent_label": "general"},
+            {"query_text": "Hi there", "intent_label": "general"},
+            {"query_text": "Good morning", "intent_label": "general"},
             {"query_text": "Thank you", "intent_label": "general"},
             {"query_text": "Goodbye", "intent_label": "general"},
+            {"query_text": "Campus map", "intent_label": "general"},
         ]
 
         created_count = 0

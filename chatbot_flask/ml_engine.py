@@ -390,11 +390,16 @@ class HybridAIEngine:
 
         # Intent-to-followup mapping
         self.followup_suggestions = {
+            'about_seait': ["Is SEAIT free?", "Who founded SEAIT?", "What courses do you offer?", "How do I contact SEAIT?"],
+            'free_tuition': ["What courses are free?", "Are there other fees?", "How do I apply?", "Tell me about SEAIT"],
+            'founders': ["What courses are offered?", "Is tuition really free?", "Tell me about SEAIT"],
+            'courses': ["Is tuition free?", "How do I enroll?", "What are the requirements?", "Tell me about SEAIT"],
+            'contact': ["Where is SEAIT located?", "Is SEAIT free?", "What courses do you offer?"],
             'library_hours': ["Can I borrow books?", "Library rules?", "Do you have computers?"],
             'registrar': ["Enrollment requirements?", "Transcript of records?", "How to pay tuition?"],
             'room_location': ["What's inside that room?", "Who uses that room?", "Other rooms nearby?"],
             'admission': ["Scholarships available?", "Tuition fees?", "Required documents?"],
-            'general': ["Tell me about SEAIT", "Campus map", "Contact information"]
+            'general': ["Tell me about SEAIT", "Is SEAIT free?", "What courses do you offer?", "Contact information"]
         }
 
     def _load_training_data(self):
