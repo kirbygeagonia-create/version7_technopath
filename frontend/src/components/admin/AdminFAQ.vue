@@ -613,22 +613,12 @@ async function loadSuggestions() {
 
 async function loadAnalytics() {
   try {
-    // Use full Flask URL in production, proxy in development
-    const flaskBaseUrl = import.meta.env.PROD 
-      ? 'https://technopath-chatbot.onrender.com'
-      : ''
-    const res = await fetch(`${flaskBaseUrl}/analytics?days=${analyticsDays.value}`)
-    if (!res.ok) throw new Error('Failed to fetch analytics')
-    analytics.value = await res.json()
+    // Use Django backend for analytics (reliable)
+    const res = await api.get(`/chatbot/analytics/?days=${analyticsDays.value}`)
+    analytics.value = res.data
   } catch (error) {
-    console.error('Error loading analytics from chatbot:', error)
-    // Fallback: try Django backend
-    try {
-      const res = await api.get(`/chatbot/analytics/?days=${analyticsDays.value}`)
-      analytics.value = res.data
-    } catch (fallbackError) {
-      console.error('Fallback also failed:', fallbackError)
-    }
+    console.error('Error loading analytics:', error)
+    analytics.value = null
   }
 }
 
