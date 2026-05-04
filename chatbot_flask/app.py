@@ -1159,6 +1159,42 @@ def health():
     return jsonify({"status": "ok"})
 
 
+@app.route("/health/openai", methods=["GET"])
+def health_openai():
+    """Check OpenAI API key status and test connection."""
+    import openai
+
+    key_status = {
+        "api_key_set": bool(_openai_key),
+        "api_key_length": len(_openai_key) if _openai_key else 0,
+        "openai_enabled": OPENAI_ENABLED,
+        "client_initialized": client is not None
+    }
+
+    if not _openai_key:
+        key_status["error"] = "OPENAI_API_KEY not set"
+        return jsonify(key_status), 500
+
+    # Test the API key with a simple request
+    try:
+        if client:
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": "Say 'OK'"}],
+                max_tokens=5
+            )
+            key_status["test_result"] = "success"
+            key_status["test_response"] = response.choices[0].message.content
+        else:
+            key_status["error"] = "OpenAI client not initialized"
+    except Exception as e:
+        key_status["error"] = str(e)
+        key_status["error_type"] = type(e).__name__
+
+    status_code = 200 if key_status.get("test_result") == "success" else 500
+    return jsonify(key_status), status_code
+
+
 @app.route("/feedback", methods=["POST"])
 def record_feedback():
     """Record user feedback for chatbot responses to enable learning."""

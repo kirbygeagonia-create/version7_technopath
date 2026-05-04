@@ -367,8 +367,19 @@ Instructions:
             )
             return response.choices[0].message.content.strip()
         except Exception as e:
-            print(f"[GPT] Error: {e}")
-            return "[Error generating AI response]"
+            error_msg = str(e)
+            print(f"[GPT] Error: {error_msg}")
+            # Return more specific error for debugging
+            if "authentication" in error_msg.lower():
+                return "[OpenAI Error: Invalid API key. Please check your API key configuration.]"
+            elif "rate limit" in error_msg.lower():
+                return "[OpenAI Error: Rate limit exceeded. Please try again later.]"
+            elif "insufficient_quota" in error_msg.lower() or "quota" in error_msg.lower():
+                return "[OpenAI Error: No credits remaining. Please add credits to your OpenAI account.]"
+            elif "invalid_request_error" in error_msg.lower():
+                return f"[OpenAI Error: {error_msg}]"
+            else:
+                return f"[Error generating AI response: {error_msg[:100]}]"
 
 
 class HybridAIEngine:
