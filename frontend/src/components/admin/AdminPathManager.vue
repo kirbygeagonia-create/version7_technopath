@@ -66,7 +66,7 @@
               class="admin-path-item"
               :class="{ 'is-editing': editingPathId === path.id }"
             >
-              <div class="admin-path-info" @click="editPath(path.id)">
+              <div class="admin-path-info">
                 <h4>{{ path.name }}</h4>
                 <p v-if="path.description">{{ path.description }}</p>
                 <div class="admin-path-route">
@@ -83,6 +83,9 @@
                 </div>
               </div>
               <div class="admin-path-actions">
+                <button class="admin-icon-btn" @click="editPath(path.id)" title="Edit Path">
+                  <span class="material-icons">edit</span>
+                </button>
                 <button class="admin-icon-btn" @click.stop="navigateToPath(path.id)" title="Navigate">
                   <span class="material-icons">navigation</span>
                 </button>
