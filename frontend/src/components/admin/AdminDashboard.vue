@@ -97,69 +97,6 @@
       </div>
     </div>
 
-    <!-- SEAIT Campus Info -->
-    <div class="panel-card seait-info">
-      <h2>
-        <span class="material-icons">school</span>
-        SEAIT Campus Overview
-      </h2>
-      <div class="seait-content">
-        <div class="seait-header">
-          <div class="seait-logo">
-            <span class="material-icons">account_balance</span>
-          </div>
-          <div class="seait-details">
-            <h3>Southern Eastern Asia Institute of Technology (SEAIT)</h3>
-            <p class="seait-location">Tandag City, Surigao del Sur, Philippines</p>
-            <p class="seait-type">Technical Education Institution</p>
-          </div>
-        </div>
-        <div class="seait-stats">
-          <div class="seait-stat">
-            <span class="material-icons">account_circle</span>
-            <div>
-              <div class="seait-stat-value">Dr. Mirasol H. Estrada</div>
-              <div class="seait-stat-label">College Dean</div>
-            </div>
-          </div>
-          <div class="seait-stat">
-            <span class="material-icons">domain</span>
-            <div>
-              <div class="seait-stat-value">{{ seaitData.buildings || 0 }}</div>
-              <div class="seait-stat-label">Academic Buildings</div>
-            </div>
-          </div>
-          <div class="seait-stat">
-            <span class="material-icons">room</span>
-            <div>
-              <div class="seait-stat-value">{{ seaitData.rooms || 0 }}</div>
-              <div class="seait-stat-label">Rooms & Facilities</div>
-            </div>
-          </div>
-          <div class="seait-stat">
-            <span class="material-icons">groups</span>
-            <div>
-              <div class="seait-stat-value">8</div>
-              <div class="seait-stat-label">Departments</div>
-            </div>
-          </div>
-        </div>
-        <div class="seait-departments">
-          <h4>Departments</h4>
-          <div class="dept-tags">
-            <span class="dept-tag">Agriculture</span>
-            <span class="dept-tag">Criminology</span>
-            <span class="dept-tag">Business</span>
-            <span class="dept-tag">ICT</span>
-            <span class="dept-tag">Engineering</span>
-            <span class="dept-tag">Teacher Education</span>
-            <span class="dept-tag">TESDA</span>
-            <span class="dept-tag">Basic Education</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Data Visualization Chart -->
     <div class="panel-card data-chart">
       <h2>
@@ -395,12 +332,6 @@ const stats = ref({
   totalFAQs: 0
 })
 
-const seaitData = ref({
-  buildings: 0,
-  rooms: 0,
-  departments: 8
-})
-
 const recentPaths = ref([])
 
 const myAnnouncements = ref([])
@@ -450,20 +381,14 @@ async function loadDashboardData() {
     // Fetch buildings count
     promises.push(
       api.get('/facilities/')
-        .then(r => { 
-          stats.value.totalBuildings = r.data.length
-          seaitData.value.buildings = r.data.length
-        })
+        .then(r => { stats.value.totalBuildings = r.data.length })
         .catch(() => { stats.value.totalBuildings = 0 })
     )
     
     // Fetch rooms count
     promises.push(
       api.get('/rooms/')
-        .then(r => { 
-          stats.value.totalRooms = r.data.length
-          seaitData.value.rooms = r.data.length
-        })
+        .then(r => { stats.value.totalRooms = r.data.length })
         .catch(() => { stats.value.totalRooms = 0 })
     )
     
@@ -1089,112 +1014,6 @@ onMounted(loadDashboardData)
   color: var(--color-text-secondary);
 }
 
-/* SEAIT Campus Info */
-.seait-info {
-  margin-bottom: 24px;
-}
-
-.seait-content {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.seait-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.seait-logo {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.seait-logo .material-icons {
-  font-size: 36px;
-  color: white;
-}
-
-.seait-details h3 {
-  font-size: var(--text-lg);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0 0 4px 0;
-}
-
-.seait-location {
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  margin: 0 0 2px 0;
-}
-
-.seait-type {
-  font-size: var(--text-xs);
-  color: var(--color-text-hint);
-  margin: 0;
-}
-
-.seait-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-.seait-stat {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-}
-
-.seait-stat .material-icons {
-  font-size: 24px;
-  color: var(--color-primary);
-}
-
-.seait-stat-value {
-  font-size: var(--text-base);
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.seait-stat-label {
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-}
-
-.seait-departments h4 {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0 0 10px 0;
-}
-
-.dept-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.dept-tag {
-  padding: 6px 12px;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  border-radius: var(--radius-full);
-  font-size: var(--text-xs);
-  font-weight: 500;
-}
-
 /* Data Chart */
 .data-chart {
   margin-bottom: 24px;
@@ -1363,19 +1182,9 @@ onMounted(loadDashboardData)
   color: white;
 }
 
-@media (max-width: 1200px) {
-  .seait-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 @media (max-width: 768px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .seait-stats {
-    grid-template-columns: 1fr;
   }
   
   .chart-label {
