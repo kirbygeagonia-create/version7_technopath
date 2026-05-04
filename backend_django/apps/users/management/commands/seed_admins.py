@@ -172,10 +172,11 @@ DEFAULT_ADMINS = [
 ]
 
 class Command(BaseCommand):
-    help = 'Seed all default SEAIT admin accounts for TechnoPath'
+    help = 'Seed all default SEAIT admin accounts for TechnoPath (resets passwords for existing users)'
 
     def handle(self, *args, **kwargs):
         created = 0
+        updated = 0
         for d in DEFAULT_ADMINS:
             username = d.pop('username')
             password = d.pop('password')
@@ -184,7 +185,11 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f'  Created: {username}'))
                 created += 1
             else:
-                self.stdout.write(f'  Exists:  {username}')
-        self.stdout.write(self.style.SUCCESS(f'\nDone. {created} new admin account(s) created.'))
-        self.stdout.write('\nDefault credentials are in this seed file.')
-        self.stdout.write('IMPORTANT: Change all passwords after first login in production.')
+                # Update password for existing user
+                user = AdminUser.objects.get(username=username)
+                user.set_password(password)
+                user.save()
+                self.stdout.write(self.style.WARNING(f'  Updated password: {username}'))
+                updated += 1
+        self.stdout.write(self.style.SUCCESS(f'\nDone. {created} new, {updated} updated.'))
+        self.stdout.write(self.style.SUCCESS(f'All passwords are now: @admin123'))
