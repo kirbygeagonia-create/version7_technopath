@@ -26,16 +26,6 @@
         </div>
       </div>
 
-      <div class="stat-card stat-warning">
-        <div class="stat-icon">
-          <span class="material-icons">pending_actions</span>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ stats.pendingApprovals }}</div>
-          <div class="stat-label">Pending Approvals</div>
-        </div>
-      </div>
-
       <div class="stat-card stat-success">
         <div class="stat-icon">
           <span class="material-icons">people</span>
@@ -55,6 +45,179 @@
           <div class="stat-label">New Feedback</div>
         </div>
       </div>
+
+      <div class="stat-card stat-warning">
+        <div class="stat-icon">
+          <span class="material-icons">business</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.totalBuildings }}</div>
+          <div class="stat-label">Buildings</div>
+        </div>
+      </div>
+
+      <div class="stat-card stat-purple">
+        <div class="stat-icon">
+          <span class="material-icons">meeting_room</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.totalRooms }}</div>
+          <div class="stat-label">Rooms</div>
+        </div>
+      </div>
+
+      <div class="stat-card stat-orange">
+        <div class="stat-icon">
+          <span class="material-icons">route</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.totalPaths }}</div>
+          <div class="stat-label">Navigation Paths</div>
+        </div>
+      </div>
+
+      <div class="stat-card stat-teal">
+        <div class="stat-icon">
+          <span class="material-icons">chat</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.totalChatLogs }}</div>
+          <div class="stat-label">Chat Interactions</div>
+        </div>
+      </div>
+
+      <div class="stat-card stat-pink">
+        <div class="stat-icon">
+          <span class="material-icons">help</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.totalFAQs }}</div>
+          <div class="stat-label">FAQ Entries</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEAIT Campus Info -->
+    <div class="panel-card seait-info">
+      <h2>
+        <span class="material-icons">school</span>
+        SEAIT Campus Overview
+      </h2>
+      <div class="seait-content">
+        <div class="seait-header">
+          <div class="seait-logo">
+            <span class="material-icons">account_balance</span>
+          </div>
+          <div class="seait-details">
+            <h3>Southern Eastern Asia Institute of Technology (SEAIT)</h3>
+            <p class="seait-location">Tandag City, Surigao del Sur, Philippines</p>
+            <p class="seait-type">Technical Education Institution</p>
+          </div>
+        </div>
+        <div class="seait-stats">
+          <div class="seait-stat">
+            <span class="material-icons">account_circle</span>
+            <div>
+              <div class="seait-stat-value">Dr. Mirasol H. Estrada</div>
+              <div class="seait-stat-label">College Dean</div>
+            </div>
+          </div>
+          <div class="seait-stat">
+            <span class="material-icons">domain</span>
+            <div>
+              <div class="seait-stat-value">{{ seaitData.buildings || 0 }}</div>
+              <div class="seait-stat-label">Academic Buildings</div>
+            </div>
+          </div>
+          <div class="seait-stat">
+            <span class="material-icons">room</span>
+            <div>
+              <div class="seait-stat-value">{{ seaitData.rooms || 0 }}</div>
+              <div class="seait-stat-label">Rooms & Facilities</div>
+            </div>
+          </div>
+          <div class="seait-stat">
+            <span class="material-icons">groups</span>
+            <div>
+              <div class="seait-stat-value">8</div>
+              <div class="seait-stat-label">Departments</div>
+            </div>
+          </div>
+        </div>
+        <div class="seait-departments">
+          <h4>Departments</h4>
+          <div class="dept-tags">
+            <span class="dept-tag">Agriculture</span>
+            <span class="dept-tag">Criminology</span>
+            <span class="dept-tag">Business</span>
+            <span class="dept-tag">ICT</span>
+            <span class="dept-tag">Engineering</span>
+            <span class="dept-tag">Teacher Education</span>
+            <span class="dept-tag">TESDA</span>
+            <span class="dept-tag">Basic Education</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Visualization Chart -->
+    <div class="panel-card data-chart">
+      <h2>
+        <span class="material-icons">analytics</span>
+        System Data Overview
+      </h2>
+      <div class="chart-container">
+        <div class="bar-chart">
+          <div v-for="(item, index) in chartData" :key="index" class="chart-bar-item">
+            <div class="chart-label">{{ item.label }}</div>
+            <div class="chart-bar-wrapper">
+              <div class="chart-bar" :style="{ width: item.percentage + '%', background: item.color }">
+                <span class="chart-value">{{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-legend">
+        <div v-for="(item, index) in chartData" :key="index" class="legend-item">
+          <span class="legend-color" :style="{ background: item.color }"></span>
+          <span class="legend-label">{{ item.label }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Paths -->
+    <div class="panel-card recent-paths" v-if="auth.canManageNavigation">
+      <h2>
+        <span class="material-icons">route</span>
+        Recent Navigation Paths
+      </h2>
+      <div v-if="recentPaths.length === 0" class="empty-state">
+        <span class="material-icons">route</span>
+        <p>No paths created yet</p>
+      </div>
+      <div v-else class="path-list">
+        <div v-for="path in recentPaths.slice(0, 5)" :key="path.id" class="path-item">
+          <div class="path-info">
+            <div class="path-name">{{ path.name }}</div>
+            <div class="path-route">
+              <span class="route-from">{{ path.from || 'Start' }}</span>
+              <span class="route-arrow">→</span>
+              <span class="route-to">{{ path.to || 'End' }}</span>
+            </div>
+            <div class="path-meta">
+              <span>{{ path.elementIds?.length || 0 }} stops</span>
+              <span v-if="path.floor">Floor {{ path.floor }}</span>
+            </div>
+          </div>
+          <button class="view-path-btn" @click="navigateTo('paths')">
+            <span class="material-icons">edit</span>
+          </button>
+        </div>
+      </div>
+      <button v-if="recentPaths.length > 5" class="view-all-btn" @click="navigateTo('paths')">
+        View All ({{ recentPaths.length }})
+      </button>
     </div>
 
     <!-- Main Content Grid -->
@@ -223,10 +386,22 @@ const auth = useAuthStore()
 
 const stats = ref({
   totalAnnouncements: 0,
-  pendingApprovals: 0,
   totalUsers: 0,
-  newFeedback: 0
+  newFeedback: 0,
+  totalBuildings: 0,
+  totalRooms: 0,
+  totalPaths: 0,
+  totalChatLogs: 0,
+  totalFAQs: 0
 })
+
+const seaitData = ref({
+  buildings: 0,
+  rooms: 0,
+  departments: 8
+})
+
+const recentPaths = ref([])
 
 const myAnnouncements = ref([])
 const recentActivity = ref([])
@@ -272,13 +447,51 @@ async function loadDashboardData() {
     // Fetch multiple stats in parallel
     const promises = []
     
-    if (auth.canApproveAnnouncements) {
+    // Fetch buildings count
+    promises.push(
+      api.get('/facilities/')
+        .then(r => { 
+          stats.value.totalBuildings = r.data.length
+          seaitData.value.buildings = r.data.length
+        })
+        .catch(() => { stats.value.totalBuildings = 0 })
+    )
+    
+    // Fetch rooms count
+    promises.push(
+      api.get('/rooms/')
+        .then(r => { 
+          stats.value.totalRooms = r.data.length
+          seaitData.value.rooms = r.data.length
+        })
+        .catch(() => { stats.value.totalRooms = 0 })
+    )
+    
+    // Fetch paths
+    if (auth.canManageNavigation) {
       promises.push(
-        api.get('/announcements/pending/')
-          .then(r => { stats.value.pendingApprovals = r.data.length })
-          .catch(() => { stats.value.pendingApprovals = 0 })
+        api.get('/navigation/paths/')
+          .then(r => { 
+            stats.value.totalPaths = r.data.length
+            recentPaths.value = r.data.slice(0, 5)
+          })
+          .catch(() => { stats.value.totalPaths = 0 })
       )
     }
+    
+    // Fetch chat logs count
+    promises.push(
+      api.get('/chatbot/logs/')
+        .then(r => { stats.value.totalChatLogs = r.data.length })
+        .catch(() => { stats.value.totalChatLogs = 0 })
+    )
+    
+    // Fetch FAQ count
+    promises.push(
+      api.get('/chatbot/faq/')
+        .then(r => { stats.value.totalFAQs = r.data.length })
+        .catch(() => { stats.value.totalFAQs = 0 })
+    )
     
     if (auth.canPostAnnouncement) {
       promises.push(
@@ -350,6 +563,37 @@ function formatTimeAgo(date) {
   return date.toLocaleDateString()
 }
 
+// Chart data computed property
+const chartData = computed(() => {
+  const maxVal = Math.max(
+    stats.value.totalUsers,
+    stats.value.totalBuildings,
+    stats.value.totalRooms,
+    stats.value.totalPaths,
+    stats.value.totalAnnouncements,
+    stats.value.newFeedback,
+    stats.value.totalChatLogs,
+    stats.value.totalFAQs,
+    1
+  )
+  
+  const colors = [
+    '#4CAF50', '#2196F3', '#FF9800', '#9C27B0', 
+    '#F44336', '#00BCD4', '#795548', '#607D8B'
+  ]
+  
+  return [
+    { label: 'Users', value: stats.value.totalUsers, percentage: (stats.value.totalUsers / maxVal) * 100, color: colors[0] },
+    { label: 'Buildings', value: stats.value.totalBuildings, percentage: (stats.value.totalBuildings / maxVal) * 100, color: colors[1] },
+    { label: 'Rooms', value: stats.value.totalRooms, percentage: (stats.value.totalRooms / maxVal) * 100, color: colors[2] },
+    { label: 'Paths', value: stats.value.totalPaths, percentage: (stats.value.totalPaths / maxVal) * 100, color: colors[3] },
+    { label: 'Announcements', value: stats.value.totalAnnouncements, percentage: (stats.value.totalAnnouncements / maxVal) * 100, color: colors[4] },
+    { label: 'Feedback', value: stats.value.newFeedback, percentage: (stats.value.newFeedback / maxVal) * 100, color: colors[5] },
+    { label: 'Chat Logs', value: stats.value.totalChatLogs, percentage: (stats.value.totalChatLogs / maxVal) * 100, color: colors[6] },
+    { label: 'FAQs', value: stats.value.totalFAQs, percentage: (stats.value.totalFAQs / maxVal) * 100, color: colors[7] }
+  ]
+})
+
 onMounted(loadDashboardData)
 </script>
 
@@ -411,12 +655,18 @@ onMounted(loadDashboardData)
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: 20px;
   margin-bottom: 24px;
   width: 100%;
 }
 
 @media (max-width: 1400px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -462,6 +712,18 @@ onMounted(loadDashboardData)
 
 .stat-info .stat-icon { background: var(--color-info-bg); }
 .stat-info .stat-icon .material-icons { color: var(--color-info); }
+
+.stat-purple .stat-icon { background: #F3E5F5; }
+.stat-purple .stat-icon .material-icons { color: #9C27B0; }
+
+.stat-orange .stat-icon { background: #FFF3E0; }
+.stat-orange .stat-icon .material-icons { color: #FF9800; }
+
+.stat-teal .stat-icon { background: #E0F2F1; }
+.stat-teal .stat-icon .material-icons { color: #009688; }
+
+.stat-pink .stat-icon { background: #FCE4EC; }
+.stat-pink .stat-icon .material-icons { color: #E91E63; }
 
 .stat-content {
   flex: 1;
@@ -825,5 +1087,300 @@ onMounted(loadDashboardData)
   border-radius: var(--radius-full);
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
+}
+
+/* SEAIT Campus Info */
+.seait-info {
+  margin-bottom: 24px;
+}
+
+.seait-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.seait-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.seait-logo {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.seait-logo .material-icons {
+  font-size: 36px;
+  color: white;
+}
+
+.seait-details h3 {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 4px 0;
+}
+
+.seait-location {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 2px 0;
+}
+
+.seait-type {
+  font-size: var(--text-xs);
+  color: var(--color-text-hint);
+  margin: 0;
+}
+
+.seait-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.seait-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+}
+
+.seait-stat .material-icons {
+  font-size: 24px;
+  color: var(--color-primary);
+}
+
+.seait-stat-value {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.seait-stat-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.seait-departments h4 {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 10px 0;
+}
+
+.dept-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dept-tag {
+  padding: 6px 12px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+/* Data Chart */
+.data-chart {
+  margin-bottom: 24px;
+}
+
+.chart-container {
+  padding: 20px 0;
+}
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chart-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chart-label {
+  width: 100px;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.chart-bar-wrapper {
+  flex: 1;
+  height: 32px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.chart-bar {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  border-radius: var(--radius-md);
+  transition: width 0.5s ease;
+  min-width: 40px;
+}
+
+.chart-value {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+}
+
+.legend-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+/* Recent Paths */
+.recent-paths {
+  margin-bottom: 24px;
+}
+
+.path-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.path-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-primary);
+}
+
+.path-info {
+  flex: 1;
+}
+
+.path-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.path-route {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.route-from {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.route-arrow {
+  color: var(--color-text-hint);
+}
+
+.route-to {
+  color: var(--color-success);
+  font-weight: 500;
+}
+
+.path-meta {
+  display: flex;
+  gap: 12px;
+  font-size: var(--text-xs);
+  color: var(--color-text-hint);
+}
+
+.view-path-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-light);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-path-btn:hover {
+  background: var(--color-primary);
+}
+
+.view-path-btn .material-icons {
+  font-size: 18px;
+  color: var(--color-primary);
+}
+
+.view-path-btn:hover .material-icons {
+  color: white;
+}
+
+@media (max-width: 1200px) {
+  .seait-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .seait-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart-label {
+    width: 70px;
+    font-size: var(--text-xs);
+  }
 }
 </style>
