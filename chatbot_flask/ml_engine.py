@@ -313,9 +313,9 @@ class GPTIntegration:
 
     def generate_response(self, query: str, conversation_history: List[Dict] = None,
                          context: Dict = None) -> str:
-        """Generate response using GPT-3.5 with context."""
+        """Generate response using GPT-3.5 with context. Returns None if not available."""
         if not self.client:
-            return "[OpenAI API key not configured]"
+            return None  # Return None to trigger fallback mechanism
 
         # Build system context
         system_msg = """You are TechnoPath AI, a helpful campus guide for SEAIT (South East Asian Institute of Technology) in Tupi, South Cotabato, Philippines.
@@ -368,18 +368,9 @@ Instructions:
             return response.choices[0].message.content.strip()
         except Exception as e:
             error_msg = str(e)
-            print(f"[GPT] Error: {error_msg}")
-            # Return more specific error for debugging
-            if "authentication" in error_msg.lower():
-                return "[OpenAI Error: Invalid API key. Please check your API key configuration.]"
-            elif "rate limit" in error_msg.lower():
-                return "[OpenAI Error: Rate limit exceeded. Please try again later.]"
-            elif "insufficient_quota" in error_msg.lower() or "quota" in error_msg.lower():
-                return "[OpenAI Error: No credits remaining. Please add credits to your OpenAI account.]"
-            elif "invalid_request_error" in error_msg.lower():
-                return f"[OpenAI Error: {error_msg}]"
-            else:
-                return f"[Error generating AI response: {error_msg[:100]}]"
+            print(f"[GPT] Error (will fallback to rule-based): {error_msg}")
+            # Return None to trigger fallback mechanism - no error shown to user
+            return None
 
 
 class HybridAIEngine:
@@ -458,7 +449,7 @@ class HybridAIEngine:
 
         # Step 3: Route based on confidence
         if confidence >= self.intent_classifier.CONFIDENCE_THRESHOLD_HIGH:
-            # High confidence - try FAQ first, then GPT
+            # High confidence - try FAQ first, then GPT, then fallback
             faq_match, faq_confidence = self.faq_matcher.find_match(query)
 
             if faq_match and faq_confidence >= 0.6:
@@ -466,42 +457,57 @@ class HybridAIEngine:
                 response_text = faq_match['answer']
                 source = 'faq'
             else:
-                # Use GPT with high-confidence context
+                # Try GPT first
                 context = {
                     'intent': intent,
                     'confidence': confidence,
                     **entities
                 }
-                response_text = self.gpt.generate_response(
+                gpt_response = self.gpt.generate_response(
                     query, conversation_history, context
                 )
-                source = 'gpt'
+                # If GPT unavailable, use intent-based template response
+                if gpt_response:
+                    response_text = gpt_response
+                    source = 'gpt'
+                else:
+                    response_text = self._generate_fallback_response(intent, entities, query)
+                    source = 'ml_fallback'
 
         elif confidence >= self.intent_classifier.CONFIDENCE_THRESHOLD_LOW:
-            # Medium confidence - GPT with intent guidance
+            # Medium confidence - try GPT, then fallback
             context = {
                 'intent': intent,
                 'confidence': confidence,
                 **entities
             }
-            response_text = self.gpt.generate_response(
+            gpt_response = self.gpt.generate_response(
                 query, conversation_history, context
             )
-            source = 'gpt'
+            if gpt_response:
+                response_text = gpt_response
+                source = 'gpt'
+            else:
+                response_text = self._generate_fallback_response(intent, entities, query)
+                source = 'ml_fallback'
 
         else:
-            # Low confidence - GPT with clarification request
+            # Low confidence - try GPT with clarification, then generic fallback
             context = {
                 'intent': 'unclear',
                 'confidence': confidence,
                 **entities
             }
-            clarification_msg = f"I'm not entirely sure what you're asking about. "
             gpt_response = self.gpt.generate_response(
                 query, conversation_history, context
             )
-            response_text = f"{clarification_msg}{gpt_response}"
-            source = 'clarification'
+            if gpt_response:
+                clarification_msg = f"I'm not entirely sure what you're asking about. "
+                response_text = f"{clarification_msg}{gpt_response}"
+                source = 'clarification'
+            else:
+                response_text = self._generate_fallback_response('general', entities, query)
+                source = 'general_fallback'
 
         # Step 4: Generate follow-up suggestions
         followups = self._generate_followups(intent, entities)
@@ -514,6 +520,71 @@ class HybridAIEngine:
             suggested_followups=followups,
             entity_data=entities
         )
+
+    def _generate_fallback_response(self, intent: str, entities: Dict, query: str) -> str:
+        """Generate a fallback response when GPT is unavailable. Uses intent-based templates."""
+
+        # Intent-based response templates
+        responses = {
+            'library_hours': [
+                "The SEAIT Library (LRC) is open Monday to Friday from 8:00 AM to 6:00 PM, and Saturday from 8:00 AM to 12:00 PM. It's located on the ground floor of the left wing. You can borrow books, use computers, and study there.",
+                "Library hours are Mon-Fri 8AM-6PM, Sat 8AM-12PM. The library offers book borrowing, computer use, and quiet study spaces."
+            ],
+            'registrar': [
+                "The Registrar's Office is located in the RST Building on the ground floor. Office hours are Monday to Friday 8AM-5PM and Saturday 8AM-12PM. They handle enrollment, transcripts, and student records.",
+                "Visit the Registrar at RST Building 1st floor. Open Mon-Fri 8AM-5PM, Sat 8AM-12PM. Services include enrollment, TOR requests, and tuition payment."
+            ],
+            'dean_office': [
+                "The Dean's Office is in the RST Building. Office hours are typically Monday to Friday, 8AM-5PM. You may need to schedule an appointment to meet with the dean.",
+                "The Dean's Office is located in RST Building. Please contact them directly to schedule an appointment."
+            ],
+            'room_location': [
+                "SEAIT has several buildings: MST (center, 4 floors), JST (behind MST, 4 floors), and RST (left of gate, 3 floors). Computer labs CL1-CL10 are on MST 3rd floor.",
+                "The MST Building is at the center with 4 floors. JST is behind MST. RST is left of the entrance gate. What specific room are you looking for?"
+            ],
+            'schedule': [
+                "Regular school hours at SEAIT are typically from 8:00 AM to 5:00 PM. However, specific class schedules vary by course and section. Check your enrollment form for your exact schedule.",
+                "School hours are generally 8AM-5PM. For your specific class schedule, please check your enrollment form or student portal."
+            ],
+            'admission': [
+                "For admission to SEAIT, you need to submit: Form 138 (report card), good moral certificate, birth certificate, and 2x2 photos. Visit the Registrar for the complete requirements and application form.",
+                "Admission requirements include: report card, good moral cert, birth certificate, and photos. Contact the Registrar's Office for detailed information and to get an application form."
+            ],
+            'scholarship': [
+                "SEAIT offers various scholarships including academic scholarships and financial assistance programs. Visit the Registrar or check the scholarship board for current opportunities and application deadlines.",
+                "Scholarships available include academic and financial aid programs. Inquire at the Registrar's Office for current scholarship opportunities."
+            ],
+            'it_support': [
+                "The IT Department is located on the 3rd floor of the RST Building. They can help with WiFi access, computer issues, and password resets. Office hours are Mon-Fri 8AM-5PM.",
+                "For IT support, visit RST Building 3rd floor. They handle WiFi, computer problems, and account issues. Open Mon-Fri 8AM-5PM."
+            ],
+            'safety_security': [
+                "The Security Office is located at the main entrance gate. For emergencies, contact the campus security immediately. Lost and found items are also handled there.",
+                "Campus security is at the main entrance gate. They handle lost & found and campus safety. Contact them for any security concerns."
+            ],
+            'general': [
+                "I'm the SEAIT Campus Assistant. I can help you find buildings, rooms, check schedules, and answer questions about the campus. What would you like to know?",
+                "Welcome to SEAIT! I can help with: finding buildings/rooms, library hours, registrar info, schedules, and campus navigation. How can I assist you?"
+            ]
+        }
+
+        # Get response for detected intent
+        intent_responses = responses.get(intent, responses['general'])
+        base_response = random.choice(intent_responses)
+
+        # Add entity-specific details if available
+        if 'building' in entities and 'room' in entities:
+            building = entities['building'].upper()
+            room = entities['room']
+            return f"You're asking about {building} Room {room}. {base_response}"
+        elif 'building' in entities:
+            building = entities['building'].upper()
+            return f"The {building} Building: {base_response}"
+        elif 'room' in entities:
+            room = entities['room']
+            return f"Regarding Room {room}: {base_response}"
+
+        return base_response
 
     def _generate_followups(self, intent: str, entities: Dict) -> List[str]:
         """Generate follow-up question suggestions."""
