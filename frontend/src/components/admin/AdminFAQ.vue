@@ -613,8 +613,11 @@ async function loadSuggestions() {
 
 async function loadAnalytics() {
   try {
-    // Call Flask chatbot via proxy for analytics
-    const res = await fetch(`/chatbot-api/analytics?days=${analyticsDays.value}`)
+    // Use full Flask URL in production, proxy in development
+    const flaskBaseUrl = import.meta.env.PROD 
+      ? 'https://technopath-chatbot.onrender.com'
+      : ''
+    const res = await fetch(`${flaskBaseUrl}/analytics?days=${analyticsDays.value}`)
     if (!res.ok) throw new Error('Failed to fetch analytics')
     analytics.value = await res.json()
   } catch (error) {
