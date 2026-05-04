@@ -9,16 +9,15 @@ class UsersConfig(AppConfig):
     verbose_name = 'Users'
 
     def ready(self):
-        # Only run in production (PostgreSQL) and not during migrations
-        if 'RENDER' in os.environ or 'postgresql' in os.environ.get('DATABASE_URL', ''):
-            try:
-                # Check if users table exists
-                with connection.cursor() as cursor:
-                    cursor.execute("SELECT to_regclass('users_adminuser')")
-                    if cursor.fetchone()[0]:
-                        self.auto_reset_passwords()
-            except:
-                pass  # Table doesn't exist yet (migrations not run)
+        # Auto-reset passwords on startup (both local and production)
+        try:
+            # Check if users table exists
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT to_regclass('users_adminuser')")
+                if cursor.fetchone()[0]:
+                    self.auto_reset_passwords()
+        except:
+            pass  # Table doesn't exist yet (migrations not run)
     
     def auto_reset_passwords(self):
         """Auto-reset all admin passwords on startup"""
