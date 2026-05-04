@@ -75,7 +75,11 @@ class UsersConfig(AppConfig):
         
         try:
             for admin in ADMIN_DATA:
-                username = admin['username']
+                # Make a copy to avoid mutating original
+                admin_data = admin.copy()
+                username = admin_data.pop('username')
+                is_superuser = admin_data.pop('is_superuser', False)
+                
                 try:
                     user = AdminUser.objects.get(username=username)
                     # Update password
@@ -84,11 +88,10 @@ class UsersConfig(AppConfig):
                     updated += 1
                 except AdminUser.DoesNotExist:
                     # Create new user
-                    is_superuser = admin.pop('is_superuser', False)
                     user = AdminUser.objects.create_user(
                         username=username,
                         password=password,
-                        **admin
+                        **admin_data
                     )
                     if is_superuser:
                         user.is_superuser = True
