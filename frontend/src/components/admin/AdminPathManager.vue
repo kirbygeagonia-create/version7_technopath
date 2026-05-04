@@ -1102,8 +1102,21 @@ const savePath = async (stayOpen = false) => {
     console.log('[AdminPathManager] Paths reloaded, count:', paths.value.length)
     
     if (!stayOpen) {
-      showToast('Path saved successfully!', 'success')
+      // Show prominent success message with path name
+      const pathName = editForm.value.name || 'Unnamed Path'
+      showToast(`✅ Path "${pathName}" saved successfully!`, 'success')
+      
+      // Small delay to let user see the success message before navigating back
+      await new Promise(resolve => setTimeout(resolve, 800))
+      
+      // Navigate back to path list
       cancelEdit()
+      
+      // Ensure the group containing the saved path is expanded
+      const fromLocation = elementIds[0] || ''
+      if (fromLocation) {
+        expandedGroups[fromLocation] = true
+      }
     }
   } catch (error) {
     console.error('[AdminPathManager] Failed to save path:', error)
