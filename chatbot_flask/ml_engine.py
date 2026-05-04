@@ -524,8 +524,28 @@ class HybridAIEngine:
     def _generate_fallback_response(self, intent: str, entities: Dict, query: str) -> str:
         """Generate a fallback response when GPT is unavailable. Uses intent-based templates."""
 
-        # Intent-based response templates
+        # Intent-based response templates with comprehensive SEAIT knowledge
         responses = {
+            'about_seait': [
+                "SEAIT (South East Asian Institute of Technology) is a private, non-stock, non-profit higher education institution founded in February 2006. Located at National Highway, Crossing Rubber, Tupi, South Cotabato, Philippines 9505. Phone: (083) 226-1202. Website: www.seait.edu.ph. The school's vision is to be a premier institution producing globally empowered individuals. Our motto: 'Committed to the Total Development of the Student'.",
+                "SEAIT stands for South East Asian Institute of Technology, Inc. We're a CHED and DepEd recognized institution in SOCCSKSARGEN (Region XII). Founded in 2006 by Hon. Reynaldo S. Tamayo Jr. and Mrs. Rochelle P. Tamayo. Contact us at seaitinc@yahoo.com or (083) 226-1202."
+            ],
+            'free_tuition': [
+                "YES! SEAIT offers completely FREE tuition for ALL college degree programs. We are one of the very few private schools in the Philippines to provide free college education. This is funded through UNIFAST (since 2016), Tulong-Dunong grants from CHED, and our founders' commitment to accessible education. Indigenous Peoples and neighboring tribes are especially welcomed and supported. SEAIT was nationally recognized for this advocacy during the Gawad Parangal for HEIs in Region 12 on July 23, 2021.",
+                "SEAIT is tuition-free! All college degree programs have zero tuition fees. Funding comes from UNIFAST, CHED grants, and the Tamayo family's dedication to free education. This makes quality college education accessible to everyone, especially Indigenous Peoples and underprivileged students. We're nationally recognized for this unique model."
+            ],
+            'founders': [
+                "SEAIT was founded by Hon. Reynaldo S. Tamayo Jr. (born Feb 9, 1980, Tupi) and his wife Mrs. Rochelle P. Tamayo. Both were DOST scholars who earned BS Information Technology degrees at Cebu Institute of Technology. They built SEAIT to give back to their community and make college education free. Hon. Tamayo Jr. later became Governor of South Cotabato. The school is run by the Tamayo family.",
+                "The founders are Hon. Reynaldo S. Tamayo Jr. and Mrs. Rochelle P. Tamayo. They were both DOST scholars in IT and wanted to give back to Tupi by creating a tuition-free college. Key family members include Atty. Ghizelle Jean S. Tamayo-Jimenea (admin/legal) and Dr. Jeffrey S. Tamayo M.D. (Board Member and School Physician)."
+            ],
+            'courses': [
+                "SEAIT offers the following degree programs: Bachelor of Science in Information Technology (BSIT), Bachelor of Science in Computer Science (BSCS), Bachelor of Science in Criminology (BSCrim), Bachelor of Science in Hospitality Management (BSHM), Bachelor of Science in Business Administration (BSBA), Bachelor of Science in Industrial Technology major in Electrical Technology (BSIT-ET), and Senior High School (SHS) with STEM, ABM, and TVL tracks. All college programs are tuition-free!",
+                "Available courses at SEAIT: BSIT, BSCS, BSCrim, BSHM, BSBA, BSIT-ET (Electrical), and Senior High School (STEM, ABM, TVL tracks). All college degrees have FREE tuition! Visit the Registrar or check www.seait.edu.ph for enrollment requirements."
+            ],
+            'contact': [
+                "You can reach SEAIT at: Phone (083) 226-1202, Email seaitinc@yahoo.com, Website www.seait.edu.ph, or visit us at National Highway, Crossing Rubber, Tupi, South Cotabato 9505. The school is located along the highway in Tupi town proper.",
+                "SEAIT Contact Info: Phone (083) 226-1202, Email seaitinc@yahoo.com, Website www.seait.edu.ph. Address: National Highway, Crossing Rubber, Tupi, South Cotabato, Philippines 9505. Located in SOCCSKSARGEN (Region XII), Mindanao."
+            ],
             'library_hours': [
                 "The SEAIT Library (LRC) is open Monday to Friday from 8:00 AM to 6:00 PM, and Saturday from 8:00 AM to 12:00 PM. It's located on the ground floor of the left wing. You can borrow books, use computers, and study there.",
                 "Library hours are Mon-Fri 8AM-6PM, Sat 8AM-12PM. The library offers book borrowing, computer use, and quiet study spaces."
@@ -563,8 +583,8 @@ class HybridAIEngine:
                 "Campus security is at the main entrance gate. They handle lost & found and campus safety. Contact them for any security concerns."
             ],
             'general': [
-                "I'm the SEAIT Campus Assistant. I can help you find buildings, rooms, check schedules, and answer questions about the campus. What would you like to know?",
-                "Welcome to SEAIT! I can help with: finding buildings/rooms, library hours, registrar info, schedules, and campus navigation. How can I assist you?"
+                "I'm the SEAIT Campus Assistant for South East Asian Institute of Technology. SEAIT offers FREE tuition for all college programs! Founded in 2006 by Hon. Reynaldo S. Tamayo Jr. and Mrs. Rochelle P. Tamayo. I can help you find buildings, rooms, check schedules, courses, and campus information. What would you like to know?",
+                "Welcome to SEAIT (South East Asian Institute of Technology)! Did you know SEAIT offers completely FREE tuition? Located in Tupi, South Cotabato. I can help with: building locations, courses offered, library hours, registrar info, and campus navigation. How can I assist you?"
             ]
         }
 
