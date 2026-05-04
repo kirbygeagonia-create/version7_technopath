@@ -9,8 +9,8 @@ import os
 import re
 from collections import Counter
 
-from .models import FAQEntry, AIChatLog, FAQSuggestion
-from .serializers import FAQEntrySerializer, AIChatLogSerializer, FAQSuggestionSerializer
+from .models import FAQEntry, AIChatLog, FAQSuggestion, TrainingData, ChatRating
+from .serializers import FAQEntrySerializer, AIChatLogSerializer, FAQSuggestionSerializer, TrainingDataSerializer, ChatRatingSerializer
 from apps.users.permissions import ReadOnlyOrSuperAdmin
 
 
