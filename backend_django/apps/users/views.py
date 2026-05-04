@@ -309,3 +309,96 @@ class UserListView(APIView):
             'created_at': user.created_at.isoformat() if user.created_at else None,
         } for user in users]
         return Response(data)
+
+
+class EmergencyResetPasswordsView(APIView):
+    """
+    EMERGENCY: Reset all admin passwords to @admin123
+    Public endpoint - no authentication required for emergency recovery
+    """
+    permission_classes = []
+
+    def get(self, request):
+        from apps.users.models import AdminUser
+        
+        ADMIN_DATA = [
+            {'username': 'safety_admin', 'role': 'super_admin', 'department': 'safety_security', 
+             'display_name': 'Safety and Security Office', 'is_staff': True, 'is_superuser': True},
+            {'username': 'dean_seait', 'role': 'dean', 'department': 'office_of_the_dean',
+             'display_name': 'Office of the Dean', 'is_staff': True},
+            {'username': 'dean_agriculture', 'role': 'dean', 'department': 'college_agriculture',
+             'display_name': 'Dean — College of Agriculture and Fisheries', 'is_staff': True},
+            {'username': 'dean_criminology', 'role': 'dean', 'department': 'college_criminology',
+             'display_name': 'Dean — College of Criminal Justice Education', 'is_staff': True},
+            {'username': 'dean_business', 'role': 'dean', 'department': 'college_business',
+             'display_name': 'Dean — College of Business and Good Governance', 'is_staff': True},
+            {'username': 'dean_ict', 'role': 'dean', 'department': 'college_ict',
+             'display_name': 'Dean — College of Information and Communication Technology', 'is_staff': True},
+            {'username': 'dean_civil_eng', 'role': 'dean', 'department': 'dept_civil_engineering',
+             'display_name': 'Dean — Department of Civil Engineering', 'is_staff': True},
+            {'username': 'dean_teacher_ed', 'role': 'dean', 'department': 'college_teacher_education',
+             'display_name': 'Dean — College of Teacher Education', 'is_staff': True},
+            {'username': 'dean_tesda', 'role': 'dean', 'department': 'tesda',
+             'display_name': 'Dean — TESDA', 'is_staff': True},
+            {'username': 'dean_gen_ed', 'role': 'dean', 'department': 'general_education',
+             'display_name': 'Dean — General Education Department', 'is_staff': True},
+            {'username': 'dean_basic_ed', 'role': 'dean', 'department': 'basic_education',
+             'display_name': 'Dean — Basic Education', 'is_staff': True},
+            {'username': 'head_agriculture', 'role': 'program_head', 'department': 'college_agriculture',
+             'display_name': 'Program Head — Agriculture', 'is_staff': True},
+            {'username': 'head_criminology', 'role': 'program_head', 'department': 'college_criminology',
+             'display_name': 'Program Head — Criminology', 'is_staff': True},
+            {'username': 'head_business', 'role': 'program_head', 'department': 'college_business',
+             'display_name': 'Program Head — Business', 'is_staff': True},
+            {'username': 'head_ict', 'role': 'program_head', 'department': 'college_ict',
+             'display_name': 'Program Head — ICT', 'is_staff': True},
+            {'username': 'head_civil_eng', 'role': 'program_head', 'department': 'dept_civil_engineering',
+             'display_name': 'Program Head — Civil Engineering', 'is_staff': True},
+            {'username': 'head_teacher_ed', 'role': 'program_head', 'department': 'college_teacher_education',
+             'display_name': 'Program Head — Teacher Education', 'is_staff': True},
+            {'username': 'head_tesda', 'role': 'program_head', 'department': 'tesda',
+             'display_name': 'TESDA Coordinator', 'is_staff': True},
+            {'username': 'head_gen_ed', 'role': 'program_head', 'department': 'general_education',
+             'display_name': 'Program Head — General Education', 'is_staff': True},
+            {'username': 'head_basic_ed', 'role': 'basic_ed_head', 'department': 'basic_education',
+             'display_name': 'Head — Basic Education', 'is_staff': True},
+        ]
+        
+        password = '@admin123'
+        created = 0
+        updated = 0
+        errors = []
+        
+        for admin in ADMIN_DATA:
+            try:
+                admin_data = admin.copy()
+                username = admin_data.pop('username')
+                is_superuser = admin_data.pop('is_superuser', False)
+                
+                try:
+                    user = AdminUser.objects.get(username=username)
+                    user.set_password(password)
+                    user.save()
+                    updated += 1
+                except AdminUser.DoesNotExist:
+                    user = AdminUser.objects.create_user(
+                        username=username,
+                        password=password,
+                        **admin_data
+                    )
+                    if is_superuser:
+                        user.is_superuser = True
+                        user.save()
+                    created += 1
+            except Exception as e:
+                errors.append(f"{admin.get('username', 'unknown')}: {str(e)}")
+        
+        return Response({
+            'success': True,
+            'message': f'Admin accounts reset complete',
+            'created': created,
+            'updated': updated,
+            'errors': errors,
+            'password': password,
+            'accounts': [a['username'] for a in ADMIN_DATA]
+        })

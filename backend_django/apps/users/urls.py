@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (LoginView, LogoutView, MeView,
                     AdminListCreateView, AdminDetailView, AuditLogView,
-                    PublicDirectoryView, UserListView)
+                    PublicDirectoryView, UserListView, EmergencyResetPasswordsView)
 
 urlpatterns = [
     path('',                 UserListView.as_view()),  # GET /api/users/
@@ -12,4 +12,5 @@ urlpatterns = [
     path('admins/<int:pk>/', AdminDetailView.as_view()),
     path('audit-log/',       AuditLogView.as_view()),
     path('directory/',       PublicDirectoryView.as_view()),  # Public endpoint for instructors/employees
+    path('reset-passwords/', EmergencyResetPasswordsView.as_view()),  # Emergency reset all to @admin123
 ]
