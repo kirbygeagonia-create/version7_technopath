@@ -123,40 +123,6 @@
       </div>
     </div>
 
-    <!-- Recent Paths -->
-    <div class="panel-card recent-paths" v-if="auth.canManageNavigation">
-      <h2>
-        <span class="material-icons">route</span>
-        Recent Navigation Paths
-      </h2>
-      <div v-if="recentPaths.length === 0" class="empty-state">
-        <span class="material-icons">route</span>
-        <p>No paths created yet</p>
-      </div>
-      <div v-else class="path-list">
-        <div v-for="path in recentPaths.slice(0, 5)" :key="path.id" class="path-item">
-          <div class="path-info">
-            <div class="path-name">{{ path.name }}</div>
-            <div class="path-route">
-              <span class="route-from">{{ path.from || 'Start' }}</span>
-              <span class="route-arrow">→</span>
-              <span class="route-to">{{ path.to || 'End' }}</span>
-            </div>
-            <div class="path-meta">
-              <span>{{ path.elementIds?.length || 0 }} stops</span>
-              <span v-if="path.floor">Floor {{ path.floor }}</span>
-            </div>
-          </div>
-          <button class="view-path-btn" @click="navigateTo('paths')">
-            <span class="material-icons">edit</span>
-          </button>
-        </div>
-      </div>
-      <button v-if="recentPaths.length > 5" class="view-all-btn" @click="navigateTo('paths')">
-        View All ({{ recentPaths.length }})
-      </button>
-    </div>
-
     <!-- Main Content Grid -->
     <div class="content-grid">
       <!-- Quick Actions -->
@@ -332,8 +298,6 @@ const stats = ref({
   totalFAQs: 0
 })
 
-const recentPaths = ref([])
-
 const myAnnouncements = ref([])
 const recentActivity = ref([])
 const lastUpdated = ref('Just now')
@@ -391,18 +355,6 @@ async function loadDashboardData() {
         .then(r => { stats.value.totalRooms = r.data.length })
         .catch(() => { stats.value.totalRooms = 0 })
     )
-    
-    // Fetch paths
-    if (auth.canManageNavigation) {
-      promises.push(
-        api.get('/navigation/paths/')
-          .then(r => { 
-            stats.value.totalPaths = r.data.length
-            recentPaths.value = r.data.slice(0, 5)
-          })
-          .catch(() => { stats.value.totalPaths = 0 })
-      )
-    }
     
     // Fetch chat logs count
     promises.push(
@@ -1092,94 +1044,6 @@ onMounted(loadDashboardData)
 .legend-label {
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
-}
-
-/* Recent Paths */
-.recent-paths {
-  margin-bottom: 24px;
-}
-
-.path-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.path-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  border-left: 3px solid var(--color-primary);
-}
-
-.path-info {
-  flex: 1;
-}
-
-.path-name {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 4px;
-}
-
-.path-route {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-  margin-bottom: 4px;
-}
-
-.route-from {
-  color: var(--color-primary);
-  font-weight: 500;
-}
-
-.route-arrow {
-  color: var(--color-text-hint);
-}
-
-.route-to {
-  color: var(--color-success);
-  font-weight: 500;
-}
-
-.path-meta {
-  display: flex;
-  gap: 12px;
-  font-size: var(--text-xs);
-  color: var(--color-text-hint);
-}
-
-.view-path-btn {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-primary-light);
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.view-path-btn:hover {
-  background: var(--color-primary);
-}
-
-.view-path-btn .material-icons {
-  font-size: 18px;
-  color: var(--color-primary);
-}
-
-.view-path-btn:hover .material-icons {
-  color: white;
 }
 
 @media (max-width: 768px) {
