@@ -393,3 +393,207 @@ class ChatbotAnalyticsView(APIView):
             }
         })
 
+
+class TrainingDataListCreateView(generics.ListCreateAPIView):
+    """
+    List and create training data for ML intent classifier.
+    Used by Flask chatbot to get training examples and post new ones.
+    """
+    queryset = TrainingData.objects.all()
+    serializer_class = TrainingDataSerializer
+    permission_classes = [ReadOnlyOrSuperAdmin]
+
+    def get_queryset(self):
+        queryset = TrainingData.objects.all()
+        intent = self.request.query_params.get('intent', None)
+        source = self.request.query_params.get('source', None)
+        unused_only = self.request.query_params.get('unused_only', 'false').lower() == 'true'
+
+        if intent:
+            queryset = queryset.filter(intent_label=intent)
+        if source:
+            queryset = queryset.filter(source=source)
+        if unused_only:
+            queryset = queryset.filter(used_for_training=False)
+
+        return queryset.order_by('-created_at')
+
+    def perform_create(self, serializer):
+        serializer.save(source='manual')
+
+
+class TrainingDataBatchCreateView(APIView):
+    """
+    Batch create training data entries.
+    Used by Flask chatbot to submit multiple ratings at once.
+    """
+    permission_classes = [ReadOnlyOrSuperAdmin]
+
+    def post(self, request):
+        data = request.data
+        if not isinstance(data, list):
+            return Response(
+                {'error': 'Expected a list of training data entries'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        created = []
+        errors = []
+
+        for item in data:
+            try:
+                training = TrainingData.objects.create(
+                    query_text=item.get('query_text', ''),
+                    intent_label=item.get('intent_label', 'general'),
+                    source=item.get('source', 'batch'),
+                    used_for_training=False
+                )
+                created.append(training.id)
+            except Exception as e:
+                errors.append({'item': item, 'error': str(e)})
+
+        return Response({
+            'created_count': len(created),
+            'created_ids': created,
+            'error_count': len(errors),
+            'errors': errors
+        }, status=status.HTTP_201_CREATED)
+
+
+class ChatRatingCreateView(APIView):
+    """
+    Create chat ratings from user feedback (thumbs up/down).
+    Called by Flask chatbot when users rate responses.
+    """
+    permission_classes = []  # Allow Flask to post ratings
+
+    def post(self, request):
+        data = request.data
+
+        # Validate required fields
+        query_text = data.get('query_text', '').strip()
+        response_text = data.get('response_text', '').strip()
+        rating = data.get('rating')
+        intent_detected = data.get('intent_detected', 'general')
+
+        if not query_text or not response_text:
+            return Response(
+                {'error': 'query_text and response_text are required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if rating not in ['thumbs_up', 'thumbs_down']:
+            return Response(
+                {'error': 'rating must be thumbs_up or thumbs_down'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Create the rating
+        chat_rating = ChatRating.objects.create(
+            query_text=query_text,
+            response_text=response_text,
+            intent_detected=intent_detected,
+            rating=rating,
+            rating_note=data.get('rating_note', ''),
+            session_id=data.get('session_id', 'default')
+        )
+
+        # If thumbs down, also create a training example with corrected intent
+        if rating == 'thumbs_down':
+            TrainingData.objects.create(
+                query_text=query_text,
+                intent_label='general',
+                source='rating',
+                used_for_training=False
+            )
+
+        return Response({
+            'id': chat_rating.id,
+            'rating': chat_rating.rating,
+            'intent': chat_rating.intent_detected,
+            'status': 'created'
+        }, status=status.HTTP_201_CREATED)
+
+
+class ChatRatingListView(generics.ListAPIView):
+    """List chat ratings with filtering - for admin review"""
+    queryset = ChatRating.objects.all()
+    serializer_class = ChatRatingSerializer
+    permission_classes = [ReadOnlyOrSuperAdmin]
+
+    def get_queryset(self):
+        queryset = ChatRating.objects.all()
+        rating = self.request.query_params.get('rating', None)
+        intent = self.request.query_params.get('intent', None)
+        days = self.request.query_params.get('days', None)
+
+        if rating:
+            queryset = queryset.filter(rating=rating)
+        if intent:
+            queryset = queryset.filter(intent_detected=intent)
+        if days:
+            from datetime import timedelta
+            from django.utils import timezone
+            start_date = timezone.now() - timedelta(days=int(days))
+            queryset = queryset.filter(created_at__gte=start_date)
+
+        return queryset.order_by('-created_at')
+
+
+class RetrainTriggerView(APIView):
+    """
+    Trigger manual retraining of the ML model.
+    Admin endpoint to force retrain based on recent ratings.
+    """
+    permission_classes = [ReadOnlyOrSuperAdmin]
+
+    def post(self, request):
+        days = int(request.data.get('days', 7))
+        from datetime import timedelta
+        from django.utils import timezone
+
+        start_date = timezone.now() - timedelta(days=days)
+
+        positive_ratings = ChatRating.objects.filter(
+            rating='thumbs_up',
+            created_at__gte=start_date
+        ).values('query_text', 'intent_detected')
+
+        negative_ratings = ChatRating.objects.filter(
+            rating='thumbs_down',
+            created_at__gte=start_date
+        ).values('query_text', 'intent_detected')
+
+        training_count = 0
+
+        for rating in positive_ratings:
+            TrainingData.objects.get_or_create(
+                query_text=rating['query_text'],
+                defaults={
+                    'intent_label': rating['intent_detected'],
+                    'source': 'rating',
+                    'used_for_training': False
+                }
+            )
+            training_count += 1
+
+        for rating in negative_ratings:
+            TrainingData.objects.get_or_create(
+                query_text=rating['query_text'],
+                defaults={
+                    'intent_label': 'general',
+                    'source': 'rating',
+                    'used_for_training': False
+                }
+            )
+            training_count += 1
+
+        return Response({
+            'message': f'Created {training_count} training entries from ratings',
+            'positive_ratings_used': positive_ratings.count(),
+            'negative_ratings_used': negative_ratings.count(),
+            'period_days': days,
+            'ready_for_training': TrainingData.objects.filter(
+                used_for_training=False
+            ).count()
+        })

@@ -11,6 +11,9 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 
+# Import Hybrid AI Engine
+from ml_engine import HybridAIEngine, generate_response as hybrid_generate_response
+
 DJANGO_API_URL = os.getenv('DJANGO_API_URL', 'https://technopath-backend-djanggo.onrender.com')
 
 # Load environment variables
@@ -67,6 +70,12 @@ def get_db_connection():
         import sqlite3
         return sqlite3.connect(DB_PATH)
 
+
+# Initialize Hybrid AI Engine
+hybrid_engine = HybridAIEngine(
+    db_connection_func=get_db_connection,
+    openai_key=_openai_key
+)
 
 def init_db() -> None:
     """Initialize database tables used by chatbot."""
@@ -1429,114 +1438,181 @@ def log_to_django(user_message: str, bot_reply: str, is_successful: bool):
 @app.route("/chat", methods=["POST"])
 @limiter.limit("20 per minute")
 def chat():
+    """
+    Hybrid AI Chat endpoint with ML intent classification + GPT response.
+    Returns: reply, intent, confidence, entities, suggestions
+    """
     data = request.get_json(silent=True) or {}
     message = str(data.get("message", "")).strip()
     history = data.get("history", [])
+    session_id = data.get("session_id", "default")
 
     if not message:
         return jsonify({"error": "message is required"}), 400
     if len(message) > 1000:
         return jsonify({"error": "Message too long"}), 400
 
-    # Get last bot reply from history for correction tracking
-    last_bot_reply = None
-    if history and len(history) >= 2:
-        for turn in reversed(history):
-            if turn.get('role') == 'assistant' and turn.get('content'):
-                last_bot_reply = turn.get('content')
-                break
+    # Process through Hybrid AI Engine
+    result = hybrid_engine.process_query(message, history, session_id)
 
-    # Check if user is teaching us something BEFORE generating reply
-    teaching = extract_teaching_from_message(message, last_bot_reply)
-    learned_something = False
-    
-    if teaching:
-        # Store the learned fact immediately
-        if teaching['type'] == 'correction':
-            update_learned_faq(teaching['question'], teaching['answer'], source='correction', confidence_boost=15)
-            log_correction(teaching['question'], teaching.get('original_reply', ''), teaching['answer'], message)
-            learned_something = True
-            print(f"[Learning] Correction accepted: {teaching['question'][:50]}...")
-        else:
-            update_learned_faq(teaching['question'], teaching['answer'], source='user' if teaching['type'] == 'definition' else 'extracted')
-            learned_something = True
-            print(f"[Learning] New fact from user: {teaching['question'][:50]}...")
+    # Determine success (not a fallback/unsure response)
+    fallback_phrases = ["try asking", "i'm here to help", "contact the", "i don't know", "not sure"]
+    is_successful = not any(p in result.text.lower() for p in fallback_phrases)
 
-    reply = generate_reply(message, history)
+    # Store in chat history
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            if DATABASE_URL:
+                # PostgreSQL
+                cursor.execute(
+                    """INSERT INTO chat_history (user_message, bot_reply, rating)
+                       VALUES (%s, %s, NULL) RETURNING id""",
+                    (message, result.text)
+                )
+                message_id = cursor.fetchone()[0]
+            else:
+                # SQLite
+                cursor.execute(
+                    "INSERT INTO chat_history (user_message, bot_reply) VALUES (?, ?)",
+                    (message, result.text)
+                )
+                message_id = cursor.lastrowid
+            conn.commit()
+    except Exception as e:
+        print(f"[Chat] Error storing chat history: {e}")
+        message_id = None
 
-    # If we learned something, acknowledge it in the reply
-    if learned_something and teaching['type'] != 'correction':
-        reply = f"Thank you for teaching me! I've learned: '{teaching['question']}'\n\n" + reply
+    # Log to Django backend
+    log_to_django(message, result.text, is_successful)
 
-    fallback_phrases = ["try asking", "i'm here to help", "contact the", "open the navigate"]
-    is_successful = not any(p in reply.lower() for p in fallback_phrases)
-
-    with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.execute(
-            "INSERT INTO chat_history (user_message, bot_reply) VALUES (?, ?)",
-            (message, reply),
-        )
-        message_id = cursor.lastrowid
-        conn.commit()
-
-    log_to_django(message, reply, is_successful)
-
-    return jsonify({"reply": reply, "message_id": message_id, "mode": "online" if OPENAI_ENABLED else "offline"})
+    return jsonify({
+        "reply": result.text,
+        "message_id": message_id,
+        "mode": "hybrid",
+        "intent": result.intent,
+        "confidence": round(result.confidence, 3),
+        "entities": result.entity_data,
+        "suggestions": result.suggested_followups,
+        "source": result.source
+    })
 
 
 @app.route("/rate", methods=["POST"])
 @limiter.limit("30 per minute")
 def rate_message():
-    """Rate a chatbot response (up/down) for learning."""
+    """
+    Rate a chatbot response (up/down) for continuous learning.
+    Sends rating to Django backend with intent data.
+    """
     data = request.get_json(silent=True) or {}
     message_id = data.get("message_id")
     rating = data.get("rating")
+    intent_detected = data.get("intent", "general")
+    rating_note = data.get("note", "")
 
     if not message_id or rating not in ("up", "down"):
         return jsonify({"error": "message_id and rating (up/down) required"}), 400
 
     try:
         init_db()
-        with get_db_connection() as conn:
-            # Update the rating
-            conn.execute(
-                "UPDATE chat_history SET rating = ? WHERE id = ?",
-                (rating, message_id)
-            )
 
-            # If thumbs up, store as learned FAQ
-            if rating == "up":
-                cursor = conn.execute(
+        # Get the chat message details from DB
+        query_text = ""
+        response_text = ""
+
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+
+            # Update the rating in local DB
+            if DATABASE_URL:
+                cursor.execute(
+                    "UPDATE chat_history SET rating = %s WHERE id = %s",
+                    (rating, message_id)
+                )
+            else:
+                cursor.execute(
+                    "UPDATE chat_history SET rating = ? WHERE id = ?",
+                    (rating, message_id)
+                )
+
+            # Get message details
+            if DATABASE_URL:
+                cursor.execute(
+                    "SELECT user_message, bot_reply FROM chat_history WHERE id = %s",
+                    (message_id,)
+                )
+            else:
+                cursor.execute(
                     "SELECT user_message, bot_reply FROM chat_history WHERE id = ?",
                     (message_id,)
                 )
-                row = cursor.fetchone()
-                if row:
-                    question, answer = row
-                    # Check if similar question already exists
+            row = cursor.fetchone()
+            if row:
+                query_text, response_text = row
+
+            # If thumbs up, store as learned FAQ locally
+            if rating == "up" and query_text and response_text:
+                if DATABASE_URL:
+                    check_cursor = conn.cursor()
+                    check_cursor.execute(
+                        "SELECT id, rating_count FROM learned_faqs WHERE question = %s",
+                        (query_text,)
+                    )
+                else:
                     check_cursor = conn.execute(
                         "SELECT id, rating_count FROM learned_faqs WHERE question = ?",
-                        (question,)
+                        (query_text,)
                     )
-                    existing = check_cursor.fetchone()
-                    if existing:
-                        # Update rating count
-                        conn.execute(
-                            "UPDATE learned_faqs SET rating_count = rating_count + 1 WHERE id = ?",
+                existing = check_cursor.fetchone()
+                if existing:
+                    if DATABASE_URL:
+                        conn.cursor().execute(
+                            "UPDATE learned_faqs SET rating_count = rating_count + 1 WHERE id = %s",
                             (existing[0],)
                         )
-                    else:
-                        # Insert new learned FAQ
-                        conn.execute(
-                            "INSERT INTO learned_faqs (question, answer) VALUES (?, ?)",
-                            (question, answer)
+                else:
+                    if DATABASE_URL:
+                        conn.cursor().execute(
+                            "INSERT INTO learned_faqs (question, answer, source_type) VALUES (%s, %s, %s)",
+                            (query_text, response_text, 'rating')
                         )
-                        print(f"[Learning] New FAQ learned: {question[:50]}...")
+                    else:
+                        conn.execute(
+                            "INSERT INTO learned_faqs (question, answer, source_type) VALUES (?, ?, ?)",
+                            (query_text, response_text, 'rating')
+                        )
+                    print(f"[Learning] New FAQ from rating: {query_text[:50]}...")
 
             conn.commit()
-        return jsonify({"status": "rated", "rating": rating})
+
+        # Submit rating to Django for ML training data
+        # Convert up/down to thumbs_up/thumbs_down
+        django_rating = 'thumbs_up' if rating == 'up' else 'thumbs_down'
+        session_id = data.get('session_id', 'default')
+
+        success = hybrid_engine.submit_rating(
+            query=query_text,
+            response=response_text,
+            intent=intent_detected,
+            rating=django_rating,
+            note=rating_note,
+            session_id=session_id
+        )
+
+        if success:
+            print(f"[Rate] Submitted to Django: {rating} for intent '{intent_detected}'")
+
+        return jsonify({
+            "status": "rated",
+            "rating": rating,
+            "intent": intent_detected,
+            "submitted_to_django": success
+        })
     except Exception as e:
         print(f"[Rate] Error: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 

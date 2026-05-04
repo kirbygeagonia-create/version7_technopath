@@ -1,4 +1,5 @@
 from django.db import models
+import json
 
 class FAQEntry(models.Model):
     CATEGORIES = [
@@ -71,3 +72,59 @@ class FAQSuggestion(models.Model):
 
     def __str__(self):
         return f"{self.suggested_question[:60]}... ({self.status})"
+
+
+class TrainingData(models.Model):
+    """Stores training examples for the ML intent classifier."""
+    INTENT_CHOICES = [
+        ('library_hours', 'Library Hours'),
+        ('registrar', 'Registrar Office'),
+        ('dean_office', 'Dean Office'),
+        ('room_location', 'Room/Location'),
+        ('schedule', 'Schedule/Time'),
+        ('admission', 'Admission/Enrollment'),
+        ('scholarship', 'Scholarship/Financial'),
+        ('it_support', 'IT Support'),
+        ('safety_security', 'Safety/Security'),
+        ('general', 'General'),
+    ]
+
+    query_text = models.TextField(help_text="Example user query")
+    intent_label = models.CharField(max_length=50, choices=INTENT_CHOICES)
+    source = models.CharField(max_length=50, default='manual', choices=[
+        ('manual', 'Manual'),
+        ('faq', 'From FAQ'),
+        ('rating', 'From User Rating'),
+    ])
+    used_for_training = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'training_data'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"[{self.intent_label}] {self.query_text[:50]}"
+
+
+class ChatRating(models.Model):
+    """Stores user thumbs up/down feedback on chatbot responses."""
+    RATING_CHOICES = [
+        ('thumbs_up', 'Thumbs Up'),
+        ('thumbs_down', 'Thumbs Down'),
+    ]
+
+    query_text = models.TextField()
+    response_text = models.TextField()
+    intent_detected = models.CharField(max_length=50, blank=True, null=True)
+    rating = models.CharField(max_length=20, choices=RATING_CHOICES)
+    rating_note = models.TextField(blank=True, null=True, help_text="Optional user feedback")
+    session_id = models.CharField(max_length=100, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'chat_ratings'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.rating} on [{self.intent_detected}]"
