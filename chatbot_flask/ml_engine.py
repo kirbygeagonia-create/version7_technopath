@@ -150,8 +150,22 @@ class MLIntentClassifier:
     INTENT_LABELS = [
         'library_hours', 'registrar', 'dean_office', 'room_location',
         'schedule', 'admission', 'scholarship', 'it_support',
-        'safety_security', 'general'
+        'safety_security', 'general',
+        # New SEAIT knowledge intents
+        'about_seait', 'free_tuition', 'founders', 'courses', 'contact'
     ]
+
+    # Hardcoded keyword patterns for immediate recognition (bypass ML)
+    KEYWORD_PATTERNS = {
+        'founders': ['president', 'founder', 'owner', 'tamayo', 'established', 'who founded', 'who started', 'who leads', 'chairman', 'director'],
+        'courses': ['courses', 'programs', 'degrees', 'bsit', 'bscs', 'criminology', 'hospitality', 'business administration', 'electrical', 'how many courses', 'what can i study', 'available programs'],
+        'about_seait': ['what is seait', 'about seait', 'seait background', 'history of seait', 'school information', 'what does seait stand for'],
+        'free_tuition': ['free tuition', 'tuition fee', 'is seait free', 'how much tuition', 'do i pay', 'is college free'],
+        'contact': ['contact', 'phone', 'email', 'address', 'where is seait located', 'how to reach', 'contact number'],
+        'library_hours': ['library', 'lrc', 'book', 'study area', 'reading'],
+        'registrar': ['registrar', 'enrollment', 'transcript', 'tor', 'grades'],
+        'room_location': ['where is', 'building', 'room', 'office location', 'mst building', 'rst building', 'jst building'],
+    }
 
     CONFIDENCE_THRESHOLD_HIGH = 0.75
     CONFIDENCE_THRESHOLD_LOW = 0.40
@@ -226,7 +240,19 @@ class MLIntentClassifier:
             return False
 
     def predict(self, query: str) -> Tuple[str, float]:
-        """Predict intent and return (label, confidence)."""
+        """Predict intent and return (label, confidence).
+        First checks keyword patterns, then falls back to ML model."""
+
+        query_lower = query.lower()
+
+        # Step 1: Check hardcoded keyword patterns (high confidence)
+        for intent, keywords in self.KEYWORD_PATTERNS.items():
+            for keyword in keywords:
+                if keyword.lower() in query_lower:
+                    # Return with high confidence for keyword matches
+                    return intent, 0.95
+
+        # Step 2: Fall back to ML model if available
         if not self.is_trained or not SKLEARN_AVAILABLE:
             return 'general', 0.0
 
@@ -236,7 +262,12 @@ class MLIntentClassifier:
             probabilities = self.pipeline.predict_proba([query])[0]
             confidence = max(probabilities)
 
-            return prediction, confidence
+            # If ML predicts a known intent with decent confidence, use it
+            if confidence >= 0.3:
+                return prediction, confidence
+            else:
+                return 'general', confidence
+
         except Exception as e:
             print(f"[ML] Prediction error: {e}")
             return 'general', 0.0
