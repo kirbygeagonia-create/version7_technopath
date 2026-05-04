@@ -11,7 +11,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 
-DJANGO_API_URL = os.getenv('DJANGO_API_URL', 'https://technopath-backend.onrender.com')
+DJANGO_API_URL = os.getenv('DJANGO_API_URL', 'https://technopath-backend-djanggo.onrender.com')
 
 # Load environment variables
 load_dotenv()
