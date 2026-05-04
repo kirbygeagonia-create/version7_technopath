@@ -50,6 +50,7 @@ CORS(app, origins=[
     "https://techno-path-frontend.onrender.com",
     "https://technopath-frontend.onrender.com",
     "https://technopath-frontend-or73.onrender.com",
+    "https://technopath-frontend-3gda.onrender.com",
 ], supports_credentials=True)
 DB_PATH = Path(__file__).parent / "chatbot.db"
 
