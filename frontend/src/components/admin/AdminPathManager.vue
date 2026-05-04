@@ -288,15 +288,21 @@
           </div>
         </div>
 
+        <!-- Success Message -->
+        <div v-if="saveSuccess" class="admin-success-message">
+          <span class="material-icons">check_circle</span>
+          <span>{{ saveSuccessMessage }}</span>
+        </div>
+
         <div class="admin-form-actions">
-          <button class="admin-btn" @click="cancelEdit">Cancel</button>
-          <button class="admin-btn admin-btn-success" @click="saveAndAddAnother" v-if="isCreatingNew">
+          <button class="admin-btn" @click="cancelEdit" :disabled="isSaving">Cancel</button>
+          <button class="admin-btn admin-btn-success" @click="saveAndAddAnother" v-if="isCreatingNew" :disabled="isSaving">
             <span class="material-icons">save</span>
-            Save & Add Another
+            {{ isSaving ? 'Saving...' : 'Save & Add Another' }}
           </button>
-          <button class="admin-btn admin-btn-primary" @click="savePath">
+          <button class="admin-btn admin-btn-primary" @click="savePath" :disabled="isSaving">
             <span class="material-icons">save</span>
-            Save Path
+            {{ isSaving ? 'Saving...' : 'Save Path' }}
           </button>
         </div>
       </div>
@@ -637,6 +643,11 @@ const editForm = ref({
 
 // Grouped paths state - track which From groups are expanded
 const expandedGroups = ref({})
+
+// Save state
+const isSaving = ref(false)
+const saveSuccess = ref(false)
+const saveSuccessMessage = ref('')
 
 // Computed
 const isEditing = computed(() => editingPathId.value !== null)
@@ -1041,17 +1052,18 @@ const editPath = (id) => {
 }
 
 const savePath = async (stayOpen = false) => {
+  isSaving.value = true
+  saveSuccess.value = false
+  
   try {
     console.log('[AdminPathManager] Saving path...')
-    console.log('[AdminPathManager] editForm:', JSON.stringify(editForm.value))
-    console.log('[AdminPathManager] visualPoints:', JSON.stringify(visualPoints.value))
     
     // Filter out empty element IDs
     const elementIds = editForm.value.elementIds.filter(id => id.trim() !== '')
-    console.log('[AdminPathManager] Filtered elementIds:', elementIds)
 
     if (elementIds.length === 0) {
       alert('Please add at least one stop with a valid ID')
+      isSaving.value = false
       return
     }
 
@@ -1071,10 +1083,8 @@ const savePath = async (stayOpen = false) => {
       if (vp && (vp.x !== 0 || vp.y !== 0)) {
         return [vp.x, vp.y]
       }
-      // Default position if no coordinates set
       return [100 + index * 50, 100]
     })
-    console.log('[AdminPathManager] Points:', points)
 
     const pathData = {
       name: editForm.value.name || 'Unnamed Path',
@@ -1086,41 +1096,43 @@ const savePath = async (stayOpen = false) => {
       elementIds,
       visualPoints: visualPoints.value
     }
-    console.log('[AdminPathManager] Path data:', pathData)
 
     if (isCreatingNew.value) {
-      console.log('[AdminPathManager] Creating new path...')
-      const newPath = await pathManager.createPath(pathData)
-      console.log('[AdminPathManager] Created path:', newPath)
+      await pathManager.createPath(pathData)
     } else {
-      console.log('[AdminPathManager] Updating path:', editingPathId.value)
-      const updatedPath = await pathManager.updatePath(editingPathId.value, pathData)
-      console.log('[AdminPathManager] Updated path:', updatedPath)
+      await pathManager.updatePath(editingPathId.value, pathData)
     }
 
     await loadPaths()
-    console.log('[AdminPathManager] Paths reloaded, count:', paths.value.length)
     
     if (!stayOpen) {
-      // Show prominent success message with path name
+      // Show success message in component
       const pathName = editForm.value.name || 'Unnamed Path'
-      showToast(`✅ Path "${pathName}" saved successfully!`, 'success')
+      saveSuccessMessage.value = `Path "${pathName}" saved successfully!`
+      saveSuccess.value = true
+      showToast(`✅ Path "${pathName}" saved!`, 'success')
       
-      // Small delay to let user see the success message before navigating back
-      await new Promise(resolve => setTimeout(resolve, 800))
+      // Wait for user to see success message
+      await new Promise(resolve => setTimeout(resolve, 1500))
       
       // Navigate back to path list
+      saveSuccess.value = false
       cancelEdit()
       
       // Ensure the group containing the saved path is expanded
       const fromLocation = elementIds[0] || ''
       if (fromLocation) {
-        expandedGroups[fromLocation] = true
+        expandedGroups.value[fromLocation] = true
       }
     }
   } catch (error) {
     console.error('[AdminPathManager] Failed to save path:', error)
+    saveSuccessMessage.value = 'Failed to save: ' + error.message
+    saveSuccess.value = true
     showToast('Failed to save path: ' + error.message, 'error')
+    setTimeout(() => saveSuccess.value = false, 3000)
+  } finally {
+    isSaving.value = false
   }
 }
 
@@ -2280,5 +2292,42 @@ onMounted(async () => {
 
 .path-group-content .admin-path-item:hover {
   background: #fafafa;
+}
+
+/* Success Message */
+.admin-success-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  border-radius: 12px;
+  margin: 16px 0;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.4);
+  animation: slideIn 0.3s ease-out;
+}
+
+.admin-success-message .material-icons {
+  font-size: 24px;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button disabled state */
+.admin-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>
