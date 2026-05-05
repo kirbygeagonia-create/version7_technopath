@@ -20,6 +20,7 @@ urlpatterns = [
 
     # Chat log endpoints
     path('chat-logs/', ChatLogListView.as_view(), name='chat-logs'),
+    path('logs/', ChatLogListView.as_view(), name='chat-logs-alias'),  # Alias for dashboard
     path('log/', ChatLogCreateView.as_view(), name='chatlog-create'),
 
     # FAQ Maker AI endpoints
