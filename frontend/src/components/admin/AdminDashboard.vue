@@ -378,8 +378,15 @@ async function loadDashboardData() {
     // Fetch navigation paths count
     promises.push(
       api.get('/navigation/paths/')
-        .then(r => { stats.value.totalPaths = r.data.length })
-        .catch(() => { stats.value.totalPaths = 0 })
+        .then(r => { 
+          const pathsData = r.data || []
+          stats.value.totalPaths = Array.isArray(pathsData) ? pathsData.length : 0
+          console.log('[Dashboard] Paths loaded:', stats.value.totalPaths)
+        })
+        .catch((e) => { 
+          console.error('[Dashboard] Failed to load paths:', e)
+          stats.value.totalPaths = 0 
+        })
     )
     
     if (auth.canPostAnnouncement) {
