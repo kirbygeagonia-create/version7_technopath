@@ -168,118 +168,6 @@
       </div>
     </div>
 
-    <!-- DATA RECORDS SECTION - Shows actual records from all models -->
-    <div class="data-records-section">
-      <h2 class="section-title">
-        <span class="material-icons">storage</span>
-        All Data Records
-      </h2>
-
-      <!-- Buildings List -->
-      <div v-if="buildingsData.length > 0" class="panel-card data-card">
-        <h3>
-          <span class="material-icons">business</span>
-          Buildings ({{ buildingsData.length }})
-        </h3>
-        <div class="data-list">
-          <div v-for="building in buildingsData.slice(0, 5)" :key="building.id" class="data-item">
-            <span class="data-name">{{ building.name }}</span>
-            <span class="data-type">{{ building.facility_type }}</span>
-          </div>
-        </div>
-        <button v-if="buildingsData.length > 5" class="view-all-btn" @click="navigateTo('facilities')">
-          View all {{ buildingsData.length }} buildings →
-        </button>
-      </div>
-
-      <!-- Rooms List -->
-      <div v-if="roomsData.length > 0" class="panel-card data-card">
-        <h3>
-          <span class="material-icons">meeting_room</span>
-          Rooms ({{ roomsData.length }})
-        </h3>
-        <div class="data-list">
-          <div v-for="room in roomsData.slice(0, 5)" :key="room.id" class="data-item">
-            <span class="data-name">{{ room.name }}</span>
-            <span class="data-type">{{ room.room_type }}</span>
-          </div>
-        </div>
-        <button v-if="roomsData.length > 5" class="view-all-btn" @click="navigateTo('rooms')">
-          View all {{ roomsData.length }} rooms →
-        </button>
-      </div>
-
-      <!-- Users List -->
-      <div v-if="usersData.length > 0" class="panel-card data-card">
-        <h3>
-          <span class="material-icons">people</span>
-          Active Users ({{ usersData.length }})
-        </h3>
-        <div class="data-list">
-          <div v-for="user in usersData.slice(0, 5)" :key="user.id" class="data-item">
-            <span class="data-name">{{ user.display_name || user.username }}</span>
-            <span class="data-type">{{ user.role }}</span>
-          </div>
-        </div>
-        <button v-if="usersData.length > 5" class="view-all-btn" @click="navigateTo('admins')">
-          View all {{ usersData.length }} users →
-        </button>
-      </div>
-
-      <!-- Feedback List -->
-      <div v-if="feedbackData.length > 0" class="panel-card data-card">
-        <h3>
-          <span class="material-icons">feedback</span>
-          Recent Feedback ({{ feedbackData.length }})
-        </h3>
-        <div class="data-list">
-          <div v-for="item in feedbackData.slice(0, 5)" :key="item.id" class="data-item">
-            <span class="data-name">{{ item.message?.substring(0, 40) || 'No message' }}...</span>
-            <span class="data-rating">{{ '⭐'.repeat(item.rating || 0) }}</span>
-          </div>
-        </div>
-        <button v-if="feedbackData.length > 5" class="view-all-btn" @click="navigateTo('feedback')">
-          View all {{ feedbackData.length }} feedback →
-        </button>
-      </div>
-
-      <!-- Chat Logs List -->
-      <div v-if="chatLogsData.length > 0" class="panel-card data-card">
-        <h3>
-          <span class="material-icons">chat</span>
-          Recent Chat Interactions ({{ chatLogsData.length }})
-        </h3>
-        <div class="data-list">
-          <div v-for="log in chatLogsData.slice(0, 5)" :key="log.id" class="data-item">
-            <span class="data-name">{{ log.user_query?.substring(0, 40) || 'No query' }}...</span>
-            <span :class="['data-status', log.is_successful ? 'success' : 'error']">
-              {{ log.is_successful ? '✓' : '✗' }} {{ log.mode }}
-            </span>
-          </div>
-        </div>
-        <button v-if="chatLogsData.length > 5" class="view-all-btn" @click="navigateTo('faq')">
-          View all {{ chatLogsData.length }} chat logs →
-        </button>
-      </div>
-
-      <!-- FAQs List -->
-      <div v-if="faqsData.length > 0" class="panel-card data-card">
-        <h3>
-          <span class="material-icons">quiz</span>
-          FAQ Entries ({{ faqsData.length }})
-        </h3>
-        <div class="data-list">
-          <div v-for="faq in faqsData.slice(0, 5)" :key="faq.id" class="data-item">
-            <span class="data-name">{{ faq.question?.substring(0, 50) || 'No question' }}...</span>
-            <span class="data-type">{{ faq.category }}</span>
-          </div>
-        </div>
-        <button v-if="faqsData.length > 5" class="view-all-btn" @click="navigateTo('faq')">
-          View all {{ faqsData.length }} FAQs →
-        </button>
-      </div>
-    </div>
-
     <!-- Main Content Grid -->
     <div class="content-grid">
       <!-- Quick Actions -->
@@ -462,13 +350,6 @@ const showAllActivities = ref(false)
 const pathsData = ref([]) // Store paths with destinations for chart
 const localPathsCount = ref(0) // Count of localStorage paths
 
-// Data records for detailed view
-const buildingsData = ref([])
-const roomsData = ref([])
-const usersData = ref([])
-const feedbackData = ref([])
-const chatLogsData = ref([])
-const faqsData = ref([])
 
 // Computed property to limit displayed activities
 const displayedActivities = computed(() => {
@@ -509,47 +390,31 @@ async function loadDashboardData() {
     // Fetch multiple stats in parallel
     const promises = []
     
-    // Fetch buildings count and data
+    // Fetch buildings count
     promises.push(
       api.get('/facilities/')
-        .then(r => { 
-          const data = r.data || []
-          stats.value.totalBuildings = data.length
-          buildingsData.value = data.slice(0, 10) // Store first 10 for display
-        })
+        .then(r => { stats.value.totalBuildings = r.data.length })
         .catch(() => { stats.value.totalBuildings = 0 })
     )
     
-    // Fetch rooms count and data
+    // Fetch rooms count
     promises.push(
       api.get('/rooms/')
-        .then(r => { 
-          const data = r.data || []
-          stats.value.totalRooms = data.length
-          roomsData.value = data.slice(0, 10)
-        })
+        .then(r => { stats.value.totalRooms = r.data.length })
         .catch(() => { stats.value.totalRooms = 0 })
     )
     
-    // Fetch chat logs count and data
+    // Fetch chat logs count
     promises.push(
       api.get('/chatbot/logs/')
-        .then(r => { 
-          const data = r.data || []
-          stats.value.totalChatLogs = data.length
-          chatLogsData.value = data.slice(0, 10)
-        })
+        .then(r => { stats.value.totalChatLogs = r.data.length })
         .catch(() => { stats.value.totalChatLogs = 0 })
     )
     
-    // Fetch FAQ count and data
+    // Fetch FAQ count
     promises.push(
       api.get('/chatbot/faq/')
-        .then(r => { 
-          const data = r.data || []
-          stats.value.totalFAQs = data.length
-          faqsData.value = data.slice(0, 10)
-        })
+        .then(r => { stats.value.totalFAQs = r.data.length })
         .catch(() => { stats.value.totalFAQs = 0 })
     )
     
@@ -592,26 +457,18 @@ async function loadDashboardData() {
       )
     }
     
-    // Fetch real user count and data
+    // Fetch real user count
     promises.push(
       api.get('/users/')
-        .then(r => { 
-          const data = r.data || []
-          stats.value.totalUsers = data.length
-          usersData.value = data.slice(0, 10)
-        })
+        .then(r => { stats.value.totalUsers = r.data.length })
         .catch(() => { stats.value.totalUsers = 0 })
     )
     
-    // Fetch real feedback count and data
+    // Fetch real feedback count
     if (auth.canViewAllFeedback || auth.canViewDeptFeedback) {
       promises.push(
         api.get('/feedback/')
-          .then(r => { 
-            const data = r.data || []
-            stats.value.newFeedback = data.length
-            feedbackData.value = data.slice(0, 10)
-          })
+          .then(r => { stats.value.newFeedback = r.data.length })
           .catch(() => { stats.value.newFeedback = 0 })
       )
     }
@@ -1399,131 +1256,6 @@ onMounted(loadDashboardData)
   display: flex;
   align-items: center;
   gap: 4px;
-}
-
-/* Data Records Section */
-.data-records-section {
-  margin-bottom: 24px;
-}
-
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: var(--text-lg);
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin-bottom: 16px;
-  padding: 0 4px;
-}
-
-.section-title .material-icons {
-  color: var(--color-primary);
-  font-size: 24px;
-}
-
-.data-card {
-  margin-bottom: 16px;
-}
-
-.data-card h3 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: var(--text-base);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0;
-  padding: 0 0 12px 0;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.data-card h3 .material-icons {
-  color: var(--color-primary);
-  font-size: 20px;
-}
-
-.data-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px 0;
-}
-
-.data-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  transition: all 0.2s ease;
-}
-
-.data-item:hover {
-  background: var(--color-primary-light);
-  border-color: var(--color-primary);
-}
-
-.data-name {
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-text-primary);
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.data-type {
-  font-size: var(--text-xs);
-  color: var(--color-text-hint);
-  background: var(--color-bg);
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  text-transform: capitalize;
-}
-
-.data-rating {
-  font-size: var(--text-sm);
-}
-
-.data-status {
-  font-size: var(--text-xs);
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-}
-
-.data-status.success {
-  background: var(--color-success-light);
-  color: var(--color-success);
-}
-
-.data-status.error {
-  background: var(--color-danger-light);
-  color: var(--color-danger);
-}
-
-.view-all-btn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  background: var(--color-primary-light);
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-md);
-  color: var(--color-primary);
-  font-family: var(--font-primary);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.view-all-btn:hover {
-  background: var(--color-primary);
-  color: white;
 }
 
 @media (max-width: 768px) {
