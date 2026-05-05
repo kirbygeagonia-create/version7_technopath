@@ -128,6 +128,30 @@
       </div>
     </div>
 
+    <!-- Navigation Paths Detail -->
+    <div v-if="pathsData.length > 0" class="panel-card paths-detail">
+      <h2>
+        <span class="material-icons">route</span>
+        Navigation Paths
+        <span class="chart-total-badge">{{ pathsData.length }} Paths</span>
+      </h2>
+      <div class="paths-list">
+        <div v-for="path in pathsData" :key="path.id" class="path-item">
+          <div class="path-from-to">
+            <span class="path-from">{{ path.from_location || path.from || 'Unknown' }}</span>
+            <span class="material-icons path-arrow">arrow_forward</span>
+            <span class="path-to">{{ path.to_location || path.to || path.name || 'Unknown' }}</span>
+          </div>
+          <div class="path-meta">
+            <span v-if="path.floor" class="path-floor">Floor {{ path.floor }}</span>
+            <span v-if="path.element_ids || path.elementIds" class="path-stops">
+              {{ (path.element_ids || path.elementIds || []).length }} stops
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Main Content Grid -->
     <div class="content-grid">
       <!-- Quick Actions -->
@@ -307,6 +331,7 @@ const myAnnouncements = ref([])
 const recentActivity = ref([])
 const lastUpdated = ref('Just now')
 const showAllActivities = ref(false)
+const pathsData = ref([]) // Store paths with destinations for chart
 
 // Computed property to limit displayed activities
 const displayedActivities = computed(() => {
@@ -375,17 +400,19 @@ async function loadDashboardData() {
         .catch(() => { stats.value.totalFAQs = 0 })
     )
     
-    // Fetch navigation paths count
+    // Fetch navigation paths count and details
     promises.push(
       api.get('/navigation/paths/')
         .then(r => { 
-          const pathsData = r.data || []
-          stats.value.totalPaths = Array.isArray(pathsData) ? pathsData.length : 0
-          console.log('[Dashboard] Paths loaded:', stats.value.totalPaths)
+          const paths = r.data || []
+          stats.value.totalPaths = Array.isArray(paths) ? paths.length : 0
+          pathsData.value = Array.isArray(paths) ? paths : []
+          console.log('[Dashboard] Paths loaded:', stats.value.totalPaths, pathsData.value)
         })
         .catch((e) => { 
           console.error('[Dashboard] Failed to load paths:', e)
           stats.value.totalPaths = 0 
+          pathsData.value = []
         })
     )
     
@@ -1108,6 +1135,78 @@ onMounted(loadDashboardData)
   margin-left: 4px;
 }
 
+/* Paths Detail Section */
+.paths-detail {
+  margin-bottom: 24px;
+}
+
+.paths-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.path-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  transition: all 0.2s ease;
+}
+
+.path-item:hover {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.path-from-to {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.path-from {
+  color: var(--color-text-primary);
+}
+
+.path-arrow {
+  font-size: 18px;
+  color: var(--color-primary);
+}
+
+.path-to {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.path-meta {
+  display: flex;
+  gap: 12px;
+  font-size: var(--text-xs);
+  color: var(--color-text-hint);
+}
+
+.path-floor {
+  background: var(--color-secondary-light);
+  color: var(--color-secondary);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.path-stops {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 @media (max-width: 768px) {
   .admindashboard-section {
     padding: 12px;
@@ -1268,6 +1367,27 @@ onMounted(loadDashboardData)
     width: 100%;
     margin-top: 8px;
     justify-content: center;
+  }
+  
+  .paths-list {
+    max-height: 250px;
+  }
+  
+  .path-item {
+    padding: 10px 12px;
+  }
+  
+  .path-from-to {
+    font-size: var(--text-xs);
+    flex-wrap: wrap;
+  }
+  
+  .path-arrow {
+    font-size: 16px;
+  }
+  
+  .path-meta {
+    gap: 8px;
   }
 }
 
