@@ -379,9 +379,11 @@ def search_faq_database(query: str) -> tuple:
         
         with get_db_connection() as conn:
             # Get all FAQs from database
-            cursor = conn.execute(
-                "SELECT question, answer FROM faq_entries WHERE is_active = 1"
-            )
+            if DATABASE_URL:
+                cursor = conn.cursor()
+                cursor.execute("SELECT question, answer FROM faq_entries WHERE is_active = true")
+            else:
+                cursor = conn.execute("SELECT question, answer FROM faq_entries WHERE is_active = 1")
             faqs = cursor.fetchall()
         
         if not faqs:
@@ -425,10 +427,17 @@ def get_learned_faqs(limit: int = 20) -> str:
         init_db()
         with get_db_connection() as conn:
             # Return all facts with confidence >= 50 (includes all system facts at 100%)
-            cursor = conn.execute(
-                "SELECT question, answer, confidence, sources FROM learned_faqs WHERE confidence >= 50 ORDER BY confidence DESC, sources DESC LIMIT ?",
-                (limit,)
-            )
+            if DATABASE_URL:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "SELECT question, answer, confidence, sources FROM learned_faqs WHERE confidence >= 50 ORDER BY confidence DESC, sources DESC LIMIT %s",
+                    (limit,)
+                )
+            else:
+                cursor = conn.execute(
+                    "SELECT question, answer, confidence, sources FROM learned_faqs WHERE confidence >= 50 ORDER BY confidence DESC, sources DESC LIMIT ?",
+                    (limit,)
+                )
             rows = cursor.fetchall()
             if not rows:
                 return ""
@@ -450,36 +459,69 @@ def update_learned_faq(question: str, answer: str, source: str = "user", confide
     try:
         init_db()
         with get_db_connection() as conn:
-            # Check if similar question exists
-            cursor = conn.execute(
-                "SELECT id, confidence, sources, answer FROM learned_faqs WHERE LOWER(question) = LOWER(?)",
-                (question,)
-            )
-            existing = cursor.fetchone()
-            
-            if existing:
-                # Update existing fact - boost confidence
-                fact_id, current_conf, current_sources, old_answer = existing
-                new_conf = min(100, current_conf + confidence_boost)
-                new_sources = current_sources + 1
-                
-                # If answer changed significantly, reduce confidence
-                if old_answer.lower() != answer.lower():
-                    new_conf = max(50, new_conf - 20)  # Penalty for conflicting info
-                
-                conn.execute(
-                    "UPDATE learned_faqs SET confidence = ?, sources = ?, answer = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-                    (new_conf, new_sources, answer, fact_id)
+            if DATABASE_URL:
+                cursor = conn.cursor()
+                # Check if similar question exists (PostgreSQL uses LOWER() function)
+                cursor.execute(
+                    "SELECT id, confidence, sources, answer FROM learned_faqs WHERE LOWER(question) = LOWER(%s)",
+                    (question,)
                 )
-                print(f"[Learning] Updated fact: '{question[:50]}...' (Confidence: {new_conf}%, Sources: {new_sources})")
+                existing = cursor.fetchone()
+                
+                if existing:
+                    # Update existing fact - boost confidence
+                    fact_id, current_conf, current_sources, old_answer = existing
+                    new_conf = min(100, current_conf + confidence_boost)
+                    new_sources = current_sources + 1
+                    
+                    # If answer changed significantly, reduce confidence
+                    if old_answer.lower() != answer.lower():
+                        new_conf = max(50, new_conf - 20)  # Penalty for conflicting info
+                    
+                    cursor.execute(
+                        "UPDATE learned_faqs SET confidence = %s, sources = %s, answer = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s",
+                        (new_conf, new_sources, answer, fact_id)
+                    )
+                    print(f"[Learning] Updated fact: '{question[:50]}...' (Confidence: {new_conf}%, Sources: {new_sources})")
+                else:
+                    # Add new fact with base confidence
+                    base_confidence = 60 if source == "extracted" else 75  # User-taught = higher trust
+                    cursor.execute(
+                        "INSERT INTO learned_faqs (question, answer, confidence, sources, source_type, created_at, updated_at) VALUES (%s, %s, %s, 1, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                        (question, answer, base_confidence, source)
+                    )
+                    print(f"[Learning] New fact learned: '{question[:50]}...' (Confidence: {base_confidence}%)")
             else:
-                # Add new fact with base confidence
-                base_confidence = 60 if source == "extracted" else 75  # User-taught = higher trust
-                conn.execute(
-                    "INSERT INTO learned_faqs (question, answer, confidence, sources, source_type, created_at, updated_at) VALUES (?, ?, ?, 1, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
-                    (question, answer, base_confidence, source)
+                # SQLite mode
+                cursor = conn.execute(
+                    "SELECT id, confidence, sources, answer FROM learned_faqs WHERE LOWER(question) = LOWER(?)",
+                    (question,)
                 )
-                print(f"[Learning] New fact learned: '{question[:50]}...' (Confidence: {base_confidence}%)")
+                existing = cursor.fetchone()
+                
+                if existing:
+                    # Update existing fact - boost confidence
+                    fact_id, current_conf, current_sources, old_answer = existing
+                    new_conf = min(100, current_conf + confidence_boost)
+                    new_sources = current_sources + 1
+                    
+                    # If answer changed significantly, reduce confidence
+                    if old_answer.lower() != answer.lower():
+                        new_conf = max(50, new_conf - 20)  # Penalty for conflicting info
+                    
+                    conn.execute(
+                        "UPDATE learned_faqs SET confidence = ?, sources = ?, answer = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                        (new_conf, new_sources, answer, fact_id)
+                    )
+                    print(f"[Learning] Updated fact: '{question[:50]}...' (Confidence: {new_conf}%, Sources: {new_sources})")
+                else:
+                    # Add new fact with base confidence
+                    base_confidence = 60 if source == "extracted" else 75  # User-taught = higher trust
+                    conn.execute(
+                        "INSERT INTO learned_faqs (question, answer, confidence, sources, source_type, created_at, updated_at) VALUES (?, ?, ?, 1, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                        (question, answer, base_confidence, source)
+                    )
+                    print(f"[Learning] New fact learned: '{question[:50]}...' (Confidence: {base_confidence}%)")
             
             conn.commit()
             return True
@@ -1392,19 +1434,33 @@ def get_analytics():
         init_db()
         
         with get_db_connection() as conn:
-            # Total queries in period
-            cursor = conn.execute(
-                "SELECT COUNT(*) FROM chat_history WHERE created_at >= %s",
-                (date_threshold,)
-            )
-            total_queries = cursor.fetchone()[0]
-            
-            # Get all queries for analysis
-            cursor = conn.execute(
-                "SELECT user_message, bot_reply FROM chat_history WHERE created_at >= %s ORDER BY created_at DESC",
-                (date_threshold,)
-            )
-            queries = cursor.fetchall()
+            if DATABASE_URL:
+                # PostgreSQL mode - need to use cursor()
+                cursor = conn.cursor()
+                cursor.execute(
+                    "SELECT COUNT(*) FROM chat_history WHERE created_at >= %s::timestamp",
+                    (date_threshold,)
+                )
+                total_queries = cursor.fetchone()[0]
+                
+                cursor.execute(
+                    "SELECT user_message, bot_reply FROM chat_history WHERE created_at >= %s::timestamp ORDER BY created_at DESC",
+                    (date_threshold,)
+                )
+                queries = cursor.fetchall()
+            else:
+                # SQLite mode - conn.execute() works directly
+                cursor = conn.execute(
+                    "SELECT COUNT(*) FROM chat_history WHERE created_at >= ?",
+                    (date_threshold,)
+                )
+                total_queries = cursor.fetchone()[0]
+                
+                cursor = conn.execute(
+                    "SELECT user_message, bot_reply FROM chat_history WHERE created_at >= ? ORDER BY created_at DESC",
+                    (date_threshold,)
+                )
+                queries = cursor.fetchall()
         
         # Calculate metrics
         successful = sum(1 for q in queries if not any(fail in q[1].lower() for fail in ['sorry', 'don\'t know', 'not sure', 'unable', 'error']))
