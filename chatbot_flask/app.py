@@ -652,20 +652,38 @@ def log_correction(original_question: str, wrong_answer: str, correct_answer: st
     try:
         init_db()
         with get_db_connection() as conn:
-            conn.execute(
-                """CREATE TABLE IF NOT EXISTS bot_corrections (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    original_question TEXT,
-                    wrong_answer TEXT,
-                    correct_answer TEXT,
-                    user_correction TEXT,
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                )"""
-            )
-            conn.execute(
-                "INSERT INTO bot_corrections (original_question, wrong_answer, correct_answer, user_correction) VALUES (?, ?, ?, ?)",
-                (original_question, wrong_answer, correct_answer, user_message)
-            )
+            if DATABASE_URL:
+                cursor = conn.cursor()
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS bot_corrections (
+                        id SERIAL PRIMARY KEY,
+                        original_question TEXT,
+                        wrong_answer TEXT,
+                        correct_answer TEXT,
+                        user_correction TEXT,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )"""
+                )
+                conn.commit()
+                cursor.execute(
+                    "INSERT INTO bot_corrections (original_question, wrong_answer, correct_answer, user_correction) VALUES (%s, %s, %s, %s)",
+                    (original_question, wrong_answer, correct_answer, user_message)
+                )
+            else:
+                conn.execute(
+                    """CREATE TABLE IF NOT EXISTS bot_corrections (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        original_question TEXT,
+                        wrong_answer TEXT,
+                        correct_answer TEXT,
+                        user_correction TEXT,
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )"""
+                )
+                conn.execute(
+                    "INSERT INTO bot_corrections (original_question, wrong_answer, correct_answer, user_correction) VALUES (?, ?, ?, ?)",
+                    (original_question, wrong_answer, correct_answer, user_message)
+                )
             conn.commit()
             print(f"[Learning] Correction logged: {original_question[:50]}...")
     except Exception as e:
@@ -951,22 +969,44 @@ def store_learning_opportunity(message: str, source: str = "user_input"):
     try:
         init_db()
         with get_db_connection() as conn:
-            conn.execute('''
-                CREATE TABLE IF NOT EXISTS learning_opportunities (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_input TEXT NOT NULL,
-                    source TEXT,
-                    status TEXT DEFAULT 'pending',
-                    suggested_answer TEXT,
-                    created_at TEXT NOT NULL,
-                    reviewed_by TEXT,
-                    reviewed_at TEXT
+            if DATABASE_URL:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS learning_opportunities (
+                        id SERIAL PRIMARY KEY,
+                        user_input TEXT NOT NULL,
+                        source TEXT,
+                        status TEXT DEFAULT 'pending',
+                        suggested_answer TEXT,
+                        created_at TIMESTAMP NOT NULL,
+                        reviewed_by TEXT,
+                        reviewed_at TIMESTAMP
+                    )
+                ''')
+                conn.commit()
+                cursor.execute(
+                    "INSERT INTO learning_opportunities (user_input, source, created_at) VALUES (%s, %s, %s)",
+                    (message, source, datetime.now().isoformat())
                 )
-            ''')
-            conn.execute(
-                "INSERT INTO learning_opportunities (user_input, source, created_at) VALUES (?, ?, ?)",
-                (message, source, datetime.now().isoformat())
-            )
+                conn.commit()
+            else:
+                conn.execute('''
+                    CREATE TABLE IF NOT EXISTS learning_opportunities (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_input TEXT NOT NULL,
+                        source TEXT,
+                        status TEXT DEFAULT 'pending',
+                        suggested_answer TEXT,
+                        created_at TEXT NOT NULL,
+                        reviewed_by TEXT,
+                        reviewed_at TEXT
+                    )
+                ''')
+                conn.execute(
+                    "INSERT INTO learning_opportunities (user_input, source, created_at) VALUES (?, ?, ?)",
+                    (message, source, datetime.now().isoformat())
+                )
+                conn.commit()
         print(f"[Learning] Stored opportunity: {message[:50]}...")
     except Exception as e:
         print(f"[Learning] Error storing opportunity: {e}")
@@ -1252,20 +1292,40 @@ def record_feedback():
         # Store feedback in database for learning analysis
         init_db()
         with get_db_connection() as conn:
-            conn.execute('''
-                CREATE TABLE IF NOT EXISTS feedback (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    question TEXT NOT NULL,
-                    answer TEXT NOT NULL,
-                    rating TEXT CHECK(rating IN ('up', 'down')),
-                    created_at TEXT NOT NULL,
-                    processed INTEGER DEFAULT 0
+            if DATABASE_URL:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS feedback (
+                        id SERIAL PRIMARY KEY,
+                        question TEXT NOT NULL,
+                        answer TEXT NOT NULL,
+                        rating TEXT CHECK(rating IN ('up', 'down')),
+                        created_at TIMESTAMP NOT NULL,
+                        processed INTEGER DEFAULT 0
+                    )
+                ''')
+                conn.commit()
+                cursor.execute(
+                    "INSERT INTO feedback (question, answer, rating, created_at) VALUES (%s, %s, %s, %s)",
+                    (question, answer, rating, timestamp)
                 )
-            ''')
-            conn.execute(
-                "INSERT INTO feedback (question, answer, rating, created_at) VALUES (?, ?, ?, ?)",
-                (question, answer, rating, timestamp)
-            )
+                conn.commit()
+            else:
+                conn.execute('''
+                    CREATE TABLE IF NOT EXISTS feedback (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        question TEXT NOT NULL,
+                        answer TEXT NOT NULL,
+                        rating TEXT CHECK(rating IN ('up', 'down')),
+                        created_at TEXT NOT NULL,
+                        processed INTEGER DEFAULT 0
+                    )
+                ''')
+                conn.execute(
+                    "INSERT INTO feedback (question, answer, rating, created_at) VALUES (?, ?, ?, ?)",
+                    (question, answer, rating, timestamp)
+                )
+                conn.commit()
         
         print(f"[Learning] Feedback recorded: {rating} for question: {question[:50]}...")
         
@@ -1451,20 +1511,38 @@ def get_all_learned_answers():
     try:
         init_db()
         with get_db_connection() as conn:
-            conn.execute('''
-                CREATE TABLE IF NOT EXISTS learned_answers (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    question TEXT NOT NULL,
-                    answer TEXT NOT NULL,
-                    rating_count INTEGER DEFAULT 0,
-                    avg_rating REAL DEFAULT 0,
-                    created_at TEXT NOT NULL,
-                    updated_at TEXT NOT NULL
+            if DATABASE_URL:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS learned_answers (
+                        id SERIAL PRIMARY KEY,
+                        question TEXT NOT NULL,
+                        answer TEXT NOT NULL,
+                        rating_count INTEGER DEFAULT 0,
+                        avg_rating REAL DEFAULT 0,
+                        created_at TIMESTAMP NOT NULL,
+                        updated_at TIMESTAMP NOT NULL
+                    )
+                ''')
+                conn.commit()
+                cursor.execute(
+                    "SELECT id, question, answer, rating_count, avg_rating, created_at FROM learned_answers ORDER BY avg_rating DESC, rating_count DESC"
                 )
-            ''')
-            cursor = conn.execute(
-                "SELECT id, question, answer, rating_count, avg_rating, created_at FROM learned_answers ORDER BY avg_rating DESC, rating_count DESC"
-            )
+            else:
+                conn.execute('''
+                    CREATE TABLE IF NOT EXISTS learned_answers (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        question TEXT NOT NULL,
+                        answer TEXT NOT NULL,
+                        rating_count INTEGER DEFAULT 0,
+                        avg_rating REAL DEFAULT 0,
+                        created_at TEXT NOT NULL,
+                        updated_at TEXT NOT NULL
+                    )
+                ''')
+                cursor = conn.execute(
+                    "SELECT id, question, answer, rating_count, avg_rating, created_at FROM learned_answers ORDER BY avg_rating DESC, rating_count DESC"
+                )
             answers = [
                 {
                     'id': row[0],
