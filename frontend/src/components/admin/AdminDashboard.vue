@@ -128,6 +128,22 @@
       </div>
     </div>
 
+    <!-- Unsynced Paths Warning -->
+    <div v-if="localPathsCount > stats.totalPaths" class="panel-card unsynced-warning">
+      <h2>
+        <span class="material-icons" style="color: var(--color-warning);">warning</span>
+        Unsynced Navigation Paths
+      </h2>
+      <p class="unsynced-message">
+        You have <strong>{{ localPathsCount - stats.totalPaths }}</strong> path(s) saved locally that aren't synced to the database.
+        Go to <strong>Map Management → SVG Paths</strong> and click "Save" on each path to sync them.
+      </p>
+      <button class="action-btn" @click="navigateTo('paths')">
+        <span class="material-icons">route</span>
+        <span>Go to Path Manager</span>
+      </button>
+    </div>
+
     <!-- Navigation Paths Detail -->
     <div v-if="pathsData.length > 0" class="panel-card paths-detail">
       <h2>
@@ -332,6 +348,7 @@ const recentActivity = ref([])
 const lastUpdated = ref('Just now')
 const showAllActivities = ref(false)
 const pathsData = ref([]) // Store paths with destinations for chart
+const localPathsCount = ref(0) // Count of localStorage paths
 
 // Computed property to limit displayed activities
 const displayedActivities = computed(() => {
@@ -407,10 +424,22 @@ async function loadDashboardData() {
           const paths = r.data || []
           stats.value.totalPaths = Array.isArray(paths) ? paths.length : 0
           pathsData.value = Array.isArray(paths) ? paths : []
-          console.log('[Dashboard] Paths loaded:', stats.value.totalPaths, pathsData.value)
+          console.log('[Dashboard] API Paths loaded:', stats.value.totalPaths)
+          
+          // Also check localStorage for unsynced paths
+          try {
+            const localPaths = JSON.parse(localStorage.getItem('svg_navigation_paths_v2') || '{}')
+            localPathsCount.value = Object.keys(localPaths).length
+            if (localPathsCount.value > stats.value.totalPaths) {
+              console.log('[Dashboard] Found', localPathsCount.value - stats.value.totalPaths, 'unsynced paths in localStorage')
+            }
+          } catch (e) {
+            localPathsCount.value = 0
+            console.log('[Dashboard] No localStorage paths found')
+          }
         })
         .catch((e) => { 
-          console.error('[Dashboard] Failed to load paths:', e)
+          console.error('[Dashboard] Failed to load paths from API:', e)
           stats.value.totalPaths = 0 
           pathsData.value = []
         })
@@ -1133,6 +1162,27 @@ onMounted(loadDashboardData)
   color: var(--color-primary);
   font-weight: 700;
   margin-left: 4px;
+}
+
+/* Unsynced Warning */
+.unsynced-warning {
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #FFF8E1 0%, #FFF3E0 100%);
+  border-color: var(--color-warning);
+}
+
+.unsynced-warning h2 {
+  color: var(--color-warning-dark);
+}
+
+.unsynced-message {
+  padding: 16px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.unsynced-message strong {
+  color: var(--color-warning-dark);
 }
 
 /* Paths Detail Section */
