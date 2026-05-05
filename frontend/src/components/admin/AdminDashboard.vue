@@ -375,6 +375,13 @@ async function loadDashboardData() {
         .catch(() => { stats.value.totalFAQs = 0 })
     )
     
+    // Fetch navigation paths count
+    promises.push(
+      api.get('/navigation/paths/')
+        .then(r => { stats.value.totalPaths = r.data.length })
+        .catch(() => { stats.value.totalPaths = 0 })
+    )
+    
     if (auth.canPostAnnouncement) {
       promises.push(
         api.get('/announcements/mine/')

@@ -181,12 +181,13 @@ class PathManager {
     const description = pathData.description || ''
     const from = pathData.from || ''
     const to = pathData.to || ''
+    const floor = pathData.floor || 1
     const points = pathData.points || pathData.visualPoints?.map(p => [p.x, p.y]) || []
     const elementIds = pathData.elementIds || []
     
     try {
       const apiData = this.toApiFormat({
-        id, name, description, from, to, points, elementIds
+        id, name, description, from, to, floor, points, elementIds
       })
       
       const response = await api.post('/navigation/paths/', apiData)
@@ -205,6 +206,7 @@ class PathManager {
         description,
         from,
         to,
+        floor,
         points,
         elementIds,
         visualPoints: pathData.visualPoints || [],
