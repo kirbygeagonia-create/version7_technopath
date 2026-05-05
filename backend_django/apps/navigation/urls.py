@@ -13,4 +13,5 @@ urlpatterns = [
     path('grid-settings/', views.GridSettingsView.as_view(), name='grid-settings'),
     path('paths/', views.NavigationPathsView.as_view(), name='navigation-paths'),
     path('paths/<int:pk>/', views.NavigationPathDetailView.as_view(), name='navigation-path-detail'),
+    path('offline-sync/', views.OfflineSyncView.as_view(), name='offline-sync'),
 ]

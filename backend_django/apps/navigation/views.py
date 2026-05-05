@@ -14,6 +14,15 @@ from .models import NavigationNode, NavigationEdge, Path, PathPoint
 from .serializers import NavigationNodeSerializer, NavigationEdgeSerializer, PathSerializer
 from apps.users.permissions import ReadOnlyOrSuperAdmin
 
+# Import for offline sync
+from apps.facilities.models import Facility
+from apps.facilities.serializers import FacilitySerializer
+from apps.rooms.models import Room
+from apps.rooms.serializers import RoomSerializer
+from apps.chatbot.models import FAQEntry
+from apps.chatbot.serializers import FAQEntrySerializer
+from django.utils import timezone
+
 
 class MapGalleryView(APIView):
     """
@@ -582,3 +591,68 @@ class NavigationPathDetailView(APIView):
         path.is_deleted = True
         path.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class OfflineSyncView(APIView):
+    """
+    API endpoint for offline data synchronization.
+    Returns all campus data needed for offline navigation.
+    GET /navigation/offline-sync/
+    """
+    permission_classes = [permissions.AllowAny]  # Allow anonymous for public campus access
+    
+    def get(self, request):
+        """Export all data needed for offline mode."""
+        try:
+            # Get all active data
+            buildings = Facility.objects.filter(is_deleted=False)
+            rooms = Room.objects.filter(is_deleted=False)
+            paths = Path.objects.filter(is_deleted=False).prefetch_related('points')
+            faqs = FAQEntry.objects.filter(is_deleted=False, is_active=True)
+            
+            # Serialize data
+            buildings_data = FacilitySerializer(buildings, many=True).data
+            rooms_data = RoomSerializer(rooms, many=True).data
+            paths_data = PathSerializer(paths, many=True).data
+            faqs_data = FAQEntrySerializer(faqs, many=True).data
+            
+            # Get map files
+            maps_dir = os.path.join(settings.MEDIA_ROOT, 'maps')
+            map_files = []
+            if os.path.exists(maps_dir):
+                for filename in os.listdir(maps_dir):
+                    if filename.endswith('.svg'):
+                        map_files.append({
+                            'filename': filename,
+                            'url': f'/media/maps/{filename}'
+                        })
+            
+            response_data = {
+                'status': 'ok',
+                'timestamp': timezone.now().isoformat(),
+                'version': '1.0',
+                'stats': {
+                    'buildings': len(buildings_data),
+                    'rooms': len(rooms_data),
+                    'paths': len(paths_data),
+                    'faqs': len(faqs_data),
+                    'maps': len(map_files)
+                },
+                'data': {
+                    'buildings': buildings_data,
+                    'rooms': rooms_data,
+                    'paths': paths_data,
+                    'faqs': faqs_data,
+                    'maps': map_files
+                }
+            }
+            
+            return Response(response_data)
+            
+        except Exception as e:
+            import traceback
+            print(f"[Offline Sync Error] {str(e)}\n{traceback.format_exc()}")
+            return Response(
+                {'status': 'error', 'message': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
