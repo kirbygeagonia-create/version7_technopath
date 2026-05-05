@@ -1710,6 +1710,62 @@ onMounted(() => {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .admin-faq-section {
+    padding: 12px;
+    min-width: auto;
+  }
+  
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .admin-header h1 {
+    font-size: var(--text-lg);
+  }
+  
+  .admin-actions {
+    width: 100%;
+  }
+  
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .faq-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .faq-actions {
+    margin-left: auto;
+  }
+  
+  .faq-card {
+    padding: 12px;
+  }
+  
+  .faq-question {
+    font-size: var(--text-sm);
+  }
+  
+  .faq-answer {
+    font-size: var(--text-xs);
+  }
+  
+  .modal-overlay {
+    padding: 16px;
+  }
+  
+  .modal-content {
+    max-height: 90vh;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+  
   .main-tabs {
     flex-wrap: wrap;
   }
@@ -1735,7 +1791,21 @@ onMounted(() => {
   }
   
   .analytics-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .search-bar input {
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+  
+  .admin-textarea,
+  .admin-input,
+  .admin-select {
+    font-size: 16px; /* Prevent iOS zoom */
   }
 }
 </style>

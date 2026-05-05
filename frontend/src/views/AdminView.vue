@@ -22,7 +22,7 @@
         </button>
 
         <!-- ── Map management group ─────────────── -->
-        <div v-if="!isMobile && (auth.canManageFacilities || auth.canManageAllRooms || auth.canManageNavigation || auth.canManageFAQ)"
+        <div v-if="auth.canManageFacilities || auth.canManageAllRooms || auth.canManageNavigation || auth.canManageFAQ"
              class="tp-nav-group-label clickable" @click="toggleSection('map')">
           <span class="tp-group-icon"><span class="material-icons">map</span></span>
           <span>MAP MANAGEMENT</span>
@@ -30,19 +30,19 @@
         </div>
 
         <div v-show="!collapsedSections.map" class="tp-nav-group-items">
-          <button v-if="!isMobile && auth.canManageFacilities"
+          <button v-if="auth.canManageFacilities"
                   :class="navCls('facilities')" @click="go('facilities')">
             <span class="material-icons tp-nav-icon">business</span>
             <span>Buildings</span>
           </button>
 
-          <button v-if="!isMobile && auth.canManageNavigation"
+          <button v-if="auth.canManageNavigation"
                   :class="navCls('paths')" @click="go('paths')">
             <span class="material-icons tp-nav-icon">route</span>
             <span>SVG Paths</span>
           </button>
 
-          <button v-if="!isMobile && auth.canManageFAQ"
+          <button v-if="auth.canManageFAQ"
                   :class="navCls('faq')" @click="go('faq')">
             <span class="material-icons tp-nav-icon">smart_toy</span>
             <span>FAQ / Chatbot</span>
@@ -79,7 +79,7 @@
         </div>
 
         <!-- ── Administration group ──────────────── -->
-        <div v-if="!isMobile && (auth.canManageAdminAccounts || auth.canViewAllFeedback || auth.canViewAuditLog || auth.canViewDeptFeedback || auth.canViewDeptAuditLog)"
+        <div v-if="auth.canManageAdminAccounts || auth.canViewAllFeedback || auth.canViewAuditLog || auth.canViewDeptFeedback || auth.canViewDeptAuditLog"
              class="tp-nav-group-label clickable" @click="toggleSection('administration')">
           <span class="tp-group-icon"><span class="material-icons">admin_panel_settings</span></span>
           <span>ADMINISTRATION</span>
@@ -87,19 +87,19 @@
         </div>
 
         <div v-show="!collapsedSections.administration" class="tp-nav-group-items">
-          <button v-if="!isMobile && auth.canManageAdminAccounts"
+          <button v-if="auth.canManageAdminAccounts"
                   :class="navCls('admins')" @click="go('admins')">
             <span class="material-icons tp-nav-icon">admin_panel_settings</span>
             <span>Admin Accounts</span>
           </button>
 
-          <button v-if="!isMobile && (auth.canViewAllFeedback || auth.canViewDeptFeedback)"
+          <button v-if="auth.canViewAllFeedback || auth.canViewDeptFeedback"
                   :class="navCls('feedback')" @click="go('feedback')">
             <span class="material-icons tp-nav-icon">star</span>
             <span>Feedback & Ratings</span>
           </button>
 
-          <button v-if="!isMobile && (auth.canViewAuditLog || auth.canViewDeptAuditLog)"
+          <button v-if="auth.canViewAuditLog || auth.canViewDeptAuditLog"
                   :class="navCls('auditlog')" @click="go('auditlog')">
             <span class="material-icons tp-nav-icon">assignment</span>
             <span>Audit Log</span>
@@ -107,13 +107,13 @@
         </div>
 
         <!-- ── System group ──────────────── -->
-        <div v-if="!isMobile" class="tp-nav-group-label">
+        <div class="tp-nav-group-label">
           <span class="tp-group-icon"><span class="material-icons">dns</span></span>
           <span>SYSTEM</span>
         </div>
 
         <div class="tp-nav-group-items">
-          <button v-if="!isMobile" class="tp-sidebar-nav-item" @click="goToFrontend">
+          <button class="tp-sidebar-nav-item" @click="goToFrontend">
             <span class="material-icons tp-nav-icon">open_in_new</span>
             <span>View Site</span>
           </button>
@@ -143,12 +143,6 @@
     <main class="tp-admin-main">
 
       <AdminDashboard        v-if="section === 'dashboard'" />
-      
-      <div v-else-if="isMobile && blockedOnMobile(section)" class="tp-access-denied">
-        <span class="material-icons">computer</span>
-        <h2>Desktop Required</h2>
-        <p>This feature requires a desktop screen to manage effectively.</p>
-      </div>
 
       <AdminFacilities       v-else-if="section === 'facilities'  && auth.canManageFacilities" />
       <AdminRooms            v-else-if="section === 'rooms'       && (auth.canManageAllRooms || auth.canManageOwnRooms)"
@@ -241,15 +235,10 @@ function toggleSection(sectionName) {
 onMounted(() => {
   window.addEventListener('resize', () => {
     isMobile.value = window.innerWidth < 1024
-    if (isMobile.value && blockedOnMobile(section.value)) {
-      section.value = 'dashboard'
-    }
   })
 })
 
-function blockedOnMobile(sec) {
-  return !['dashboard', 'announcements', 'notifications'].includes(sec)
-}
+// All sections now accessible on mobile
 
 // Department-based secondary color theming
 const departmentColors = {
@@ -350,13 +339,32 @@ function handleAdminNavigate(e) {
 .tp-mobile-card h2 { font-size: var(--text-xl); font-weight: 700; font-family: var(--font-primary); margin-bottom: 12px; }
 .tp-mobile-card p { font-size: var(--text-base); font-family: var(--font-primary); color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 8px; }
 
-/* Admin shell - Desktop Only */
+/* Admin shell - Responsive for all devices */
 .tp-admin-shell { 
   display: flex; 
   height: 100vh; 
   overflow: hidden; 
   background: var(--color-surface-2);
-  min-width: 1024px;
+}
+
+/* Mobile layout */
+.tp-admin-shell.mobile-layout {
+  flex-direction: column;
+}
+
+.tp-admin-shell.mobile-layout .tp-sidebar {
+  width: 100%;
+  min-width: auto;
+  max-width: none;
+  height: auto;
+  max-height: 50vh;
+  border-right: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tp-admin-shell.mobile-layout .tp-admin-main {
+  min-width: auto;
+  padding: 16px;
 }
 
 /* Sidebar - Fixed width for desktop */

@@ -1018,4 +1018,89 @@ onMounted(loadFacilities)
   color: var(--color-text-hint);
   margin-top: 8px;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .adminfacilities-section {
+    padding: 12px;
+    min-width: auto;
+  }
+  
+  .section-header h1 {
+    font-size: var(--text-lg);
+  }
+  
+  .stats-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .stat-box {
+    flex: 1;
+    min-width: calc(50% - 8px);
+    padding: 12px;
+  }
+  
+  .stat-number {
+    font-size: var(--text-xl);
+  }
+  
+  .filters-bar {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .search-box {
+    width: 100%;
+  }
+  
+  .filter-select {
+    width: 100%;
+  }
+  
+  .btn-add-inline {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .facility-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .facility-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .facility-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .modal-overlay {
+    padding: 16px;
+  }
+  
+  .modal-content {
+    max-height: 90vh;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+  
+  .search-box input {
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+}
 </style>
