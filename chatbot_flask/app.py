@@ -737,8 +737,6 @@ def find_best_answer_ml(message: str) -> tuple:
     Machine Learning-based answer finding using similarity matching.
     Returns (answer, confidence_score, source)
     """
-    import sqlite3
-    
     msg_lower = message.lower().strip()
     best_answer = None
     best_score = 0.0
@@ -748,7 +746,11 @@ def find_best_answer_ml(message: str) -> tuple:
     try:
         init_db()
         with get_db_connection() as conn:
-            cursor = conn.execute("SELECT question, answer, confidence, source_type FROM learned_faqs WHERE confidence >= 30")
+            if DATABASE_URL:
+                cursor = conn.cursor()
+                cursor.execute("SELECT question, answer, confidence, source_type FROM learned_faqs WHERE confidence >= 30")
+            else:
+                cursor = conn.execute("SELECT question, answer, confidence, source_type FROM learned_faqs WHERE confidence >= 30")
             rows = cursor.fetchall()
             
             for question, answer, confidence, source in rows:
@@ -1282,23 +1284,41 @@ def get_learned_answer(question: str, similarity_threshold: float = 0.7):
     try:
         init_db()
         with get_db_connection() as conn:
-            # Create learned_answers table if not exists
-            conn.execute('''
-                CREATE TABLE IF NOT EXISTS learned_answers (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    question TEXT NOT NULL,
-                    answer TEXT NOT NULL,
-                    rating_count INTEGER DEFAULT 0,
-                    avg_rating REAL DEFAULT 0,
-                    created_at TEXT NOT NULL,
-                    updated_at TEXT NOT NULL
+            if DATABASE_URL:
+                cursor = conn.cursor()
+                # Create learned_answers table if not exists (PostgreSQL syntax)
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS learned_answers (
+                        id SERIAL PRIMARY KEY,
+                        question TEXT NOT NULL,
+                        answer TEXT NOT NULL,
+                        rating_count INTEGER DEFAULT 0,
+                        avg_rating REAL DEFAULT 0,
+                        created_at TIMESTAMP NOT NULL,
+                        updated_at TIMESTAMP NOT NULL
+                    )
+                ''')
+                conn.commit()
+                # Get all learned answers with positive feedback
+                cursor.execute(
+                    "SELECT question, answer, rating_count, avg_rating FROM learned_answers WHERE avg_rating >= 0.6 ORDER BY avg_rating DESC, rating_count DESC"
                 )
-            ''')
-            
-            # Get all learned answers with positive feedback
-            cursor = conn.execute(
-                "SELECT question, answer, rating_count, avg_rating FROM learned_answers WHERE avg_rating >= 0.6 ORDER BY avg_rating DESC, rating_count DESC"
-            )
+            else:
+                # SQLite mode
+                conn.execute('''
+                    CREATE TABLE IF NOT EXISTS learned_answers (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        question TEXT NOT NULL,
+                        answer TEXT NOT NULL,
+                        rating_count INTEGER DEFAULT 0,
+                        avg_rating REAL DEFAULT 0,
+                        created_at TEXT NOT NULL,
+                        updated_at TEXT NOT NULL
+                    )
+                ''')
+                cursor = conn.execute(
+                    "SELECT question, answer, rating_count, avg_rating FROM learned_answers WHERE avg_rating >= 0.6 ORDER BY avg_rating DESC, rating_count DESC"
+                )
             learned = cursor.fetchall()
         
         if not learned:
@@ -1342,41 +1362,82 @@ def store_learned_answer(question: str, answer: str, rating: str):
     try:
         init_db()
         with get_db_connection() as conn:
-            conn.execute('''
-                CREATE TABLE IF NOT EXISTS learned_answers (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    question TEXT NOT NULL UNIQUE,
-                    answer TEXT NOT NULL,
-                    rating_count INTEGER DEFAULT 0,
-                    avg_rating REAL DEFAULT 0,
-                    created_at TEXT NOT NULL,
-                    updated_at TEXT NOT NULL
-                )
-            ''')
-            
-            # Check if question already exists
-            cursor = conn.execute("SELECT rating_count, avg_rating FROM learned_answers WHERE question = ?", (question,))
-            existing = cursor.fetchone()
-            
-            rating_value = 1.0 if rating == 'up' else 0.0
-            now = datetime.now().isoformat()
-            
-            if existing:
-                count, avg = existing
-                # Update with new rating using weighted average
-                new_count = count + 1
-                new_avg = (avg * count + rating_value) / new_count
-                conn.execute(
-                    "UPDATE learned_answers SET avg_rating = ?, rating_count = ?, updated_at = ? WHERE question = ?",
-                    (new_avg, new_count, now, question)
-                )
+            if DATABASE_URL:
+                cursor = conn.cursor()
+                # PostgreSQL mode
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS learned_answers (
+                        id SERIAL PRIMARY KEY,
+                        question TEXT NOT NULL UNIQUE,
+                        answer TEXT NOT NULL,
+                        rating_count INTEGER DEFAULT 0,
+                        avg_rating REAL DEFAULT 0,
+                        created_at TIMESTAMP NOT NULL,
+                        updated_at TIMESTAMP NOT NULL
+                    )
+                ''')
+                conn.commit()
+                
+                # Check if question already exists
+                cursor.execute("SELECT rating_count, avg_rating FROM learned_answers WHERE question = %s", (question,))
+                existing = cursor.fetchone()
+                
+                rating_value = 1.0 if rating == 'up' else 0.0
+                now = datetime.now().isoformat()
+                
+                if existing:
+                    count, avg = existing
+                    # Update with new rating using weighted average
+                    new_count = count + 1
+                    new_avg = (avg * count + rating_value) / new_count
+                    cursor.execute(
+                        "UPDATE learned_answers SET avg_rating = %s, rating_count = %s, updated_at = %s WHERE question = %s",
+                        (new_avg, new_count, now, question)
+                    )
+                else:
+                    # Insert new learned answer
+                    cursor.execute(
+                        "INSERT INTO learned_answers (question, answer, rating_count, avg_rating, created_at, updated_at) VALUES (%s, %s, 1, %s, %s, %s)",
+                        (question, answer, rating_value, now, now)
+                    )
+                    print(f"[ML Learning] New learned answer stored: {question[:50]}...")
             else:
-                # Insert new learned answer
-                conn.execute(
-                    "INSERT INTO learned_answers (question, answer, rating_count, avg_rating, created_at, updated_at) VALUES (?, ?, 1, ?, ?, ?)",
-                    (question, answer, rating_value, now, now)
-                )
-                print(f"[ML Learning] New learned answer stored: {question[:50]}...")
+                # SQLite mode
+                conn.execute('''
+                    CREATE TABLE IF NOT EXISTS learned_answers (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        question TEXT NOT NULL UNIQUE,
+                        answer TEXT NOT NULL,
+                        rating_count INTEGER DEFAULT 0,
+                        avg_rating REAL DEFAULT 0,
+                        created_at TEXT NOT NULL,
+                        updated_at TEXT NOT NULL
+                    )
+                ''')
+                
+                # Check if question already exists
+                cursor = conn.execute("SELECT rating_count, avg_rating FROM learned_answers WHERE question = ?", (question,))
+                existing = cursor.fetchone()
+                
+                rating_value = 1.0 if rating == 'up' else 0.0
+                now = datetime.now().isoformat()
+                
+                if existing:
+                    count, avg = existing
+                    # Update with new rating using weighted average
+                    new_count = count + 1
+                    new_avg = (avg * count + rating_value) / new_count
+                    conn.execute(
+                        "UPDATE learned_answers SET avg_rating = ?, rating_count = ?, updated_at = ? WHERE question = ?",
+                        (new_avg, new_count, now, question)
+                    )
+                else:
+                    # Insert new learned answer
+                    conn.execute(
+                        "INSERT INTO learned_answers (question, answer, rating_count, avg_rating, created_at, updated_at) VALUES (?, ?, 1, ?, ?, ?)",
+                        (question, answer, rating_value, now, now)
+                    )
+                    print(f"[ML Learning] New learned answer stored: {question[:50]}...")
         
         return True
     except Exception as e:
