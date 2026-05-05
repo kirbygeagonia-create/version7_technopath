@@ -2,8 +2,151 @@
   <!-- ── Desktop & Mobile admin shell ── -->
   <div class="tp-admin-shell" :style="secondaryColorStyles" :class="{'mobile-layout': isMobile}">
 
-    <!-- Sidebar -->
-    <aside class="tp-sidebar">
+    <!-- Mobile Header -->
+    <header v-if="isMobile" class="tp-mobile-header">
+      <div class="tp-mobile-brand">
+        <span class="tp-brand-icon">T</span>
+        <div class="tp-brand-text">
+          <div class="tp-brand-name">TechnoPath</div>
+          <div class="tp-brand-sub">Admin</div>
+        </div>
+      </div>
+      <button class="tp-menu-toggle" @click="mobileMenuOpen = !mobileMenuOpen">
+        <span class="material-icons">{{ mobileMenuOpen ? 'close' : 'menu' }}</span>
+      </button>
+    </header>
+
+    <!-- Mobile Overlay -->
+    <div v-if="isMobile" class="tp-mobile-overlay" :class="{'open': mobileMenuOpen}" @click="mobileMenuOpen = false"></div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div v-if="isMobile" class="tp-mobile-drawer" :class="{'open': mobileMenuOpen}">
+      <nav class="tp-mobile-nav">
+
+        <!-- Dashboard — all roles -->
+        <button :class="navCls('dashboard')" @click="go('dashboard')">
+          <span class="material-icons tp-nav-icon">dashboard</span>
+          <span>Dashboard</span>
+        </button>
+
+        <!-- ── Map management group ─────────────── -->
+        <div v-if="auth.canManageFacilities || auth.canManageAllRooms || auth.canManageNavigation || auth.canManageFAQ"
+             class="tp-nav-group-label clickable" @click="toggleSection('map')">
+          <span class="tp-group-icon"><span class="material-icons">map</span></span>
+          <span>MAP MANAGEMENT</span>
+          <span class="material-icons tp-collapse-icon">{{ collapsedSections.map ? 'expand_more' : 'expand_less' }}</span>
+        </div>
+
+        <div v-show="!collapsedSections.map" class="tp-nav-group-items">
+          <button v-if="auth.canManageFacilities"
+                  :class="navCls('facilities')" @click="go('facilities')">
+            <span class="material-icons tp-nav-icon">business</span>
+            <span>Buildings</span>
+          </button>
+
+          <button v-if="auth.canManageNavigation"
+                  :class="navCls('paths')" @click="go('paths')">
+            <span class="material-icons tp-nav-icon">route</span>
+            <span>SVG Paths</span>
+          </button>
+
+          <button v-if="auth.canManageFAQ"
+                  :class="navCls('faq')" @click="go('faq')">
+            <span class="material-icons tp-nav-icon">smart_toy</span>
+            <span>FAQ / Chatbot</span>
+          </button>
+        </div>
+
+        <!-- ── Communications group ──────────────── -->
+        <div class="tp-nav-group-label clickable" @click="toggleSection('communications')">
+          <span class="tp-group-icon"><span class="material-icons">chat</span></span>
+          <span>COMMUNICATIONS</span>
+          <span class="material-icons tp-collapse-icon">{{ collapsedSections.communications ? 'expand_more' : 'expand_less' }}</span>
+        </div>
+
+        <div v-show="!collapsedSections.communications" class="tp-nav-group-items">
+          <button v-if="auth.canPostAnnouncement"
+                  :class="navCls('announcements')" @click="go('announcements')">
+            <span class="material-icons tp-nav-icon">campaign</span>
+            <span>Announcements</span>
+            <span v-if="myPendingCount > 0" class="tp-nav-badge">{{ myPendingCount }}</span>
+          </button>
+
+          <button v-if="auth.canApproveAnnouncements"
+                  :class="navCls('pending')" @click="go('pending')">
+            <span class="material-icons tp-nav-icon">notifications</span>
+            <span>Notifications</span>
+            <span v-if="pendingCount > 0" class="tp-nav-badge tp-badge-urgent">{{ pendingCount }}</span>
+          </button>
+
+          <button v-if="auth.canSendCampusNotification"
+                  :class="navCls('notifications')" @click="go('notifications')">
+            <span class="material-icons tp-nav-icon">notifications_active</span>
+            <span>Send Notification</span>
+          </button>
+        </div>
+
+        <!-- ── Administration group ──────────────── -->
+        <div v-if="auth.canManageAdminAccounts || auth.canViewAllFeedback || auth.canViewAuditLog || auth.canViewDeptFeedback || auth.canViewDeptAuditLog"
+             class="tp-nav-group-label clickable" @click="toggleSection('administration')">
+          <span class="tp-group-icon"><span class="material-icons">admin_panel_settings</span></span>
+          <span>ADMINISTRATION</span>
+          <span class="material-icons tp-collapse-icon">{{ collapsedSections.administration ? 'expand_more' : 'expand_less' }}</span>
+        </div>
+
+        <div v-show="!collapsedSections.administration" class="tp-nav-group-items">
+          <button v-if="auth.canManageAdminAccounts"
+                  :class="navCls('admins')" @click="go('admins')">
+            <span class="material-icons tp-nav-icon">admin_panel_settings</span>
+            <span>Admin Accounts</span>
+          </button>
+
+          <button v-if="auth.canViewAllFeedback || auth.canViewDeptFeedback"
+                  :class="navCls('feedback')" @click="go('feedback')">
+            <span class="material-icons tp-nav-icon">star</span>
+            <span>Feedback & Ratings</span>
+          </button>
+
+          <button v-if="auth.canViewAuditLog || auth.canViewDeptAuditLog"
+                  :class="navCls('auditlog')" @click="go('auditlog')">
+            <span class="material-icons tp-nav-icon">assignment</span>
+            <span>Audit Log</span>
+          </button>
+        </div>
+
+        <!-- ── System group ──────────────── -->
+        <div class="tp-nav-group-label">
+          <span class="tp-group-icon"><span class="material-icons">dns</span></span>
+          <span>SYSTEM</span>
+        </div>
+
+        <div class="tp-nav-group-items">
+          <button class="tp-sidebar-nav-item" @click="goToFrontend">
+            <span class="material-icons tp-nav-icon">open_in_new</span>
+            <span>View Site</span>
+          </button>
+        </div>
+
+      </nav>
+
+      <!-- Mobile User Section -->
+      <div v-if="isMobile" class="tp-mobile-user">
+        <div class="tp-mobile-user-info">
+          <span class="material-icons">account_circle</span>
+          <div>
+            <div class="tp-footer-name">{{ auth.displayName }}</div>
+            <div class="tp-footer-role">{{ auth.roleLabel }}</div>
+          </div>
+        </div>
+        <button class="tp-logout-btn" @click="showLogoutConfirm = true">
+          <span class="material-icons">logout</span>
+          <span>Sign out</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sidebar (Desktop Only) -->
+    <aside v-if="!isMobile" class="tp-sidebar">
 
       <div class="tp-sidebar-brand">
         <span class="tp-brand-icon">T</span>
@@ -210,6 +353,7 @@ const myPendingCount= ref(0)
 const showLogoutConfirm = ref(false)
 
 const isMobile = ref(window.innerWidth < 1024)
+const mobileMenuOpen = ref(false)
 
 // Collapsible navigation sections (all collapsed by default)
 const collapsedSections = ref({
@@ -268,7 +412,10 @@ function navCls(name) {
   return ['tp-sidebar-nav-item', section.value === name ? 'active' : '']
 }
 
-function go(name) { section.value = name }
+function go(name) { 
+  section.value = name 
+  mobileMenuOpen.value = false
+}
 
 function goToFrontend() {
   router.push('/')
@@ -347,24 +494,150 @@ function handleAdminNavigate(e) {
   background: var(--color-surface-2);
 }
 
-/* Mobile layout */
-.tp-admin-shell.mobile-layout {
+/* Mobile Header */
+.tp-mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.tp-mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tp-mobile-brand .tp-brand-text {
+  display: flex;
   flex-direction: column;
 }
 
-.tp-admin-shell.mobile-layout .tp-sidebar {
+.tp-mobile-brand .tp-brand-name {
+  font-size: var(--text-base);
+  font-weight: 700;
+}
+
+.tp-mobile-brand .tp-brand-sub {
+  font-size: var(--text-xs);
+  color: var(--color-text-hint);
+}
+
+.tp-menu-toggle {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tp-menu-toggle:active {
+  background: var(--color-primary-light);
+}
+
+.tp-menu-toggle .material-icons {
+  font-size: 24px;
+}
+
+/* Mobile Navigation Drawer */
+.tp-mobile-drawer {
+  position: fixed;
+  top: 69px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-bg);
+  z-index: 99;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.tp-mobile-drawer.open {
+  transform: translateX(0);
+}
+
+.tp-mobile-nav {
+  flex: 1;
+  padding: 8px 0;
+}
+
+.tp-mobile-nav .tp-sidebar-nav-item {
+  padding: 14px 16px;
+  font-size: var(--text-base);
+}
+
+.tp-mobile-nav .tp-nav-group-label {
+  padding: 12px 16px;
+  font-size: 11px;
+}
+
+.tp-mobile-user {
+  padding: 16px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.tp-mobile-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.tp-mobile-user-info .material-icons {
+  font-size: 40px;
+  color: var(--color-primary);
+}
+
+.tp-mobile-user .tp-logout-btn {
   width: 100%;
-  min-width: auto;
-  max-width: none;
-  height: auto;
-  max-height: 50vh;
-  border-right: none;
-  border-bottom: 1px solid var(--color-border);
+  margin-top: 8px;
+}
+
+/* Mobile layout */
+.tp-admin-shell.mobile-layout {
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .tp-admin-shell.mobile-layout .tp-admin-main {
+  flex: 1;
   min-width: auto;
-  padding: 16px;
+  padding: 12px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Overlay for mobile menu */
+.tp-mobile-overlay {
+  position: fixed;
+  inset: 69px 0 0 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 98;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.tp-mobile-overlay.open {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Sidebar - Fixed width for desktop */

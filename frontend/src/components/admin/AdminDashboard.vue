@@ -1095,13 +1095,193 @@ onMounted(loadDashboardData)
 }
 
 @media (max-width: 768px) {
+  .admindashboard-section {
+    padding: 12px;
+    min-width: auto;
+  }
+  
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 16px;
+  }
+  
+  .admin-header h1 {
+    font-size: var(--text-xl);
+  }
+  
+  .header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .btn-refresh {
+    width: 40px;
+    height: 40px;
+  }
+  
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .stat-card {
+    padding: 14px;
+    gap: 10px;
+  }
+  
+  .stat-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .stat-icon .material-icons {
+    font-size: 18px;
+  }
+  
+  .stat-value {
+    font-size: 20px;
+  }
+  
+  .stat-label {
+    font-size: 10px;
+  }
+  
+  .panel-card {
+    padding: 16px;
+  }
+  
+  .panel-card h2 {
+    font-size: var(--text-base);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .chart-total-badge {
+    margin-left: 0;
+    font-size: var(--text-xs);
+    padding: 4px 10px;
+  }
+  
+  .chart-container {
+    padding: 12px 0;
   }
   
   .chart-label {
-    width: 70px;
+    width: 60px;
+    font-size: 11px;
+  }
+  
+  .chart-bar-wrapper {
+    height: 28px;
+  }
+  
+  .chart-value {
+    font-size: 11px;
+    padding-right: 8px;
+  }
+  
+  .chart-legend {
+    gap: 8px;
+  }
+  
+  .legend-item {
+    font-size: 10px;
+  }
+  
+  .legend-color {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .quick-actions {
+    grid-column: span 1;
+  }
+  
+  .actions-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  
+  .action-btn {
+    padding: 14px 10px;
     font-size: var(--text-xs);
+  }
+  
+  .action-btn .material-icons {
+    font-size: 20px;
+  }
+  
+  .recent-activity,
+  .my-announcements,
+  .system-status,
+  .user-info-panel {
+    grid-column: span 1;
+  }
+  
+  .user-header h3 {
+    font-size: var(--text-base);
+  }
+  
+  .permission-tag {
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+  
+  .announcement-item,
+  .activity-item {
+    padding: 12px;
+  }
+  
+  .announcement-title,
+  .activity-title {
+    font-size: var(--text-sm);
+  }
+  
+  .announcement-meta,
+  .activity-time {
+    font-size: 10px;
+  }
+  
+  .legend-total {
+    width: 100%;
+    margin-top: 8px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .stat-card {
+    padding: 12px;
+  }
+  
+  .stat-value {
+    font-size: 18px;
+  }
+  
+  .stat-label {
+    font-size: 9px;
+  }
+  
+  .actions-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart-label {
+    width: 50px;
+    font-size: 10px;
   }
 }
 </style>
