@@ -10,20 +10,31 @@ class UsersConfig(AppConfig):
     verbose_name = 'Users'
 
     def ready(self):
-        # Only run in the actual server process, never during build steps
-        # (collectstatic, migrate, etc. all run in the build container where
-        # the internal Render DB hostname is not reachable)
-        is_gunicorn = 'gunicorn' in sys.argv[0] if sys.argv else False
-        is_runserver = 'runserver' in sys.argv
-        is_render_runtime = 'RENDER' in os.environ and os.environ.get('SERVER_SOFTWARE', '').startswith('gunicorn')
-
-        if not (is_gunicorn or is_runserver or is_render_runtime):
+        # Skip during management commands that don't need DB at app load time
+        # (collectstatic, migrate, shell, etc.)
+        skip_commands = {'collectstatic', 'migrate', 'makemigrations', 'shell',
+                         'dbshell', 'check', 'showmigrations', 'sqlmigrate',
+                         'seed_bulk_campus', 'seed_default_data'}
+        if sys.argv and len(sys.argv) > 1 and sys.argv[1] in skip_commands:
             return
 
         import threading
         def delayed_setup():
             import time
-            time.sleep(10)  # Wait for migrations to complete first
+            # Retry loop — wait for DB to be reachable (internal hostname
+            # resolves only after the service is fully started on Render)
+            for attempt in range(12):  # try for up to 60 seconds
+                time.sleep(5)
+                try:
+                    from django.db import connection
+                    connection.ensure_connection()
+                    connection.close()
+                    break  # DB is reachable
+                except Exception:
+                    if attempt == 11:
+                        print("❌ DB never became reachable — skipping admin setup")
+                        return
+                    continue
             self.setup_admin_accounts()
 
         threading.Thread(target=delayed_setup, daemon=True).start()
