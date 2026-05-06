@@ -2,6 +2,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework.pagination import PageNumberPagination
 from django.db import transaction
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -22,6 +23,13 @@ from apps.rooms.serializers import RoomSerializer
 from apps.chatbot.models import FAQEntry
 from apps.chatbot.serializers import FAQEntrySerializer
 from django.utils import timezone
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    """Standard pagination for list views."""
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
 
 
 class MapGalleryView(APIView):
@@ -270,6 +278,7 @@ class NavigationNodeListView(generics.ListCreateAPIView):
     queryset = NavigationNode.objects.filter(is_deleted=False)
     serializer_class = NavigationNodeSerializer
     permission_classes = [ReadOnlyOrSuperAdmin]
+    pagination_class = StandardResultsSetPagination
 
 
 class NavigationNodeDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -284,9 +293,10 @@ class NavigationNodeDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class NavigationEdgeListView(generics.ListCreateAPIView):
-    queryset = NavigationEdge.objects.filter(is_deleted=False)
+    queryset = NavigationEdge.objects.filter(is_deleted=False).select_related('from_node', 'to_node')
     serializer_class = NavigationEdgeSerializer
     permission_classes = [ReadOnlyOrSuperAdmin]
+    pagination_class = StandardResultsSetPagination
 
 
 class NavigationEdgeDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -523,10 +533,27 @@ class NavigationPathsView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request):
-        """List all non-deleted paths."""
-        paths = Path.objects.filter(is_deleted=False).prefetch_related('points')
-        serializer = PathSerializer(paths, many=True)
-        return Response(serializer.data)
+        """List all non-deleted paths with optimized query."""
+        try:
+            # Get query params for optimization
+            include_points = request.query_params.get('include_points', 'true').lower() == 'true'
+            limit = int(request.query_params.get('limit', 100))  # Default limit 100
+            
+            # Base query with select_related for foreign keys
+            queryset = Path.objects.filter(is_deleted=False).select_related('facility', 'room', 'created_by')
+            
+            # Only prefetch points if requested (saves bandwidth for list views)
+            if include_points:
+                queryset = queryset.prefetch_related('points')
+            
+            # Apply limit for performance
+            paths = queryset[:limit]
+            
+            serializer = PathSerializer(paths, many=True, context={'include_points': include_points})
+            return Response(serializer.data)
+        except Exception as e:
+            print(f"[NavigationPathsView] Error: {e}")
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
         """Create a new path."""
@@ -604,23 +631,31 @@ class OfflineSyncView(APIView):
     def get(self, request):
         """Export all data needed for offline mode."""
         try:
-            # Get all active data
+            # Get query params for optimization
+            include_points = request.query_params.get('include_points', 'false').lower() == 'true'
+            
+            # Get all active data with optimization
             buildings = Facility.objects.filter(is_deleted=False)
-            rooms = Room.objects.filter(is_deleted=False)
-            paths = Path.objects.filter(is_deleted=False).prefetch_related('points')
+            rooms = Room.objects.filter(is_deleted=False).select_related('facility')
             faqs = FAQEntry.objects.filter(is_deleted=False, is_active=True)
             
-            # Serialize data
+            # Optimize path query - exclude points unless requested
+            paths_query = Path.objects.filter(is_deleted=False).select_related('facility', 'room')
+            if include_points:
+                paths_query = paths_query.prefetch_related('points')
+            
+            # Serialize data with context
             buildings_data = FacilitySerializer(buildings, many=True).data
             rooms_data = RoomSerializer(rooms, many=True).data
-            paths_data = PathSerializer(paths, many=True).data
+            paths_data = PathSerializer(paths_query, many=True, context={'include_points': include_points}).data
             faqs_data = FAQEntrySerializer(faqs, many=True).data
             
-            # Get map files
+            # Get map files (limit to SVG files only for efficiency)
             maps_dir = os.path.join(settings.MEDIA_ROOT, 'maps')
             map_files = []
             if os.path.exists(maps_dir):
-                for filename in os.listdir(maps_dir):
+                # Limit to first 50 SVG files to avoid timeout
+                for filename in os.listdir(maps_dir)[:50]:
                     if filename.endswith('.svg'):
                         map_files.append({
                             'filename': filename,
@@ -631,6 +666,7 @@ class OfflineSyncView(APIView):
                 'status': 'ok',
                 'timestamp': timezone.now().isoformat(),
                 'version': '1.0',
+                'include_points': include_points,
                 'stats': {
                     'buildings': len(buildings_data),
                     'rooms': len(rooms_data),

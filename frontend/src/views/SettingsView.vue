@@ -91,6 +91,12 @@
         </div>
       </div>
 
+      <!-- Offline Sync -->
+      <div class="settings-section">
+        <h3 class="settings-section-title">Offline Mode</h3>
+        <OfflineSyncPanel />
+      </div>
+
       <!-- Tutorial -->
       <div class="settings-section">
         <h3 class="settings-section-title">Tutorial</h3>
@@ -209,6 +215,7 @@ import { useRouter } from 'vue-router'
 import { useThemeStore } from '../stores/themeStore.js'
 import { showToast } from '../services/toast.js'
 import FacilitiesRoomsPanel from '../components/FacilitiesRoomsPanel.vue'
+import OfflineSyncPanel from '../components/OfflineSyncPanel.vue'
 import QrcodeVue from 'qrcode.vue'
 
 const router    = useRouter()

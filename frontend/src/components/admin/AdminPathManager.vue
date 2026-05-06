@@ -38,6 +38,11 @@
               </span>
               <span class="route-from-label">FROM:</span>
               <span class="route-from-value">{{ fromLocation }}</span>
+              <span class="route-arrow-summary">→</span>
+              <span class="route-destinations" v-if="getDestinationNames(group.paths).length > 0">
+                {{ getDestinationNames(group.paths).slice(0, 3).join(', ') }}
+                <span v-if="getDestinationNames(group.paths).length > 3">+{{ getDestinationNames(group.paths).length - 3 }} more</span>
+              </span>
               <span class="path-count">({{ group.paths.length }} path{{ group.paths.length > 1 ? 's' : '' }})</span>
             </div>
             <div class="path-group-header-actions">
@@ -77,7 +82,8 @@
                   <span class="route-to" v-else>No destination</span>
                 </div>
                 <div class="admin-path-meta">
-                  <span>{{ path.elementIds?.length || 0 }} stops</span>
+                  <!-- Use points_count from optimized API, fallback to elementIds.length -->
+                  <span>{{ path.points_count || path.elementIds?.length || 0 }} stops</span>
                   <span v-if="path.floor">Floor: {{ path.floor }}</span>
                   <span>Updated: {{ formatDate(path.updatedAt) }}</span>
                 </div>
@@ -709,23 +715,37 @@ const previewPathPoints = computed(() => {
 
 // Helper functions for grouped path view
 function getFromLocation(path) {
+  // Prefer human-readable location name over cell ID
+  if (path.from && path.from.trim()) {
+    return path.from
+  }
   if (path.elementIds && path.elementIds.length > 0 && path.elementIds[0]) {
     return path.elementIds[0]
-  }
-  if (path.from) {
-    return path.from
   }
   return 'Unknown'
 }
 
 function getDestination(path) {
+  // Prefer human-readable location name over cell ID
+  if (path.to && path.to.trim()) {
+    return path.to
+  }
   if (path.elementIds && path.elementIds.length > 1) {
     return path.elementIds[path.elementIds.length - 1]
   }
-  if (path.to) {
-    return path.to
-  }
   return null
+}
+
+// Get unique destination names for a group of paths
+function getDestinationNames(paths) {
+  const destinations = new Set()
+  paths.forEach(path => {
+    const dest = getDestination(path)
+    if (dest && dest !== 'Unknown') {
+      destinations.add(dest)
+    }
+  })
+  return Array.from(destinations)
 }
 
 function toggleGroup(fromLocation) {
@@ -776,13 +796,13 @@ async function deleteAllPathsInGroup(fromLocation, pathCount) {
   }
 }
 
-// Load data
+// Load data - use optimized endpoint (no points) for list view
 const loadPaths = async () => {
   try {
-    console.log('[AdminPathManager] Loading paths...')
-    await pathManager.loadPaths()
+    console.log('[AdminPathManager] Loading paths (optimized)...')
+    await pathManager.loadPaths({ includePoints: false })
     paths.value = pathManager.getAllPaths()
-    console.log('[AdminPathManager] Loaded', paths.value.length, 'paths')
+    console.log('[AdminPathManager] Loaded', paths.value.length, 'paths (points_count only)')
   } catch (error) {
     console.error('[AdminPathManager] Error loading paths:', error)
     // Fallback: get paths from localStorage via pathManager
@@ -2238,6 +2258,27 @@ onMounted(async () => {
   padding: 4px 10px;
   border-radius: 12px;
   border: 1px solid #ddd;
+}
+
+.route-arrow-summary {
+  font-size: 16px;
+  color: #FF9800;
+  font-weight: 600;
+  margin: 0 4px;
+}
+
+.route-destinations {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+  background: #FFF8E1;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid #FFE0B2;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .path-group-header-actions {

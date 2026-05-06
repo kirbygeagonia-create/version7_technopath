@@ -1,15 +1,23 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from .models import Room
 from .serializers import RoomSerializer
 from apps.users.permissions import CanManageRoom
 from apps.facilities.models import Facility
 
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+
 class RoomListView(generics.ListCreateAPIView):
-    queryset = Room.objects.filter(is_deleted=False)
+    queryset = Room.objects.filter(is_deleted=False).select_related('facility')
     serializer_class = RoomSerializer
     permission_classes = [CanManageRoom]
+    pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
         """

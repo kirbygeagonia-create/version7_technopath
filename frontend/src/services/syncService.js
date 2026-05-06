@@ -11,12 +11,14 @@ const SYNC_ENDPOINT = '/navigation/offline-sync/'
 /**
  * Perform full offline sync - download all data from server
  */
-export async function performFullSync() {
-  console.log('[Sync] Starting full offline sync...')
+export async function performFullSync(progressCallback = null, includePoints = false) {
+  console.log('[Sync] Starting full offline sync...', includePoints ? 'with points' : 'optimized (no points)')
   
   try {
-    // Call the offline sync API
-    const response = await api.get(SYNC_ENDPOINT)
+    // Get all data from optimized sync endpoint
+    // By default, exclude points for faster sync (points are large)
+    const params = includePoints ? '?include_points=true' : '?include_points=false'
+    const response = await api.get(`/navigation/offline-sync/${params}`)
     
     if (response.data.status !== 'ok') {
       throw new Error(response.data.message || 'Sync failed')

@@ -2,6 +2,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count, Avg, Q
 from django.utils import timezone
 from datetime import timedelta
@@ -15,10 +16,17 @@ from apps.users.permissions import ReadOnlyOrSuperAdmin, IsSuperAdmin
 from rest_framework.permissions import AllowAny
 
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+
 class FAQListView(generics.ListCreateAPIView):
     queryset = FAQEntry.objects.filter(is_deleted=False)
     serializer_class = FAQEntrySerializer
     permission_classes = [ReadOnlyOrSuperAdmin]
+    pagination_class = StandardResultsSetPagination
 
 
 class FAQDetailView(generics.RetrieveUpdateDestroyAPIView):

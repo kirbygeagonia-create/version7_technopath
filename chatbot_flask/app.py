@@ -1089,6 +1089,37 @@ CAMPUS_KNOWLEDGE = {
                      'features': 'Modern culinary tools, simulated real-world hospitality environment'},
     'agriculture farm': {'name': 'Agriculture Farm', 'location': 'External sites at Tucalabong and MAPECON',
                          'features': 'Farm plots, demonstration areas, greenhouses for Agriculture students'},
+
+    # Colleges & Courses
+    'colleges': {
+        'cict': 'College of Information and Communication Technology (CICT) - Flagship college offering BSIT. Head: Jonathan L. Sucayan MIT',
+        'engineering': 'Department of Civil Engineering - Offering BSCE',
+        'cte': 'College of Teacher Education - Dean: Dr. Fidel N. Braga / Dr. Rodolfo D. Juanillo. Programs: BSEd (Filipino, General Science, Social Studies), BTLEd-ICT',
+        'agriculture': 'College of Agriculture and Fisheries - Programs: BS Agriculture (Animal/Crop Science), Bachelor of Agricultural Technology. Farm sites at Tucalabong and MAPECON',
+        'business': 'College of Business and Good Governance - Programs: Business Administration, Tourism and Hospitality Management',
+        'criminology': 'College of Criminal Justice Education - Dean: Airah Shynne C. Cabizares MBA. Program: BSCrim',
+        'social work': 'College of Social Work - 3-time PASWI champion (2024, 2025, 2026). Program: BSSW'
+    },
+
+    'courses': {
+        'bsit': 'Bachelor of Science in Information Technology - Offered by CICT (flagship IT college)',
+        'bsce': 'Bachelor of Science in Civil Engineering',
+        'bsed filipino': 'Bachelor of Secondary Education major in Filipino',
+        'bsed science': 'Bachelor of Secondary Education major in General Science',
+        'bsed social studies': 'Bachelor of Secondary Education major in Social Studies',
+        'btled ict': 'Bachelor of Technology and Livelihood Education major in ICT',
+        'bs agriculture': 'Bachelor of Science in Agriculture (Animal and Crop Science)',
+        'bat': 'Bachelor of Agricultural Technology',
+        'bsba': 'Bachelor of Science in Business Administration',
+        'bscrim': 'Bachelor of Science in Criminology - Dean: Airah Shynne C. Cabizares MBA',
+        'bssw': 'Bachelor of Science in Social Work - 3-time PASWI champion college',
+        'tesda': 'Free TESDA programs: Computer Programming NC-IV, Computer Hardware Servicing NC-II, Cookery NC-II, Hotel and Restaurant Management'
+    },
+
+    # Key facts
+    'tuition': '100% FREE for ALL college students since 2016 through UNIFAST and Tulong-Dunong grants from CHED',
+    'founded': 'Founded February 2006 by Hon. Reynaldo S. Tamayo Jr. and Mrs. Rochelle P. Tamayo (both DOST scholars)',
+    'achievements': 'CHED Gawad Parangal 2021, 3-time PASWI Social Work champion (2024-2026), CineMatutum 2026 Documentary winner, JY Corporation Korea scholarships, Tupi IT Park key partner'
 }
 
 CLASSROOM_BUILDINGS = {
@@ -1215,6 +1246,31 @@ SEAIT_QA = {
     'what is the motto': 'SEAIT motto is: Committed to the Total Development of the Student.',
     'what are the core values': 'SEAIT core values are: Service, Excellence, Accountability, Innovation.',
     'what are the seait core values': 'SEAIT core values are Service, Excellence, Accountability, and Innovation (SEAIT).',
+    
+    # ========== SAFETY & SECURITY - ALL VARIATIONS ==========
+    'where is the safety and security office': 'The Safety and Security Office is located on the 2nd Floor of the RST Building, headed by S03 Romel B. Maloloy-on CTP MBA.',
+    'where is the safety office': 'The Safety and Security Office is on the 2nd Floor of the RST Building, headed by S03 Romel B. Maloloy-on.',
+    'who is the head of security': 'The head of Safety and Security is S03 Romel B. Maloloy-on CTP MBA, located at RST Building 2nd Floor.',
+    'who is the security officer': 'S03 Romel B. Maloloy-on CTP MBA is the head of Safety and Security at SEAIT.',
+    'safety office': 'The Safety and Security Office is on RST Building 2nd Floor. Head: S03 Romel B. Maloloy-on CTP MBA.',
+    
+    # ========== SPECIFIC COURSES - ALL VARIATIONS ==========
+    'what is bsit': 'BSIT (Bachelor of Science in Information Technology) is the FLAGSHIP program at SEAIT, offered by CICT under Jonathan L. Sucayan MIT.',
+    'tell me about bsit': 'BSIT is SEAIT\'s flagship IT program. All computer labs (CL1-CL10) are on MST Building 3rd Floor.',
+    'what is bsce': 'BSCE (Bachelor of Science in Civil Engineering) is offered at SEAIT. Science labs are in JST Building.',
+    'what is bscrim': 'BSCrim (Bachelor of Science in Criminology) is offered at SEAIT. Dean: Airah Shynne C. Cabizares MBA.',
+    'what is bssw': 'BSSW (Bachelor of Science in Social Work) is offered at SEAIT. The Social Work department is 3-time PASWI champion (2024-2026).',
+    'what is bsed': 'BSEd (Bachelor of Secondary Education) at SEAIT offers majors in Filipino, General Science, and Social Studies.',
+    'what is bs agriculture': 'BS Agriculture at SEAIT offers Animal Science and Crop Science majors. Farm sites at Tucalabong and MAPECON.',
+    'what is agriculture': 'SEAIT offers Agriculture programs with farm sites at Tucalabong and MAPECON.',
+    
+    # ========== TESDA PROGRAMS - ALL VARIATIONS ==========
+    'what tesda courses does seait offer': 'SEAIT offers FREE TESDA programs: Computer Programming NC-IV, Computer Hardware Servicing NC-II, Cookery NC-II, Hotel and Restaurant Management.',
+    'does seait have tesda': 'Yes, SEAIT offers free TESDA programs: Computer Programming NC-IV, CHS NC-II, Cookery NC-II, and HRM.',
+    
+    # ========== SCHOOL CLINIC - ALL VARIATIONS ==========
+    'who is the school physician': 'The school physician is Dr. Jeffrey S. Tamayo M.D., who is also a Board Member of SEAIT.',
+    'school physician': 'Dr. Jeffrey S. Tamayo M.D. FPCP MCH is the SEAIT school physician.',
 }
 
 

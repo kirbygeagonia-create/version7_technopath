@@ -33,13 +33,31 @@ class PathSerializer(serializers.ModelSerializer):
     points_input = serializers.ListField(child=serializers.ListField(child=serializers.FloatField()), write_only=True, required=False)
     facility_name = serializers.CharField(source='facility.name', read_only=True, allow_null=True)
     room_name = serializers.CharField(source='room.name', read_only=True, allow_null=True)
+    points_count = serializers.SerializerMethodField()
     
     class Meta:
         model = Path
         fields = ['id', 'name', 'description', 'facility', 'facility_name', 'room', 'room_name',
                   'floor', 'created_by', 'from_location', 'to_location', 'points', 'element_ids',
-                  'points_input', 'is_deleted', 'created_at', 'updated_at']
+                  'points_input', 'points_count', 'is_deleted', 'created_at', 'updated_at']
         read_only_fields = ['created_by', 'from_location', 'to_location']
+    
+    def get_points_count(self, obj):
+        """Return count of points for list views (fast)"""
+        if hasattr(obj, '_prefetched_objects_cache') and 'points' in obj._prefetched_objects_cache:
+            return len(obj._prefetched_objects_cache['points'])
+        return obj.points.filter(is_deleted=False).count()
+    
+    def to_representation(self, instance):
+        """Conditionally exclude points data for performance"""
+        data = super().to_representation(instance)
+        
+        # Check if we should exclude points (for list views)
+        include_points = self.context.get('include_points', True)
+        if not include_points:
+            data.pop('points', None)
+        
+        return data
     
     def create(self, validated_data):
         element_ids = validated_data.pop('element_ids', [])

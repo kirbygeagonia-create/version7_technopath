@@ -2,6 +2,7 @@ from rest_framework import generics, permissions, filters
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from apps.users.permissions import ReadOnlyOrSuperAdmin, CanViewAuditLog
 from .models import (
@@ -18,10 +19,17 @@ from .serializers import (
 
 
 # Department Views
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+
 class DepartmentListCreateView(generics.ListCreateAPIView):
     queryset = Department.objects.filter(is_active=True)
     serializer_class = DepartmentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = StandardResultsSetPagination
 
 
 class DepartmentDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -32,12 +40,13 @@ class DepartmentDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 # Map Marker Views
 class MapMarkerListCreateView(generics.ListCreateAPIView):
-    queryset = MapMarker.objects.filter(is_active=True)
+    queryset = MapMarker.objects.filter(is_active=True).select_related('facility')
     serializer_class = MapMarkerSerializer
     permission_classes = [ReadOnlyOrSuperAdmin]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['marker_type', 'facility']
     search_fields = ['name']
+    pagination_class = StandardResultsSetPagination
 
 
 class MapMarkerDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -51,6 +60,7 @@ class MapLabelListCreateView(generics.ListCreateAPIView):
     queryset = MapLabel.objects.filter(is_active=True)
     serializer_class = MapLabelSerializer
     permission_classes = [ReadOnlyOrSuperAdmin]
+    pagination_class = StandardResultsSetPagination
 
 
 class MapLabelDetailView(generics.RetrieveUpdateDestroyAPIView):
