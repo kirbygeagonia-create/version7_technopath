@@ -199,6 +199,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '../../services/api.js'
+import { showToast } from '../../services/toast.js'
 
 const props = defineProps({
   ownOnly: { type: Boolean, default: false },
@@ -286,13 +287,16 @@ async function saveRoom() {
   try {
     if (showEditModal.value) {
       await api.put(`/rooms/${form.value.id}/`, form.value)
+      showToast(`Room "${form.value.name}" updated - users will be notified`, 'success')
     } else {
       await api.post('/rooms/', form.value)
+      showToast(`Room "${form.value.name}" added - users will be notified`, 'success')
     }
     closeModal()
-    loadData()
+    await loadData()
   } catch (e) {
     console.error('Failed to save room:', e)
+    showToast('Failed to save room', 'error')
   }
 }
 
@@ -308,10 +312,13 @@ async function toggleStatus(room) {
 async function deleteRoom() {
   try {
     await api.delete(`/rooms/${roomToDelete.value.id}/`)
+    showToast('Room deleted - users will be notified', 'success')
     showDeleteModal.value = false
-    loadData()
+    roomToDelete.value = null
+    await loadData()
   } catch (e) {
     console.error('Failed to delete room:', e)
+    showToast('Failed to delete room', 'error')
   }
 }
 

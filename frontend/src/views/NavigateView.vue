@@ -1005,9 +1005,8 @@ watch(toLocation, () => {
 
 // Lifecycle
 onMounted(async () => {
-  loadMap()
-  // Wait for paths to load from storage/API, then extract locations
-  await new Promise(resolve => setTimeout(resolve, 500))
+  await pathManager.loadPaths({ includePoints: true })
+  await loadMap()
   extractLocationsFromPaths()
   console.log('[NavigateView] Locations extracted:', locations.value.length)
   console.log('[NavigateView] From locations:', fromLocations.value.length)

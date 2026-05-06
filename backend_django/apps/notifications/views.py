@@ -1,6 +1,7 @@
 from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from .models import Notification
 from .serializers import NotificationSerializer
 
@@ -10,9 +11,17 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 50
+    page_size_query_param = 'page_size'
+    max_page_size = 200
+
+
 class NotificationListView(generics.ListCreateAPIView):
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         qs = Notification.objects.all()
@@ -32,6 +41,7 @@ class NotificationDetailView(generics.RetrieveUpdateDestroyAPIView):
     # Using the same logic for detail view
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         qs = Notification.objects.all()
@@ -117,7 +127,9 @@ class SendNotificationView(APIView):
 
     def post(self, request):
         # Check if user has permission to send notifications
-        if not request.user.is_staff and not getattr(request.user, 'role', '') in ['admin', 'super_admin', 'dean', 'program_head']:
+        ALLOWED_ROLES = {'super_admin', 'dean', 'program_head', 'basic_ed_head'}
+        user_role = getattr(request.user, 'role', '')
+        if user_role not in ALLOWED_ROLES:
             return Response(
                 {'error': 'You do not have permission to send notifications.'},
                 status=status.HTTP_403_FORBIDDEN

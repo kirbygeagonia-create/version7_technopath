@@ -88,9 +88,10 @@ onMounted(async () => {
     if (isOnline()) {
       try {
         const res = await api.get('/notifications/')
-        notifications.value = res.data
+        const data = res.data
+        notifications.value = Array.isArray(data) ? data : (data.results || [])
         await db.notifications.clear()
-        await db.notifications.bulkPut(res.data)
+        await db.notifications.bulkPut(notifications.value)
       } catch {
         notifications.value = await db.notifications
           .orderBy('created_at').reverse().toArray()

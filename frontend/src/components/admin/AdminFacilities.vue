@@ -71,7 +71,7 @@
             </span>
             <span class="stat">
               <span class="material-icons">layers</span>
-              {{ facility.floors || 1 }} Floors
+              {{ facility.total_floors || 1 }} Floors
             </span>
           </div>
           <div class="facility-actions">
@@ -108,10 +108,6 @@
             <label>Facility Name</label>
             <input v-model="form.name" type="text" placeholder="Enter facility name" />
           </div>
-          <div class="form-group">
-            <label>Room</label>
-            <input v-model="form.room" type="text" placeholder="e.g., CL6, Room 101" />
-          </div>
           <div class="form-row">
             <div class="form-group">
               <label>Code</label>
@@ -136,11 +132,7 @@
           <div class="form-row">
             <div class="form-group">
               <label>Number of Floors</label>
-              <input v-model="form.floors" type="number" min="1" />
-            </div>
-            <div class="form-group">
-              <label>Room Count</label>
-              <input v-model="form.room_count" type="number" min="0" />
+              <input v-model="form.total_floors" type="number" min="1" />
             </div>
           </div>
         </div>
@@ -149,14 +141,9 @@
           <button class="btn-primary" @click="saveFacility">
             {{ showEditModal ? 'Save Changes' : 'Create Facility' }}
           </button>
-          <button 
-            v-if="showEditModal || showCreateModal" 
-            class="btn-announce" 
-            @click="announceFacilityChange"
-            title="Announce this change to users"
-          >
+          <button class="btn-announce" @click="goToAnnouncements" title="Post announcement in announcements panel">
             <span class="material-icons">campaign</span>
-            Announce
+            Post Announcement
           </button>
         </div>
       </div>
@@ -201,18 +188,13 @@ const selectedFacility = ref('')
 const newRoomName = ref('')
 const newRoomFloor = ref('')
 
-// Announcement
-const announcementText = ref('')
-
 const form = ref({
   id: null,
   name: '',
-  room: '',
   code: '',
   facility_type: 'academic',
   description: '',
-  total_floors: 1,
-  room_count: 0
+  total_floors: 1
 })
 
 const filteredFacilities = computed(() => {
@@ -309,23 +291,8 @@ async function deleteRoom(room) {
   }
 }
 
-// Post announcement
-function postAnnouncement() {
-  if (!announcementText.value.trim()) return
-  
-  const message = announcementText.value.trim()
-  
-  // Emit announcement event
-  window.dispatchEvent(new CustomEvent('facility-announcement', { 
-    detail: { 
-      type: 'announcement',
-      message: message,
-      timestamp: new Date().toISOString()
-    }
-  }))
-  
-  showToast(`Announcement posted: ${message}`, 'success')
-  announcementText.value = ''
+function goToAnnouncements() {
+  window.dispatchEvent(new CustomEvent('admin-navigate', { detail: 'announcements' }))
 }
 
 function formatType(type) {
@@ -348,7 +315,7 @@ function editFacility(facility) {
 function closeModal() {
   showCreateModal.value = false
   showEditModal.value = false
-  form.value = { id: null, name: '', room: '', code: '', facility_type: 'academic', description: '', total_floors: 1, room_count: 0 }
+  form.value = { id: null, name: '', code: '', facility_type: 'academic', description: '', total_floors: 1 }
 }
 
 function confirmDelete(facility) {
@@ -358,24 +325,6 @@ function confirmDelete(facility) {
 
 function viewRooms(facility) {
   window.dispatchEvent(new CustomEvent('admin-navigate', { detail: 'rooms' }))
-}
-
-// Announce facility changes
-function announceFacilityChange() {
-  const action = showCreateModal.value ? 'added' : 'updated'
-  const facilityName = form.value.name || 'Unknown Facility'
-  const message = `Facility "${facilityName}" has been ${action}.`
-  
-  // Emit announcement event
-  window.dispatchEvent(new CustomEvent('facility-announcement', { 
-    detail: { 
-      type: action,
-      facility: form.value,
-      message: message
-    }
-  }))
-  
-  showToast(message, 'success')
 }
 
 async function loadFacilities() {
@@ -404,24 +353,30 @@ async function saveFacility() {
   try {
     if (showEditModal.value) {
       await api.put(`/facilities/${form.value.id}/`, form.value)
+      showToast(`Facility "${form.value.name}" updated - users will be notified`, 'success')
     } else {
       await api.post('/facilities/', form.value)
+      showToast(`Facility "${form.value.name}" added - users will be notified`, 'success')
     }
     closeModal()
-    loadFacilities()
+    await loadFacilities()
   } catch (e) {
     console.error('Failed to save facility:', e)
-    showToast('Failed to save facility', 'error')
+    const msg = e.response?.data?.code?.[0] || e.response?.data?.detail || 'Failed to save facility'
+    showToast(msg, 'error')
   }
 }
 
 async function deleteFacility() {
   try {
     await api.delete(`/facilities/${facilityToDelete.value.id}/`)
+    showToast(`Facility "${facilityToDelete.value.name}" removed - users will be notified`, 'success')
     showDeleteModal.value = false
-    loadFacilities()
+    facilityToDelete.value = null
+    await loadFacilities()
   } catch (e) {
     console.error('Failed to delete facility:', e)
+    showToast('Failed to delete facility', 'error')
   }
 }
 
