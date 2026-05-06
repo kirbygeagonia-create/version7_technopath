@@ -7,6 +7,9 @@ import os
 import subprocess
 import sys
 
+# Set a marker so apps.py ready() hooks know we're in gunicorn runtime
+os.environ.setdefault('SERVER_SOFTWARE', 'gunicorn')
+
 
 def on_starting(server):
     """Run migrations before any worker starts accepting requests."""

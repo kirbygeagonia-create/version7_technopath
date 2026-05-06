@@ -10,16 +10,23 @@ class UsersConfig(AppConfig):
     verbose_name = 'Users'
 
     def ready(self):
-        # Use thread to delay execution until after migrations complete
+        # Only run in the actual server process, never during build steps
+        # (collectstatic, migrate, etc. all run in the build container where
+        # the internal Render DB hostname is not reachable)
+        is_gunicorn = 'gunicorn' in sys.argv[0] if sys.argv else False
+        is_runserver = 'runserver' in sys.argv
+        is_render_runtime = 'RENDER' in os.environ and os.environ.get('SERVER_SOFTWARE', '').startswith('gunicorn')
+
+        if not (is_gunicorn or is_runserver or is_render_runtime):
+            return
+
         import threading
         def delayed_setup():
             import time
-            time.sleep(5)  # Wait for everything to be ready
+            time.sleep(10)  # Wait for migrations to complete first
             self.setup_admin_accounts()
-        
-        # Only run in main process (not during migrations)
-        if 'runserver' in sys.argv or 'gunicorn' in sys.argv[0] or 'RENDER' in os.environ:
-            threading.Thread(target=delayed_setup, daemon=True).start()
+
+        threading.Thread(target=delayed_setup, daemon=True).start()
     
     def setup_admin_accounts(self):
         """Create missing admin accounts and reset all passwords"""
