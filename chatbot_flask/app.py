@@ -44,17 +44,8 @@ limiter = Limiter(
     storage_uri="memory://",
 )
 
-# Restrict CORS to known origins for security
-CORS(app, origins=[
-    "http://localhost:5173",
-    "http://localhost:4173",
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:4173",
-    "https://techno-path-frontend.onrender.com",
-    "https://technopath-frontend.onrender.com",
-    "https://technopath-frontend-or73.onrender.com",
-    "https://technopath-frontend-3gda.onrender.com",
-], supports_credentials=True)
+# Allow all origins — API is stateless/JWT-protected so open CORS is safe
+CORS(app, supports_credentials=True)
 DB_PATH = Path(__file__).parent / "chatbot.db"
 
 # PostgreSQL Database URL (Render provides this as env var)

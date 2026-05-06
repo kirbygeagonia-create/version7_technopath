@@ -414,10 +414,16 @@ class HybridAIEngine:
         self.faq_matcher = FAQMatcher()
         self.gpt = GPTIntegration(openai_key)
 
-        # Load initial data
-        self._load_training_data()
+        # Load initial data in a background thread so startup is never blocked
+        # by DB connectivity issues (common on Render free tier cold starts)
         if db_connection_func:
-            self.faq_matcher.load_from_db(db_connection_func)
+            import threading
+            def _bg_load():
+                import time
+                time.sleep(5)  # Wait for DB to be reachable after service start
+                self._load_training_data()
+                self.faq_matcher.load_from_db(db_connection_func)
+            threading.Thread(target=_bg_load, daemon=True).start()
 
         # Intent-to-followup mapping
         self.followup_suggestions = {
