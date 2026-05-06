@@ -439,6 +439,7 @@
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import api from '../../services/api.js'
 import { showToast } from '../../services/toast.js'
+import { normalizePaginated } from '../../utils/pagination.js'
 
 // Tab state
 const activeTab = ref('manual')
@@ -535,8 +536,8 @@ function confirmDelete(faq) {
 
 async function loadFaqs() {
   try {
-    const response = await api.get('/faq/')
-    faqs.value = response.data
+    const response = await api.get('/faq/?page_size=1000')
+    faqs.value = normalizePaginated(response.data).items
   } catch (e) {
     console.error('Failed to load FAQs:', e)
     // Mock data

@@ -87,7 +87,7 @@ onMounted(async () => {
   try {
     if (isOnline()) {
       try {
-        const res = await api.get('/notifications/')
+        const res = await api.get('/notifications/?page_size=1000')
         const data = res.data
         notifications.value = Array.isArray(data) ? data : (data.results || [])
         await db.notifications.clear()

@@ -6,7 +6,7 @@ if (!BASE_URL && import.meta.env.PROD) {
 }
 const api = axios.create({
   baseURL: BASE_URL || 'http://localhost:8000/api',
-  timeout: 15000,
+  timeout: 60000,
   headers: { 'Content-Type': 'application/json' }
 })
 

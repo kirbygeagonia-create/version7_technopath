@@ -329,6 +329,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '../../stores/authStore.js'
 import api from '../../services/api.js'
+import { normalizePaginated } from '../../utils/pagination.js'
 
 const auth = useAuthStore()
 
@@ -353,10 +354,11 @@ const localPathsCount = ref(0) // Count of localStorage paths
 
 // Computed property to limit displayed activities
 const displayedActivities = computed(() => {
+  const list = Array.isArray(recentActivity.value) ? recentActivity.value : []
   if (showAllActivities.value) {
-    return recentActivity.value
+    return list
   }
-  return recentActivity.value.slice(0, 3)
+  return list.slice(0, 3)
 })
 
 function navigateTo(section) {
@@ -381,18 +383,6 @@ function formatDate(ts) {
     day: 'numeric',
     year: 'numeric'
   })
-}
-
-/** DRF may return { count, results } — dashboard must not call .map/.length on the wrapper object. */
-function normalizePaginated(data) {
-  if (Array.isArray(data)) {
-    return { items: data, total: data.length }
-  }
-  if (data && Array.isArray(data.results)) {
-    const total = typeof data.count === 'number' ? data.count : data.results.length
-    return { items: data.results, total }
-  }
-  return { items: [], total: 0 }
 }
 
 async function loadDashboardData() {
@@ -444,11 +434,12 @@ async function loadDashboardData() {
     
     // Fetch navigation paths count - USE OPTIMIZED ENDPOINT (no points)
     promises.push(
-      api.get('/navigation/paths/?include_points=false&limit=100')
-        .then(r => { 
-          const paths = r.data || []
-          stats.value.totalPaths = Array.isArray(paths) ? paths.length : 0
-          pathsData.value = Array.isArray(paths) ? paths : []
+      api.get('/navigation/paths/?include_points=false&limit=100', { timeout: 120000 })
+        .then(r => {
+          const raw = r.data
+          const paths = Array.isArray(raw) ? raw : (raw?.results || [])
+          stats.value.totalPaths = paths.length
+          pathsData.value = paths
           console.log('[Dashboard] API Paths loaded (optimized):', stats.value.totalPaths, 'with points_count')
           
           // Also check localStorage for unsynced paths
@@ -473,9 +464,10 @@ async function loadDashboardData() {
     if (auth.canPostAnnouncement) {
       promises.push(
         api.get('/announcements/mine/')
-          .then(r => { 
-            myAnnouncements.value = r.data
-            stats.value.totalAnnouncements = r.data.length 
+          .then(r => {
+            const { items, total } = normalizePaginated(r.data)
+            myAnnouncements.value = items
+            stats.value.totalAnnouncements = total
           })
           .catch(() => { stats.value.totalAnnouncements = 0 })
       )
@@ -503,16 +495,17 @@ async function loadDashboardData() {
     // Fetch recent activity from audit log (Super Admin gets all, Dean gets dept only)
     if (auth.canViewAuditLog || auth.canViewDeptAuditLog) {
       promises.push(
-        api.get('/users/audit-log/?limit=5')
+        api.get('/users/audit-log/?page_size=5&page=1')
           .then(r => {
-            recentActivity.value = r.data.map(item => ({
+            const { items } = normalizePaginated(r.data)
+            recentActivity.value = items.map(item => ({
               id: item.id,
-              type: item.entity_type === 'announcement' ? 'announcement' : 
+              type: item.entity_type === 'announcement' ? 'announcement' :
                     item.entity_type === 'user' ? 'user' : 'feedback',
-              icon: item.entity_type === 'announcement' ? 'campaign' : 
+              icon: item.entity_type === 'announcement' ? 'campaign' :
                     item.entity_type === 'user' ? 'person_add' : 'star',
               title: `${item.action} ${item.entity_type}`,
-              user: item.user || 'System',
+              user: item.admin || item.user || 'System',
               time: formatTimeAgo(new Date(item.created_at))
             }))
           })

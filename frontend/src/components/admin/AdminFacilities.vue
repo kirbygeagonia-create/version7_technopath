@@ -173,6 +173,9 @@
 import { ref, computed, onMounted } from 'vue'
 import api from '../../services/api.js'
 import { showToast } from '../../services/toast.js'
+import { normalizePaginated } from '../../utils/pagination.js'
+
+const LIST_QS = '?page_size=1000'
 
 const facilities = ref([])
 const rooms = ref([])
@@ -244,8 +247,8 @@ async function addRoom() {
     showToast(`Room "${roomData.name}" added successfully`, 'success')
     
     // Reload rooms
-    const roomsRes = await api.get('/rooms/')
-    rooms.value = roomsRes.data || []
+    const roomsRes = await api.get(`/rooms/${LIST_QS}`)
+    rooms.value = normalizePaginated(roomsRes.data).items
     
     // Reset inputs
     newRoomName.value = ''
@@ -266,8 +269,8 @@ async function editRoom(room) {
     showToast(`Room updated to "${newName}"`, 'success')
     
     // Reload rooms
-    const roomsRes = await api.get('/rooms/')
-    rooms.value = roomsRes.data || []
+    const roomsRes = await api.get(`/rooms/${LIST_QS}`)
+    rooms.value = normalizePaginated(roomsRes.data).items
   } catch (error) {
     console.error('Failed to update room:', error)
     showToast('Failed to update room', 'error')
@@ -283,8 +286,8 @@ async function deleteRoom(room) {
     showToast(`Room "${room.name}" deleted`, 'success')
     
     // Reload rooms
-    const roomsRes = await api.get('/rooms/')
-    rooms.value = roomsRes.data || []
+    const roomsRes = await api.get(`/rooms/${LIST_QS}`)
+    rooms.value = normalizePaginated(roomsRes.data).items
   } catch (error) {
     console.error('Failed to delete room:', error)
     showToast('Failed to delete room', 'error')
@@ -330,11 +333,11 @@ function viewRooms(facility) {
 async function loadFacilities() {
   try {
     const [facilitiesRes, roomsRes] = await Promise.all([
-      api.get('/facilities/'),
-      api.get('/rooms/')
+      api.get(`/facilities/${LIST_QS}`),
+      api.get(`/rooms/${LIST_QS}`)
     ])
-    facilities.value = facilitiesRes.data
-    rooms.value = roomsRes.data || []
+    facilities.value = normalizePaginated(facilitiesRes.data).items
+    rooms.value = normalizePaginated(roomsRes.data).items
   } catch (e) {
     console.error('Failed to load facilities:', e)
     // Mock data

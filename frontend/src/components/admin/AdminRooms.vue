@@ -200,6 +200,7 @@
 import { ref, computed, onMounted } from 'vue'
 import api from '../../services/api.js'
 import { showToast } from '../../services/toast.js'
+import { normalizePaginated } from '../../utils/pagination.js'
 
 const props = defineProps({
   ownOnly: { type: Boolean, default: false },
@@ -266,12 +267,15 @@ function confirmDelete(room) {
 
 async function loadData() {
   try {
+    const roomsUrl = props.ownOnly
+      ? `/rooms/?department=${encodeURIComponent(props.dept)}&page_size=1000`
+      : '/rooms/?page_size=1000'
     const [roomsRes, buildingsRes] = await Promise.all([
-      api.get(props.ownOnly ? `/rooms/?department=${props.dept}` : '/rooms/'),
-      api.get('/facilities/')
+      api.get(roomsUrl),
+      api.get('/facilities/?page_size=1000')
     ])
-    rooms.value = roomsRes.data
-    buildings.value = buildingsRes.data
+    rooms.value = normalizePaginated(roomsRes.data).items
+    buildings.value = normalizePaginated(buildingsRes.data).items
   } catch (e) {
     console.error('Failed to load rooms:', e)
     rooms.value = [
