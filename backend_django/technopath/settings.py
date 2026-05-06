@@ -19,6 +19,7 @@ _allowed_hosts_env = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast
 # requests before CORS headers can be applied.
 _production_hosts = [
     'technopath-backend.onrender.com',
+    'technopath-backend-3gda.onrender.com',
 ]
 ALLOWED_HOSTS = list(set(_allowed_hosts_env + _production_hosts))
 

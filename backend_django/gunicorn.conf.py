@@ -1,40 +1,45 @@
 """
 Gunicorn configuration for Render deployment.
-Runs Django migrations before workers start (on_starting hook),
-so the port binds immediately while DB setup happens in the master process.
 """
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
-# Set a marker so apps.py ready() hooks know we're in gunicorn runtime
 os.environ.setdefault('SERVER_SOFTWARE', 'gunicorn')
 
-# Resolve manage.py path relative to this config file
 BASE_DIR = Path(__file__).resolve().parent
+_migrations_done = False
 
 
 def on_starting(server):
-    """Run migrations before any worker starts accepting requests."""
+    """Attempt migrations with retry — internal DB hostname may need a moment."""
+    global _migrations_done
     manage = str(BASE_DIR / "manage.py")
 
-    print("[gunicorn] Running database migrations...", flush=True)
-    result = subprocess.run(
-        [sys.executable, manage, "migrate", "--no-input"],
-        capture_output=False,
-    )
-    if result.returncode != 0:
-        print("[gunicorn] migrate failed — continuing anyway", flush=True)
+    # Retry for up to 60 seconds waiting for the internal DB to resolve
+    for attempt in range(12):
+        print(f"[gunicorn] migrate attempt {attempt + 1}/12...", flush=True)
+        result = subprocess.run(
+            [sys.executable, manage, "migrate", "--no-input"],
+            capture_output=False,
+        )
+        if result.returncode == 0:
+            print("[gunicorn] Migrations complete.", flush=True)
+            _migrations_done = True
+            # Run seed after successful migrate
+            subprocess.run(
+                [sys.executable, manage, "seed_bulk_campus"],
+                capture_output=False,
+            )
+            print("[gunicorn] Seed complete.", flush=True)
+            return
+        print(f"[gunicorn] migrate failed, retrying in 5s...", flush=True)
+        time.sleep(5)
 
-    print("[gunicorn] Running seed command...", flush=True)
-    subprocess.run(
-        [sys.executable, manage, "seed_bulk_campus"],
-        capture_output=False,
-    )
-    print("[gunicorn] Startup tasks complete.", flush=True)
+    print("[gunicorn] migrate never succeeded — workers will start anyway.", flush=True)
 
 
-# Workers and timeout
 workers = 2
 timeout = 120

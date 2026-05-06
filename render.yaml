@@ -43,7 +43,7 @@ services:
       - key: OPENAI_API_KEY
         sync: false   # Set manually in Render dashboard — NEVER commit this key
       - key: DJANGO_API_URL
-        value: https://technopath-backend.onrender.com
+        value: https://technopath-backend-3gda.onrender.com
 
   # Vue 3 Frontend (Vite)
   - type: web
@@ -55,9 +55,9 @@ services:
       - key: NODE_VERSION
         value: "18.20.4"
       - key: VITE_API_BASE_URL
-        value: https://technopath-backend.onrender.com/api
+        value: https://technopath-backend-3gda.onrender.com/api
       - key: VITE_FLASK_CHATBOT_URL
-        value: https://technopath-chatbot.onrender.com
+        value: https://technopath-chatbot-3gda.onrender.com
     routes:
       - type: rewrite
         source: /*
