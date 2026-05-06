@@ -5,7 +5,7 @@ services:
     runtime: python
     plan: free
     rootDir: backend_django
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate && python manage.py seed_bulk_campus
     startCommand: gunicorn technopath.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 60
     envVars:
       - key: PYTHON_VERSION
