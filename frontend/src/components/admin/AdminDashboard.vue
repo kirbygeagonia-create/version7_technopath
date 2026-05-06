@@ -383,6 +383,18 @@ function formatDate(ts) {
   })
 }
 
+/** DRF may return { count, results } — dashboard must not call .map/.length on the wrapper object. */
+function normalizePaginated(data) {
+  if (Array.isArray(data)) {
+    return { items: data, total: data.length }
+  }
+  if (data && Array.isArray(data.results)) {
+    const total = typeof data.count === 'number' ? data.count : data.results.length
+    return { items: data.results, total }
+  }
+  return { items: [], total: 0 }
+}
+
 async function loadDashboardData() {
   lastUpdated.value = new Date().toLocaleTimeString()
   
@@ -392,40 +404,52 @@ async function loadDashboardData() {
     
     // Fetch buildings count
     promises.push(
-      api.get('/facilities/')
-        .then(r => { stats.value.totalBuildings = r.data.length })
+      api.get('/facilities/?page_size=1000')
+        .then(r => {
+          const { total } = normalizePaginated(r.data)
+          stats.value.totalBuildings = total
+        })
         .catch(() => { stats.value.totalBuildings = 0 })
     )
     
     // Fetch rooms count
     promises.push(
-      api.get('/rooms/')
-        .then(r => { stats.value.totalRooms = r.data.length })
+      api.get('/rooms/?page_size=1000')
+        .then(r => {
+          const { total } = normalizePaginated(r.data)
+          stats.value.totalRooms = total
+        })
         .catch(() => { stats.value.totalRooms = 0 })
     )
     
     // Fetch chat logs count
     promises.push(
-      api.get('/chatbot/logs/')
-        .then(r => { stats.value.totalChatLogs = r.data.length })
+      api.get('/chatbot/logs/?page_size=1000')
+        .then(r => {
+          const { total } = normalizePaginated(r.data)
+          stats.value.totalChatLogs = total
+        })
         .catch(() => { stats.value.totalChatLogs = 0 })
     )
     
     // Fetch FAQ count
     promises.push(
-      api.get('/chatbot/faq/')
-        .then(r => { stats.value.totalFAQs = r.data.length })
+      api.get('/chatbot/faq/?page_size=1000')
+        .then(r => {
+          const { total } = normalizePaginated(r.data)
+          stats.value.totalFAQs = total
+        })
         .catch(() => { stats.value.totalFAQs = 0 })
     )
     
-    // Fetch navigation paths count and details
+    // Fetch navigation paths count - USE OPTIMIZED ENDPOINT (no points)
     promises.push(
-      api.get('/navigation/paths/')
+      api.get('/navigation/paths/?include_points=false&limit=100')
         .then(r => { 
           const paths = r.data || []
           stats.value.totalPaths = Array.isArray(paths) ? paths.length : 0
           pathsData.value = Array.isArray(paths) ? paths : []
-          console.log('[Dashboard] API Paths loaded:', stats.value.totalPaths)
+          console.log('[Dashboard] API Paths loaded (optimized):', stats.value.totalPaths, 'with points_count')
           
           // Also check localStorage for unsynced paths
           try {
@@ -468,7 +492,10 @@ async function loadDashboardData() {
     if (auth.canViewAllFeedback || auth.canViewDeptFeedback) {
       promises.push(
         api.get('/feedback/')
-          .then(r => { stats.value.newFeedback = r.data.length })
+          .then(r => {
+            const { total } = normalizePaginated(r.data)
+            stats.value.newFeedback = total
+          })
           .catch(() => { stats.value.newFeedback = 0 })
       )
     }

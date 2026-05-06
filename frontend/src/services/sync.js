@@ -49,18 +49,19 @@ export async function syncAllData() {
 
     // Fetch all data from Django API in parallel
     // Uses Promise.allSettled so one failing endpoint doesn't kill the entire cache
+    // NOTE: Now uses page_size=1000 to get all data in one request (with pagination)
     const endpoints = [
-      { key: 'facilities',       url: '/facilities/',           table: 'facilities' },
-      { key: 'rooms',            url: '/rooms/',                table: 'rooms' },
-      { key: 'departments',      url: '/core/departments/',     table: 'departments' },
-      { key: 'nodes',            url: '/navigation/nodes/',     table: 'navigation_nodes' },
-      { key: 'edges',            url: '/navigation/edges/',     table: 'navigation_edges' },
-      { key: 'mapMarkers',       url: '/core/map-markers/',     table: 'map_markers' },
-      { key: 'mapLabels',        url: '/core/map-labels/',      table: 'map_labels' },
-      { key: 'faq',              url: '/chatbot/faq/',          table: 'faq_entries' },
+      { key: 'facilities',       url: '/facilities/?page_size=1000',       table: 'facilities' },
+      { key: 'rooms',            url: '/rooms/?page_size=1000',           table: 'rooms' },
+      { key: 'departments',      url: '/core/departments/?page_size=1000', table: 'departments' },
+      { key: 'nodes',            url: '/navigation/nodes/?page_size=1000', table: 'navigation_nodes' },
+      { key: 'edges',            url: '/navigation/edges/?page_size=1000', table: 'navigation_edges' },
+      { key: 'mapMarkers',       url: '/core/map-markers/?page_size=1000', table: 'map_markers' },
+      { key: 'mapLabels',        url: '/core/map-labels/?page_size=1000',  table: 'map_labels' },
+      { key: 'faq',              url: '/chatbot/faq/?page_size=1000',      table: 'faq_entries' },
       // notification_types table was removed in db.js v5 — do NOT fetch or write
-      { key: 'notifications',    url: '/notifications/',        table: 'notifications' },
-      { key: 'appConfig',        url: '/core/app-config/',      table: 'app_config' },
+      { key: 'notifications',    url: '/notifications/?page_size=1000',   table: 'notifications' },
+      { key: 'appConfig',        url: '/core/app-config/',                table: 'app_config' },
     ]
 
     const results = await Promise.allSettled(
@@ -68,10 +69,23 @@ export async function syncAllData() {
     )
 
     // Build a map of successfully-fetched data
+    // Handle both paginated (results array) and non-paginated (direct array) responses
     const fetched = {}
     results.forEach((result, i) => {
       if (result.status === 'fulfilled') {
-        fetched[endpoints[i].key] = result.value.data
+        const responseData = result.value.data
+        // Check if paginated response (has 'results' key with array)
+        if (responseData && Array.isArray(responseData.results)) {
+          fetched[endpoints[i].key] = responseData.results
+          console.log(`[Sync] Fetched ${responseData.results.length} items from ${endpoints[i].url} (paginated, total: ${responseData.count})`)
+        } else if (Array.isArray(responseData)) {
+          // Non-paginated response (direct array)
+          fetched[endpoints[i].key] = responseData
+          console.log(`[Sync] Fetched ${responseData.length} items from ${endpoints[i].url}`)
+        } else {
+          console.warn(`[Sync] Unexpected response format from ${endpoints[i].url}:`, responseData)
+          fetched[endpoints[i].key] = responseData
+        }
       } else {
         console.warn(`[Sync] Failed to fetch ${endpoints[i].url}:`, result.reason?.message)
       }
@@ -111,19 +125,22 @@ export async function syncAllData() {
 
       // Notifications: preserve read state across sync
       if (fetched.notifications !== undefined) {
-        const existingNotifs = await db.notifications.toArray()
-        const readStates = {}
-        for (const n of existingNotifs) {
-          readStates[n.id] = !!n.is_read
+        const notifList = Array.isArray(fetched.notifications) ? fetched.notifications : []
+        if (notifList.length > 0) {
+          const existingNotifs = await db.notifications.toArray()
+          const readStates = {}
+          for (const n of existingNotifs) {
+            readStates[n.id] = !!n.is_read
+          }
+
+          const newNotifs = notifList.map((n) => {
+            if (readStates[n.id]) n.is_read = true
+            return n
+          })
+
+          await db.notifications.clear()
+          await db.notifications.bulkPut(newNotifs)
         }
-
-        const newNotifs = fetched.notifications.map(n => {
-          if (readStates[n.id]) n.is_read = true
-          return n
-        })
-
-        await db.notifications.clear()
-        await db.notifications.bulkPut(newNotifs)
       }
     })
 
@@ -192,23 +209,26 @@ export function startPolling() {
     if (!isOnline()) return
     
     try {
-      const notificationsRes = await api.get('/notifications/')
-      
+      const notificationsRes = await api.get('/notifications/?page_size=200')
+      const raw = notificationsRes.data
+      const list = Array.isArray(raw) ? raw : (raw?.results || [])
+      if (!Array.isArray(list) || list.length === 0) {
+        return
+      }
+
       const existingNotifs = await db.notifications.toArray()
       const readStates = {}
       for (const n of existingNotifs) {
-          readStates[n.id] = !!n.is_read
+        readStates[n.id] = !!n.is_read
       }
 
-      const newNotifs = notificationsRes.data.map(n => {
-          if (readStates[n.id]) n.is_read = true
-          return n
+      const newNotifs = list.map((n) => {
+        if (readStates[n.id]) n.is_read = true
+        return n
       })
 
       await db.transaction('rw', db.notifications, async () => {
-          // Upsert by PK — no clear() so there is no window where the table is empty.
-          // Any notification the user is reading right now won't disappear mid-poll.
-          await db.notifications.bulkPut(newNotifs)
+        await db.notifications.bulkPut(newNotifs)
       })
       
       // Also opportunistically upload offline queue if device is online

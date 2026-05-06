@@ -47,9 +47,14 @@ class PathManager {
   }
 
   // Load all paths from API (with localStorage fallback)
-  async loadPaths() {
+  async loadPaths(options = {}) {
     try {
-      const response = await api.get('/navigation/paths/')
+      const { includePoints = true, limit = 100 } = options
+      // Use optimized endpoint - exclude points for list views (much faster)
+      const params = includePoints ? '' : '?include_points=false'
+      // Navigation paths can be large (points); production / cold Render may exceed default 15s.
+      const timeout = includePoints ? 120000 : 60000
+      const response = await api.get(`/navigation/paths/${params}`, { timeout })
       const pathsArray = response.data || []
       
       // Get localStorage data to check if we have existing paths
@@ -163,7 +168,7 @@ class PathManager {
   // Fetch single path from API
   async fetchPath(id) {
     try {
-      const response = await api.get(`/navigation/paths/${id}/`)
+      const response = await api.get(`/navigation/paths/${id}/`, { timeout: 120000 })
       const path = this.normalizePath(response.data)
       this.paths.value[id] = path
       return path
