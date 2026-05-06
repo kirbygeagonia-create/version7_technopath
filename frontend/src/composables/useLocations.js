@@ -26,7 +26,17 @@ export function useLocations() {
     initialized = true
     loadLocations()
     
-    // Extract existing paths immediately
+    // Load saved navigation paths and extract location endpoints from them.
+    pathManager.loadPaths()
+      .then(() => {
+        extractLocationsFromPaths()
+      })
+      .catch((error) => {
+        console.warn('[useLocations] Failed to load paths:', error)
+        extractLocationsFromPaths()
+      })
+    
+    // Extract existing paths immediately in case local cache already exists
     extractLocationsFromPaths()
     
     // Watch for path changes and extract locations from paths

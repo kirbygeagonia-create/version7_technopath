@@ -32,7 +32,7 @@
     <!-- Location Selection Panel -->
     <div class="svg-nav-panel" v-if="!isNavigating">
       <!-- Loading or no paths message -->
-      <div v-if="availablePaths.length === 0" class="svg-nav-empty">
+      <div v-if="availablePaths.length === 0 && locations.length === 0" class="svg-nav-empty">
         <span class="material-icons" style="font-size: 48px; color: #ccc;">map</span>
         <p>No navigation paths available.</p>
         <p class="svg-nav-hint">Go to Admin Panel → Map Management → SVG Paths to create paths first.</p>
