@@ -129,23 +129,9 @@ SIMPLE_JWT = {
 _cors_extra = config('CORS_EXTRA_ORIGINS', default=config('CORS_EXTRA_ORIGIN', default=''))
 _cors_extra_list = [o.strip() for o in _cors_extra.split(',') if o.strip()]
 
-CORS_ALLOWED_ORIGINS = list(set([
-    o for o in [
-        'http://localhost:5173',
-        'http://localhost:5174',
-        'http://localhost:5175',
-        'http://localhost:3000',
-        'http://127.0.0.1:5173',
-        'http://localhost:4173',
-        'http://localhost:4174',
-        'http://localhost:4175',
-        'http://localhost:4176',
-        'http://localhost:4177',
-        'https://techno-path-frontend.onrender.com',
-        'https://technopath-frontend.onrender.com',
-        'https://technopath-frontend-3gda.onrender.com',
-    ] + _cors_extra_list if o
-]))
+# In production on Render, allow all origins so CORS never blocks the frontend.
+# The API is protected by JWT authentication, so open CORS is safe here.
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 # Expose common headers needed by the frontend
