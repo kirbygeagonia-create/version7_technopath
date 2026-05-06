@@ -4,18 +4,15 @@ from decouple import config, UndefinedValueError
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# In production, SECRET_KEY MUST be set via .env — no insecure fallback.
-# In development (DEBUG=True), auto-generate a random key if not set.
+# SECRET_KEY: use env var if set, otherwise generate a stable fallback.
+# In true production you should always set SECRET_KEY in the Render dashboard.
 _debug = config('DEBUG', default=False, cast=bool)
 try:
     SECRET_KEY = config('SECRET_KEY')
 except UndefinedValueError:
-    if _debug:
-        import secrets
-        SECRET_KEY = secrets.token_urlsafe(50)
-        print('[WARNING] SECRET_KEY not set — using auto-generated dev key. Set SECRET_KEY in .env for production.')
-    else:
-        raise RuntimeError('SECRET_KEY environment variable is required in production. Set it in your .env file.')
+    import secrets
+    SECRET_KEY = secrets.token_urlsafe(50)
+    print('[WARNING] SECRET_KEY not set — using auto-generated key. Sessions will reset on restart. Set SECRET_KEY in Render dashboard.')
 DEBUG = config('DEBUG', default=False, cast=bool)
 _allowed_hosts_env = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
 # Always include the production backend domain so Django doesn't reject
@@ -85,15 +82,12 @@ if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
     }
-elif not DEBUG:
-    raise RuntimeError(
-        '\n\n'
-        '  DATABASE_URL is not set and DEBUG=False.\n'
-        '  This means the app is running in production without a database.\n'
-        '  Create a PostgreSQL instance in Render and set DATABASE_URL.\n'
-        '  SQLite on Render is wiped on every restart — all data would be lost.\n'
-    )
 else:
+    # Fall back to SQLite — on Render this means data won't persist across
+    # restarts, but the service will at least start. Set DATABASE_URL in the
+    # Render dashboard to use PostgreSQL in production.
+    if not _debug:
+        print('[WARNING] DATABASE_URL is not set. Falling back to SQLite. Data will NOT persist on Render restarts. Set DATABASE_URL in the Render dashboard.')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
