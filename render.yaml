@@ -17,7 +17,9 @@ services:
       - key: DATABASE_URL
         sync: false   # Set manually in Render dashboard — use PostgreSQL
       - key: ALLOWED_HOSTS
-        value: ".onrender.com"
+        value: "technopath-backend.onrender.com,.onrender.com"
+      - key: CORS_EXTRA_ORIGINS
+        value: "https://technopath-frontend-3gda.onrender.com,https://technopath-frontend.onrender.com,https://techno-path-frontend.onrender.com"
       - key: OPENAI_API_KEY
         sync: false
       - key: FLASK_CHATBOT_URL
